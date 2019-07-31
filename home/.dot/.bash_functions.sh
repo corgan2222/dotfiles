@@ -50,6 +50,16 @@ function mkcdir ()
       cd -P -- "$1"
 }
 
+function psKillAllX ()
+{
+ if [ $# -eq 0 ]; then
+      echo "usage addToHome [file, file, folder]"
+      return 1
+    else
+      ps -ef | grep "${1}" | grep -v grep | awk '{print $2}' | xargs -r kill -9
+    fi    
+}
+
 # Convert video to gif file.
 # Usage: video2gif video_file (scale) (fps)
 function video2gif() {
