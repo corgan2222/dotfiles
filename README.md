@@ -91,12 +91,17 @@ homeshick track dotfiles [file, folder]
 
 ## Usage example
 
-_For alias and functions check the [Wiki][wiki]._
+_For alias and functions check the [Wiki][https://github.com/corgan2222/dotfiles/wiki]._
 
 ## Release History
 
 - 0.0.1
   - first deploy
+
+## ToDo
+
+- merge with Asus Merlin
+- scripts
 
 ## Software Used and thanks
 
@@ -104,11 +109,7 @@ _For alias and functions check the [Wiki][wiki]._
 - [voku/dotfiles](https://github.com/voku/dotfiles)
 - [cowboy/dotfiles](https://github.com/cowboy/dotfiles)
 - [alrra/dotfiles](https://github.com/alrra/dotfiles)
-- []()
-- []()
 
 ## Meta
 
 Stefan Knaak – stefan@knaak.org
-
-
