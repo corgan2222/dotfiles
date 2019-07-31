@@ -1241,7 +1241,7 @@ ppp() {
 
 # Search history.
 
-qh() {
+function qh() {
     #           ┌─ enable colors for pipe
     #           │  ("--color=auto" enables colors only if
     #           │  the output is in the terminal)
@@ -1254,12 +1254,40 @@ qh() {
 
 # Search for text within the current directory.
 
-qt() {
+function qt() {
     grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
     #     │└─ search all files under each directory, recursively
     #     └─ ignore case
 }
 
+# Print a line of dashes or the given string across the entire screen.
+function line {
+	width=$(tput cols);
+	str=${1--};
+	len=${#str};
+	for ((i = 0; i < $width; i += $len)); do
+		echo -n "${str:0:$(($width - $i))}";
+	done;
+	echo;
+}
+# Print the given text in the center of the screen.
+function center {
+	width=$(tput cols);
+	str="$@";
+	len=${#str};
+	[ $len -ge $width ] && echo "$str" && return;
+	for ((i = 0; i < $(((($width - $len)) / 2)); i++)); do
+		echo -n " ";
+	done;
+	echo "$str";
+}
+
+# Open the man page for the previous command.
+function lman () { set -- $(fc -nl -1); while [ "$#" -gt 0 -a '(' "sudo" = "$1" -o "-" = "${1:0:1}" ')' ]; do shift; done; man "$1" || help "$1"; }
+
+# lman
+# center
+# line
 # qt
 # qh
 # ppp
