@@ -214,6 +214,9 @@ alias pscpu10="pscpu | tail -10"
 # shows the corresponding process to ...
 alias psx="ps auxwf | grep "
 
+#kill all process with name
+alias psKillAll="pkill -f "
+
 # shows the process structure to clearly
 alias pst="pstree -Alpha"
 
