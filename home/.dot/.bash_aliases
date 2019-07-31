@@ -6,7 +6,7 @@
 
 # Enable simple aliases to be sudo'ed. ("sudone"?)
 alias sudo='sudo '
-alias joe='joe -nodeadjoe -nobackups'
+alias joe='joe -nodeadjoe -nobackups -noexmsg '
 alias vi='joe'
 alias hmm='apropos '
 
@@ -29,7 +29,7 @@ alias tarx='tar xfv'
 alias e='extract'
 
 alias editAlias="joe ~/.dot/.bash_aliases"
-alias editFunctions="joe ~/.dot/.bash_functions"
+alias editFunctions="joe ~/.dot/.bash_functions.sh"
 alias editBash='joe ~/.bashrc'
 
 alias cf='grep ^[^#]'
