@@ -1,6 +1,9 @@
+function initHome ()
+{
+  bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh) 
+}
 
-
-function updateHome ()
+function saveHome ()
 {
   if [ $# -eq 0 ]; then
       echo "add commit message"
@@ -13,7 +16,7 @@ function updateHome ()
     fi
 }
 
-function reloadHome ()
+function loadHome ()
 {
       homeshick pull dotfiles
       reload
