@@ -1,4 +1,17 @@
 
+updateHome ()
+{
+  if [ $# -eq 0 ]; then
+      echo "add commit message"
+      return 1
+    else
+      homeshick cd dotfiles
+      gitadd "${1}"
+      gitp
+      cd -
+    fi
+
+}
 
 mkcdir ()
 {
