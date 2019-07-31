@@ -15,6 +15,7 @@ updateHome ()
 reloadHome ()
 {
       homeshick pull dotfiles
+      reload
 }
 
 checkHome ()
