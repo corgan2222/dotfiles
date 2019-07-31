@@ -36,7 +36,7 @@ function addToHome ()
       echo "usage addToHome [file, file, folder]"
       return 1
     else
-      homeshick track dotfiles
+      homeshick track dotfiles "${1}"
     fi
 }
 
