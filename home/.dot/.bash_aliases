@@ -44,7 +44,7 @@ alias cx="chmod +x "
 alias bd=". bd -s"
 
 alias eachdir=". eachdir"
-alias uls='cat /etc/passwd'
+alias userls='cat /etc/passwd'
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload="exec $SHELL -l"
