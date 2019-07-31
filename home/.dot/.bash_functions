@@ -10,7 +10,13 @@ updateHome ()
       gitp
       cd -
     fi
+}
 
+gitSaveCredential ()
+{
+  homeshick cd dotfiles
+  git config credential.helper store
+  git pull
 }
 
 mkcdir ()
