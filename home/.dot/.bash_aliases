@@ -8,6 +8,7 @@
 alias sudo='sudo '
 alias joe='joe -nodeadjoe -nobackups'
 alias vi='joe'
+alias hmm='apropos '
 
 # ------------------------------------------------------------------------------
 # | Directories Commands (create / remove)                                     |
@@ -115,7 +116,7 @@ alias gitadd="git add * && git commit -m "
 # replace top with htop
 if command -v htop >/dev/null; then
 alias top_orig="/usr/bin/top"
-alias top="htop"
+#alias top="htop"
 fi
 
 

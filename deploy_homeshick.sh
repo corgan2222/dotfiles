@@ -30,7 +30,7 @@ corgan2222/dotfiles
 #secret@example.org:securerc.git
 EOF
 
-${VISUAL:-vi} $tmpfile
+${VISUAL:-joe} $tmpfile
 
 code=$?
 
