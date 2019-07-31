@@ -12,11 +12,31 @@ updateHome ()
     fi
 }
 
+reloadHome ()
+{
+      homeshick pull dotfiles
+}
+
+checkHome ()
+{
+      homeshick check dotfiles
+}
+
 gitSaveCredential ()
 {
   homeshick cd dotfiles
   git config credential.helper store
   git pull
+}
+
+function addToHome ()
+{
+  if [ $# -eq 0 ]; then
+      echo "usage addToHome [file, file, folder]"
+      return 1
+    else
+      homeshick track dotfiles
+    fi
 }
 
 mkcdir ()
