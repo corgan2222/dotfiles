@@ -1,11 +1,5 @@
 # https://github.com/voku/dotfiles
 
-alias mountJPG2019="mount -t cifs -o user=admin //192.168.196.253/Medien/Fotos_JPG/2019/mnt/serva3/"
-alias lnav_cloud="lnav /var/www/vhosts/knaak.org/logs/cloud.knaak.org/error_log  /var/log/plesk-php73-fpm/error.log /var/www/vhosts/knaak.org/logs/error_log/var/log/apache2/error.log"
-alias php73="/opt/plesk/php/7.3/bin/php"
-alias peclInstallapcu="/opt/plesk/php/7.3/bin/pecl install apcu"
-alias OCC="sudo -u knaak  /opt/plesk/php/7.3/bin/php /var/www/vhosts/knaak.org/cloud.knaak.org/occ"
-
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
 # ------------------------------------------------------------------------------
@@ -59,7 +53,6 @@ alias reload="exec $SHELL -l"
 # Print each PATH entry on a separate line
 alias path="echo -e ${PATH//:/\\n}"
 
-
 # ------------------------------------------------------------------------------
 # | Navigation                                                                 |
 # ------------------------------------------------------------------------------
@@ -88,10 +81,15 @@ alias la='ls -A'
 alias l='ls -CF'
 
 alias dir='ls -la'
-alias d='exa --long --header --git -g'
-alias da='exa --long --header --git -g -all'
-alias dd='exa --long --header --git -T -g'
-alias dira='la -la'
+alias d='ls -l'
+alias da='ls -la'
+
+# ls replacement with exa
+if command -v exa >/dev/null; then
+  alias d='exa --long --header --git -g'
+  alias da='exa --long --header --git -g -all'
+  alias dd='exa --long --header --git -T -g'
+fi
 
 # ------------------------------------------------------------------------------
 # | Apt                                                                        |
@@ -103,7 +101,10 @@ alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.ba
 alias aptGetVersion="dpkg -l | grep -i "
 alias aptList="dpkg -l"
 
-#servies
+# ------------------------------------------------------------------------------
+# | services Ubuntu 16                                                         |
+# ------------------------------------------------------------------------------
+
 #https://superuser.com/questions/896812/all-systemd-states
 
 alias list_services_startup="systemctl list-units --type service"
@@ -117,7 +118,9 @@ alias disable_mask_service="systemctl mask "
 alias disable_service="systemctl enable "
 alias enable_service="systemctl enable "
 
-#plesk
+# ------------------------------------------------------------------------------
+# | #plesk   Ubuntu 16                                                         |
+# ------------------------------------------------------------------------------
 
 alias pleskReadPhpHandler="plesk bin php_handler --reread"
 alias peclPhp70Install="/opt/plesk/php/7.0/bin/pecl install "
@@ -126,14 +129,18 @@ alias peclPhp72Install="/opt/plesk/php/7.2/bin/pecl install "
 alias peclPhp73Install="/opt/plesk/php/7.3/bin/pecl install "
 alias pleskRestart="service sw-engine restart && service sw-cp-server restart"
 
-#apache
+# ------------------------------------------------------------------------------
+# | #apache Ubuntu 16                                                          |
+# ------------------------------------------------------------------------------
 
 alias apacheModsAvailable="ls -l /etc/apache2/mods-available/"
 alias apacheModsEnabled="ls -l /etc/apache2/mods-enabled/"
 alias restartApachePhp="service apache2 restart" 
 alias restartPhp73fpm="service plesk-php73-fpm restart"
 
-#php
+# ------------------------------------------------------------------------------
+# | php                                                                        |
+# ------------------------------------------------------------------------------
 
 alias listLoadedPhpInis7="php --ini"
 alias listLoadedPhpInis73="php73 --ini"
@@ -154,6 +161,7 @@ alias gitsub='git submodule add'
 alias gitsubadd='git submodule add'
 alias gitsubget='git submodule init && git submodule update'
 alias gitadd="git add * && git commit -m "
+alias gc="git clone "
 
 
 # replace top with htop
