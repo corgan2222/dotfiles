@@ -1,3 +1,18 @@
+function findStringInFiles ()
+{
+#usage findStringInFiles /etc foo exclud
+
+ if [ $# -eq 3 ]; then
+    grep --exclude="$3" -rnw "$2" -e "$1"
+  else
+   grep -rnw "$2" -e "$1"
+fi
+
+
+
+
+}
+
 function initHome ()
 {
   bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh) 

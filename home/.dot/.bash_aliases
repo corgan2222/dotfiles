@@ -1,5 +1,11 @@
 # https://github.com/voku/dotfiles
 
+alias mountJPG2019="mount -t cifs -o user=admin //192.168.196.253/Medien/Fotos_JPG/2019/mnt/serva3/"
+alias lnav_cloud="lnav /var/www/vhosts/knaak.org/logs/cloud.knaak.org/error_log  /var/log/plesk-php73-fpm/error.log /var/www/vhosts/knaak.org/logs/error_log/var/log/apache2/error.log"
+alias php73="/opt/plesk/php/7.3/bin/php"
+alias peclInstallapcu="/opt/plesk/php/7.3/bin/pecl install apcu"
+alias OCC="sudo -u knaak  /opt/plesk/php/7.3/bin/php /var/www/vhosts/knaak.org/cloud.knaak.org/occ"
+
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
 # ------------------------------------------------------------------------------
@@ -59,6 +65,9 @@ alias path="echo -e ${PATH//:/\\n}"
 # ------------------------------------------------------------------------------
 
 alias cdknaak='cd /var/www/vhosts/knaak.org/httpdocs'
+alias cd_Aptlist='cd /etc/apt/'
+alias cd_git="cd $HOME/git"
+alias cd_Scripts="cd $HOME/git/scripts"
 
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ..="cd .."
@@ -90,10 +99,44 @@ alias dira='la -la'
 
 alias ap='apt-get install'
 alias apuu='sudo apt-get update && sudo apt-get -y upgrade'
-alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions'
+alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 alias aptGetVersion="dpkg -l | grep -i "
 alias aptList="dpkg -l"
 
+#servies
+#https://superuser.com/questions/896812/all-systemd-states
+
+alias list_services_startup="systemctl list-units --type service"
+alias list_services_all="systemctl list-units --type service --all"
+alias list_services_tree="systemctl list-dependencies --type service"
+alias list_services_locate="locate "
+
+alias check_servic_isActive="systemctl is-active "
+alias check_servic_isActive_onBoot="systemctl is-enabled "
+alias disable_mask_service="systemctl mask "
+alias disable_service="systemctl enable "
+alias enable_service="systemctl enable "
+
+#plesk
+
+alias pleskReadPhpHandler="plesk bin php_handler --reread"
+alias peclPhp70Install="/opt/plesk/php/7.0/bin/pecl install "
+alias peclPhp71Install="/opt/plesk/php/7.1/bin/pecl install "
+alias peclPhp72Install="/opt/plesk/php/7.2/bin/pecl install "
+alias peclPhp73Install="/opt/plesk/php/7.3/bin/pecl install "
+alias pleskRestart="service sw-engine restart && service sw-cp-server restart"
+
+#apache
+
+alias apacheModsAvailable="ls -l /etc/apache2/mods-available/"
+alias apacheModsEnabled="ls -l /etc/apache2/mods-enabled/"
+alias restartApachePhp="service apache2 restart" 
+alias restartPhp73fpm="service plesk-php73-fpm restart"
+
+#php
+
+alias listLoadedPhpInis7="php --ini"
+alias listLoadedPhpInis73="php73 --ini"
 
 # ------------------------------------------------------------------------------
 # | Docker                                                                     |
@@ -230,22 +273,22 @@ alias loadavg="cat /proc/loadavg"
 alias partitions="cat /proc/partitions"
 
 # shows the disk usage of a directory legibly
-alias du='du -kh'
-alias du5='du -kh | tail -5'
-alias du10='du -kh | tail -10'
+alias du="du -kh"
+alias du5="du -kh | tail -5"
+alias du10="du -kh | tail -10"
 
 # show the biggest files in a folder first
-alias du_overview='du -h | grep "^[0-9,]*[MG]" | sort -hr | less'
+alias du_overview="du -h | grep "^[0-9,]*[MG]" | sort -hr | less"
 
 # shows the complete disk usage to legibly
-alias df='df -kTh'
+alias df="df -kTh"
 
 # ------------------------------------------------------------------------------
 # | System Utilities                                                           |
 # ------------------------------------------------------------------------------
 
 # becoming root + executing last command
-alias sulast='su -c !-1 root'
+alias sulast="su -c !-1 root"
 
 
 # ------------------------------------------------------------------------------
@@ -253,7 +296,7 @@ alias sulast='su -c !-1 root'
 # ------------------------------------------------------------------------------
 
 # decimal to hexadecimal value
-alias dec2hex='printf "%x\n" $1'
+alias dec2hex="printf "%x\n" $1"
 
 
 # Canonical hex dump; some systems have this symlinked
@@ -261,11 +304,9 @@ command -v hd > /dev/null || alias hd="hexdump -C"
 
 
 # urldecode - url http network decode
-alias urldecode='python -c "import sys, urllib as ul; print ul.unquote_plus(sys.argv[1])"'
-
+alias urldecode='python -c import sys, urllib as ul; print ul.unquote_plus(sys.argv[1])"'
 
 # urlencode - url encode network http
-alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1])"'
 
 # ROT13-encode text. Works for decoding, too! ;)
 alias rot13='tr a-zA-Z n-za-mN-ZA-M'
