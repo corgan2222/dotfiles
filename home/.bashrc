@@ -96,7 +96,7 @@ fi
 # * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you don’t want to commit.
 #for file in ~/.{config_dotfiles,path,load,colors,exports,icons,aliases,bash_complete,functions,extra,dotfilecheck}; do
-for file in ~/.dot/.{exports,bash_aliases,bash_functions.sh}; do
+for file in ~/.dot/.{exports,bash_aliases,bash_functions.sh, .srv1.bash_aliases}; do
     [ -r "$file" ] && [ -f "$file" ] && source "$file"
 done
 unset file
