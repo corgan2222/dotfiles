@@ -72,7 +72,7 @@ shootProfile(){
 
 			readonly CPU_CORES
 			readonly CPU_TYPE
-			readonly OS
+			#readonly OS
 			readonly DIST
 			readonly DistroBasedOn
 			readonly PSUEDONAME
