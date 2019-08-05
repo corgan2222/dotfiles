@@ -52,14 +52,14 @@ shootProfile(){
             			fi
 			elif [ -f /etc/VERSION ] ; then
 				DistroBasedOn='Synology'
-				if [ -f /etc.defaults/synoinfo.conf  ] ; then
-			        	DIST=`/etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'`
-			            PSUEDONAME=`DSM`
-			            REV=`/etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'`
-			            MODELL=`cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }'`
-			            MODELL_TYPE=`cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'`
-			            MODELL_SYSTEM=`cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'`
-            	fi						
+				
+				DIST=`/etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'`
+				PSUEDONAME=`DSM`
+				REV=`/etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'`
+				MODELL=`cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }'`
+				MODELL_TYPE=`cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'`
+				MODELL_SYSTEM=`cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'`
+            							
 			fi
 
 #upnpmodelname="DS415+"
