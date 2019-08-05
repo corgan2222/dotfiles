@@ -1,3 +1,8 @@
+function_exists() {
+    declare -f -F $1 > /dev/null
+    return $?
+}
+
 function findStringInFiles ()
 {
 #usage findStringInFiles /etc foo exclud
@@ -7,8 +12,6 @@ function findStringInFiles ()
   else
    grep -rnw "$2" -e "$1"
 fi
-
-
 
 
 }

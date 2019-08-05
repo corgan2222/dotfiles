@@ -7,39 +7,38 @@ PROMPT_COMMAND='history -a'
 # Env vars
 export EDITOR=joe
 
-
 # detect your os
 case "$OSTYPE" in
-  solaris*) SYSTEM_TYPE="SOLARIS" ;;
-  darwin*)  SYSTEM_TYPE="OSX" ;;
-  linux*)   SYSTEM_TYPE="LINUX" ;;
-  bsd*)     SYSTEM_TYPE="BSD" ;;
-  msys*)    SYSTEM_TYPE="MINGW" ;;
-  cygwin*)  SYSTEM_TYPE="CYGWIN" ;;
+    solaris*) SYSTEM_TYPE="SOLARIS" ;;
+    darwin*)  SYSTEM_TYPE="OSX" ;;
+    linux*)   SYSTEM_TYPE="LINUX" ;;
+    bsd*)     SYSTEM_TYPE="BSD" ;;
+    msys*)    SYSTEM_TYPE="MINGW" ;;
+    cygwin*)  SYSTEM_TYPE="CYGWIN" ;;
 esac
 
 if [[ "$(uname)" == "Darwin" ]]; then
-  SYSTEM_TYPE="OSX"
-elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
-  SYSTEM_TYPE="LINUX"
-elif [[ "$(expr substr $(uname -s) 1 7)" == "FreeBSD" ]]; then
-  SYSTEM_TYPE="FREE_BSD"
-elif [[ "$(expr substr $(uname -s) 1 6)" == "NetBSD" ]]; then
-  SYSTEM_TYPE="NET_BSD"
-elif [[ "$(expr substr $(uname -s) 1 7)" == "OpenBSD" ]]; then
-  SYSTEM_TYPE="OPEN_BSD"
-elif [[ "$(expr substr $(uname -s) 1 7)" == "MSYS_NT" ]]; then
-  SYSTEM_TYPE="MINGW"
-elif [[ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]]; then
-  SYSTEM_TYPE="MINGW"
-elif [[ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]]; then
-  SYSTEM_TYPE="MINGW"
-elif [[ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]]; then
-  SYSTEM_TYPE="CYGWIN"
+    SYSTEM_TYPE="OSX"
+    elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
+    SYSTEM_TYPE="LINUX"
+    elif [[ "$(expr substr $(uname -s) 1 7)" == "FreeBSD" ]]; then
+    SYSTEM_TYPE="FREE_BSD"
+    elif [[ "$(expr substr $(uname -s) 1 6)" == "NetBSD" ]]; then
+    SYSTEM_TYPE="NET_BSD"
+    elif [[ "$(expr substr $(uname -s) 1 7)" == "OpenBSD" ]]; then
+    SYSTEM_TYPE="OPEN_BSD"
+    elif [[ "$(expr substr $(uname -s) 1 7)" == "MSYS_NT" ]]; then
+    SYSTEM_TYPE="MINGW"
+    elif [[ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]]; then
+    SYSTEM_TYPE="MINGW"
+    elif [[ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]]; then
+    SYSTEM_TYPE="MINGW"
+    elif [[ "$(expr substr $(uname -s) 1 9)" == "CYGWIN_NT" ]]; then
+    SYSTEM_TYPE="CYGWIN"
 fi
 
 if [[ -n "$(cat /proc/version | grep '(Microsoft@Microsoft.com)')" ]]; then
-  SYSTEM_TYPE="Win10_Linux"
+    SYSTEM_TYPE="Win10_Linux"
 fi
 
 export SYSTEM_TYPE
