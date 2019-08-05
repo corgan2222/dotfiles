@@ -25,7 +25,7 @@ fi
 
 if [ "$DIST" = "Synology" ]; then 
   echo "welcome to $DIST"
-  for file in ~/.dot/synology/.{bashrc,exports,bash_aliases; do
+  for file in "$HOME"/.dot/synology/.{bashrc,exports,bash_aliases; do
       [ -r "$file" ] && [ -f "$file" ] && source "$file"
   done
   unset file
