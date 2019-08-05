@@ -51,47 +51,36 @@ shootProfile(){
 			                REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
             			fi
 			elif [ -f /etc/VERSION ] ; then
-				DistroBasedOn='Synology'
-				
-				DIST=`/etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'`
-				PSUEDONAME=`DSM`
-				REV=`/etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'`
+			 	DistroBasedOn='Synology'
+				DIST=`cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'`
+				PSUEDONAME="DSM"
+				REV=`cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'`
 				MODELL=`cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }'`
 				MODELL_TYPE=`cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'`
-				MODELL_SYSTEM=`cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'`
-            							
+				MODELL_SYSTEM=`cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'`						
 			fi
-
-#upnpmodelname="DS415+"
-#cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'
-#"DS415+"
-
-#unique="synology_avoton_415+"
-#cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'
-
-#company_title="Synology"
-#cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'
-
-#product="DiskStation"
-#cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }'
-
-#cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'
-#cat /etc.defaults/VERSION | grep '^buildnumber' | awk -F=  '{ print $2 }'
 
 			if [ -f /etc/UnitedLinux-release ] ; then
 				DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
 			fi
 			OS=`lowercase $OS`
 			DistroBasedOn=`lowercase $DistroBasedOn`
-		 	readonly OS
-		 	readonly DIST
+
+			CPU_CORES=`cat /proc/cpuinfo | grep "model name" | wc -l`
+			CPU_TYPE=`cat /proc/cpuinfo | grep "model name" -m 1 | cut -d: -f2`
+
+			readonly CPU_CORES
+			readonly CPU_TYPE
+			readonly OS
+			readonly DIST
 			readonly DistroBasedOn
-		 	readonly PSUEDONAME
-		 	readonly REV
-		 	readonly KERNEL
-		 	readonly MACH
-		 	readonly MODELL_TYPE
-		 	readonly MODELL_SYSTEM
+			readonly PSUEDONAME
+			readonly REV
+			readonly KERNEL
+			readonly MACH
+			readonly MODELL
+			readonly MODELL_TYPE
+			readonly MODELL_SYSTEM
 		fi
 
 	fi
@@ -155,7 +144,9 @@ runOption(){
 	printMenu
 }
 
+
 # shootProfile
+#echo "$CPU_CORES x $CPU_TYPE"
 # echo "OS: $OS"
 # echo "DIST: $DIST"
 # echo "PSUEDONAME: $PSUEDONAME"
@@ -163,8 +154,12 @@ runOption(){
 # echo "DistroBasedOn: $DistroBasedOn"
 # echo "KERNEL: $KERNEL"
 # echo "MACH: $MACH"
-# echo "========"
+# echo "model: $MODELL"
+# echo "type: $MODELL_TYPE"
+# echo "system: $MODELL_SYSTEM"
+#echo "========"
 # printMenu
+
 
 #upnpmodelname="DS415+"
 #cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'
