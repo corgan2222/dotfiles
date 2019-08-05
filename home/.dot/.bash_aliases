@@ -140,7 +140,6 @@ alias gc="git clone "
 # replace top with htop
 if command -v htop >/dev/null; then
 alias top_orig="/usr/bin/top"
-@@ -199,134 +113,6 @@ else
 fi
 
 
