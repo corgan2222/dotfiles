@@ -6,7 +6,7 @@ if [ "$BASH" ]; then
   fi
 fi
 
-#mesg n || true
+mesg n || true
 
 #[ ! -s ~/.plesk_banner ] || . ~/.plesk_banner
  
