@@ -1,39 +1,11 @@
-# ------------------------------------------------------------------------------
-# | #plesk   Ubuntu 16                                                         |
-# ------------------------------------------------------------------------------
 
-alias pleskReadPhpHandler="plesk bin php_handler --reread"
-alias peclPhp70Install="/opt/plesk/php/7.0/bin/pecl install "
-alias peclPhp71Install="/opt/plesk/php/7.1/bin/pecl install "
-alias peclPhp72Install="/opt/plesk/php/7.2/bin/pecl install "
-alias peclPhp73Install="/opt/plesk/php/7.3/bin/pecl install "
-alias pleskRestart="service sw-engine restart && service sw-cp-server restart"
-
-# ------------------------------------------------------------------------------
-# | #apache Ubuntu 16                                                          |
-# ------------------------------------------------------------------------------
-
-alias apacheModsAvailable="ls -l /etc/apache2/mods-available/"
-alias apacheModsEnabled="ls -l /etc/apache2/mods-enabled/"
-alias restartApachePhp="service apache2 restart" 
-alias restartPhp73fpm="service plesk-php73-fpm restart"
-
-
-alias cf='grep ^[^#]'
-alias nodels='pm2 ls'
-alias aliasls='cat ~/.bashrc | grep alias'
 
 alias py3='python3'
 alias py='py3'
 alias p3='py3'
 alias p='py3'
 
-alias bd=". bd -s"
-alias eachdir=". eachdir"
-alias userls='cat /etc/passwd'
 
-# Print each PATH entry on a separate line
-alias path="echo -e ${PATH//:/\\n}"
 
 # ------------------------------------------------------------------------------
 # | Navigation                                                                 |
@@ -49,27 +21,8 @@ alias cd_Scripts="cd $HOME/git/scripts"
 # ------------------------------------------------------------------------------
 
 alias ap='apt-get install'
-alias apuu='sudo apt-get update && sudo apt-get -y upgrade'
-alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 alias aptGetVersion="dpkg -l | grep -i "
 alias aptList="dpkg -l"
-
-# ------------------------------------------------------------------------------
-# | services Ubuntu 16                                                         |
-# ------------------------------------------------------------------------------
-
-#https://superuser.com/questions/896812/all-systemd-states
-
-alias list_services_startup="systemctl list-units --type service"
-alias list_services_all="systemctl list-units --type service --all"
-alias list_services_tree="systemctl list-dependencies --type service"
-alias list_services_locate="locate "
-
-alias check_servic_isActive="systemctl is-active "
-alias check_servic_isActive_onBoot="systemctl is-enabled "
-alias disable_mask_service="systemctl mask "
-alias disable_service="systemctl enable "
-alias enable_service="systemctl enable "
 
 # ------------------------------------------------------------------------------
 # | php                                                                        |
@@ -77,13 +30,6 @@ alias enable_service="systemctl enable "
 
 alias listLoadedPhpInis7="php --ini"
 alias listLoadedPhpInis73="php73 --ini"
-
-# replace top with htop
-if command -v htop >/dev/null; then
-alias top_orig="/usr/bin/top"
-#alias top="htop"
-fi
-
 
 # tree (with fallback)
 if which tree >/dev/null 2>&1; then
@@ -95,32 +41,6 @@ else
   alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
   alias ltree="tree | less -R"
 fi
-
-# ------------------------------------------------------------------------------
-# | Search and Find                                                            |
-# ------------------------------------------------------------------------------
-
-# super-grep ;)
-alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
-
-# search in files (with fallback)
-if which ack-grep >/dev/null 2>&1; then
-  alias ack=ack-grep
-
-  alias afind="ack-grep -iH"
-else
-  alias afind="ack -iH"
-fi
-
-
-# ------------------------------------------------------------------------------
-# | Fun                                                                        |
-# ------------------------------------------------------------------------------
-
-#alias nyancat="telnet miku.acm.uiuc.edu"  # offline
-
-alias starwars="telnet towel.blinkenlights.nl"
-
 
 
 # ------------------------------------------------------------------------------

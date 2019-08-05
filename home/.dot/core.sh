@@ -52,17 +52,18 @@ shootProfile(){
             			fi
 			elif [ -f /etc/VERSION ] ; then
 			 	DistroBasedOn='Synology'
-				DIST=`cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'`
+				DIST=`cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//" `
 				PSUEDONAME="DSM"
-				REV=`cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'`
-				MODELL=`cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }'`
-				MODELL_TYPE=`cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'`
-				MODELL_SYSTEM=`cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'`						
+				REV=`cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//" ` 
+				MODELL=`cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//" `
+				MODELL_TYPE=`cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//" `
+				MODELL_SYSTEM=`cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//" `						
 			fi
 
 			if [ -f /etc/UnitedLinux-release ] ; then
 				DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
 			fi
+
 			OS=`lowercase $OS`
 			DistroBasedOn=`lowercase $DistroBasedOn`
 
