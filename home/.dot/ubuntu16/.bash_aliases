@@ -50,7 +50,7 @@ alias cd_Scripts="cd $HOME/git/scripts"
 
 alias ap='apt-get install'
 alias apuu='sudo apt-get update && sudo apt-get -y upgrade'
-alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
+alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
 alias aptGetVersion="dpkg -l | grep -i "
 alias aptList="dpkg -l"
 
