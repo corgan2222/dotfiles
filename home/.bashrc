@@ -4,13 +4,12 @@ source "$HOME"/.dot/core.sh
 #OS Check
 shootProfile
 
-echo "$OS $DIST $MACH $REV $PSUEDONAME | Kernel $KERNEL | based on $DistroBasedOn "
+echo "$OS $DIST $MACH $REV $PSUEDONAME | Kernel $KERNEL | based on $DistroBasedOn | $MODELL_TYPE $MODELL_SYSTEM"
 
 #load basisc
 source "$HOME"/.dot/.bash_aliases
 source "$HOME"/.dot/.bash_functions.sh
 source "$HOME"/.dot/.exports
-
 
 
 if [ "$DIST" = "Ubuntu" ]; then   
@@ -24,7 +23,7 @@ if [ "$DIST" = "Ubuntu" ]; then
   unset file
 fi  
 
-if [ "$DIST" = "synology" ]; then 
+if [ "$DIST" = "Synology" ]; then 
   for file in ~/.dot/synology/.{bashrc,exports,bash_aliases; do
       [ -r "$file" ] && [ -f "$file" ] && source "$file"
   done
@@ -34,7 +33,7 @@ fi
 
 if [ "$DIST" = "raspi" ]; then 
   for file in ~/.dot/raspi/.{.bashrc,.exports,.bash_aliases}; do
-      [ -r "$file" ] && [ -f "$file" ] && source "$file"
+      [ -r "$file" ] && [ -f "$file" ] && source "$file"source
   done
   unset file
 fi 
@@ -54,6 +53,7 @@ fi
 ############# INCLUDE ####################################
 
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+
 source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
 homeshick refresh
 
