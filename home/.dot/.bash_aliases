@@ -36,8 +36,7 @@ alias p='py3'
 
 alias cx="chmod +x "
 alias bd=". bd -s"
-# reload the shell (i.e. invoke as a login shell)
-alias reload="exec $SHELL -l"
+
 
 # Easier navigation: .., ..., ...., ....., ~ and -
 alias ..="cd .."
@@ -72,6 +71,8 @@ alias userls='cat /etc/passwd'
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload="exec $SHELL -l"
+
+alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
 
 # Print each PATH entry on a separate line
 alias path="echo -e ${PATH//:/\\n}"
