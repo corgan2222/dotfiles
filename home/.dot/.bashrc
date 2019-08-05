@@ -12,7 +12,6 @@ source "$HOME"/.dot/.bash_functions.sh
 source "$HOME"/.dot/.exports
 
 
-
 if [ "$DIST" = "Ubuntu" ]; then   
   # load the shell dotfiles, and then some:
   # * ~/.path can be used to extend `$PATH`.
@@ -34,7 +33,7 @@ fi
 
 if [ "$DIST" = "raspi" ]; then 
   for file in ~/.dot/raspi/.{.bashrc,.exports,.bash_aliases}; do
-      [ -r "$file" ] && [ -f "$file" ] && source "$file"
+      [ -r "$file" ] && [ -f "$file" ] && source "$file"source
   done
   unset file
 fi 
