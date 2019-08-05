@@ -24,6 +24,7 @@ if [ "$DIST" = "Ubuntu" ]; then
 fi  
 
 if [ "$DIST" = "Synology" ]; then 
+  echo "welcome to $DIST"
   for file in ~/.dot/synology/.{bashrc,exports,bash_aliases; do
       [ -r "$file" ] && [ -f "$file" ] && source "$file"
   done
@@ -53,7 +54,6 @@ fi
 ############# INCLUDE ####################################
 
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
-
 source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
 homeshick refresh
 
