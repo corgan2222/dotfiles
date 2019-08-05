@@ -76,7 +76,7 @@ alias reload="exec $SHELL -l"
 # Print each PATH entry on a separate line
 alias path="echo -e ${PATH//:/\\n}"
 
-@@ -62,35 +44,6 @@ alias cd_Aptlist='cd /etc/apt/'
+aliascd_Aptlist='cd /etc/apt/'
 alias cd_git="cd $HOME/git"
 alias cd_Scripts="cd $HOME/git/scripts"
 
