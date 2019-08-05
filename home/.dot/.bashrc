@@ -4,7 +4,7 @@ source "$HOME"/.dot/core.sh
 #OS Check
 shootProfile
 
-echo "$OS $DIST $MACH $REV $PSUEDONAME | Kernel $KERNEL | based on $DistroBasedOn "
+echo "$OS $DIST $MACH $REV $PSUEDONAME | Kernel $KERNEL | based on $DistroBasedOn | $MODELL_TYPE $MODELL_SYSTEM"
 
 #load basisc
 source "$HOME"/.dot/.bash_aliases
@@ -23,7 +23,7 @@ if [ "$DIST" = "Ubuntu" ]; then
   unset file
 fi  
 
-if [ "$DIST" = "synology" ]; then 
+if [ "$DIST" = "Synology" ]; then 
   for file in ~/.dot/synology/.{bashrc,exports,bash_aliases; do
       [ -r "$file" ] && [ -f "$file" ] && source "$file"
   done

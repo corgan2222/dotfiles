@@ -50,7 +50,34 @@ shootProfile(){
 			                PSUEDONAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
 			                REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
             			fi
+			elif [ -f /etc/VERSION ] ; then
+				DistroBasedOn='Synology'
+				if [ -f /etc.defaults/synoinfo.conf  ] ; then
+			        	DIST=`/etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'`
+			            PSUEDONAME=`DSM`
+			            REV=`/etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'`
+			            MODELL=`cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }'`
+			            MODELL_TYPE=`cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'`
+			            MODELL_SYSTEM=`cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'`
+            	fi						
 			fi
+
+#upnpmodelname="DS415+"
+#cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'
+#"DS415+"
+
+#unique="synology_avoton_415+"
+#cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'
+
+#company_title="Synology"
+#cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'
+
+#product="DiskStation"
+#cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }'
+
+#cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'
+#cat /etc.defaults/VERSION | grep '^buildnumber' | awk -F=  '{ print $2 }'
+
 			if [ -f /etc/UnitedLinux-release ] ; then
 				DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
 			fi
@@ -63,6 +90,8 @@ shootProfile(){
 		 	readonly REV
 		 	readonly KERNEL
 		 	readonly MACH
+		 	readonly MODELL_TYPE
+		 	readonly MODELL_SYSTEM
 		fi
 
 	fi
@@ -136,3 +165,31 @@ runOption(){
 # echo "MACH: $MACH"
 # echo "========"
 # printMenu
+
+#upnpmodelname="DS415+"
+#cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }'
+#"DS415+"
+
+#unique="synology_avoton_415+"
+#cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }'
+
+#company_title="Synology"
+#cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }'
+
+#product="DiskStation"
+#cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }'
+
+#cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }'
+#cat /etc.defaults/VERSION | grep '^buildnumber' | awk -F=  '{ print $2 }'
+
+# /etc.defaults$ cat VERSION
+# majorversion="6"
+# minorversion="2"
+# productversion="6.2.2"
+# buildphase="GM"
+# buildnumber="24922"
+# smallfixnumber="2"
+# packing="official"
+# packing_id="18"
+# builddate="2019/07/03"
+# buildtime="06:53:28"
