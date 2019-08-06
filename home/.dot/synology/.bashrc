@@ -1,9 +1,5 @@
 # If not running interactively, don't do anything
-echo $CPU_TYPE
 echo "syno functions were loaded"
-
-
-[ -z "$PS1" ] && return
 
 HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend

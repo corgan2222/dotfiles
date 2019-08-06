@@ -1,3 +1,4 @@
+[ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 source "$HOME"/.dot/core.sh
 
