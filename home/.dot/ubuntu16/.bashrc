@@ -112,22 +112,3 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
-# if [ -f ~/.dot/.bash_functions ]; then
-#     . ~/.dot/.bash_functions
-# fi
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-#if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-#    . /etc/bash_completion
-#fi
-
-# load the shell dotfiles, and then some:
-# * ~/.path can be used to extend `$PATH`.
-# * ~/.extra can be used for other settings you don’t want to commit.
-#for file in ~/.{config_dotfiles,path,load,colors,exports,icons,aliases,bash_complete,functions,extra,dotfilecheck}; do
-for file in ~/.dot/.{exports,bash_aliases,bash_functions.sh,srv1.bash_aliases}; do
-    [ -r "$file" ] && [ -f "$file" ] && source "$file"
-done
-unset file
