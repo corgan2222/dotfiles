@@ -1,6 +1,4 @@
 # If not running interactively, don't do anything
-echo "syno functions were loaded"
-
 HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend
 HISTFILESIZE=99999999

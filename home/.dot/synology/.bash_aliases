@@ -1,5 +1,3 @@
-echo "syno alias were loaded"
-
 alias py3='python3'
 alias py='py3'
 alias p3='py3'
