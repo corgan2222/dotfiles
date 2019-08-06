@@ -1303,6 +1303,65 @@ function center {
 # Open the man page for the previous command.
 function lman () { set -- $(fc -nl -1); while [ "$#" -gt 0 -a '(' "sudo" = "$1" -o "-" = "${1:0:1}" ')' ]; do shift; done; man "$1" || help "$1"; }
 
+function xxgetmac() {
+if [ $# -eq 1 ]; then
+	ip -o link show dev $1 | grep -Po 'ether \K[^ ]*'
+	return 1
+fi
+echo 'Usage: xxgetmac INTERFACE'
+}
+
+# set variables 
+#declare -r TRUE=0
+#declare -r FALSE=1
+#declare -r PASSWD_FILE=/etc/passwd
+
+##################################################################
+# Purpose: Converts a string to lower case
+# Arguments:
+#   $1 -> String to convert to lower case
+##################################################################
+function to_lower() 
+{
+    local str="$@"
+    local output     
+    output=$(tr '[A-Z]' '[a-z]'<<<"${str}")
+    echo $output
+}
+##################################################################
+# Purpose: Display an error message and die
+# Arguments:
+#   $1 -> Message
+#   $2 -> Exit status (optional)
+##################################################################
+function die() 
+{
+    local m="$1"	# message
+    local e=${2-1}	# default exit status 1
+    echo "$m" 
+    exit $e
+}
+##################################################################
+# Purpose: Return true if script is executed by the root user
+# Arguments: none
+# Return: True or False
+##################################################################
+function is_root() 
+{
+   [ $(id -u) -eq 0 ] && return $TRUE || return $FALSE
+}
+
+##################################################################
+# Purpose: Return true $user exits in /etc/passwd
+# Arguments: $1 (username) -> Username to check in /etc/passwd
+# Return: True or False
+##################################################################
+function is_user_exits() 
+{
+    local u="$1"
+    grep -q "^${u}" $PASSWD_FILE && return $TRUE || return $FALSE
+}
+
 # lman
 # center
 # line
