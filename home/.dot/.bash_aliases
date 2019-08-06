@@ -1,5 +1,10 @@
 # https://github.com/voku/dotfiles
 
+# reload the shell (i.e. invoke as a login shell)
+alias reload="exec $SHELL -l"
+alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
+
+
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
 # ------------------------------------------------------------------------------
@@ -33,7 +38,6 @@ alias cf='grep ^[^#]'
 alias nodels='pm2 ls'
 alias p3='py3'
 alias p='py3'
-
 alias cx="chmod +x "
 alias bd=". bd -s"
 
@@ -68,11 +72,6 @@ if command -v exa >/dev/null; then
 fi
 
 alias userls='cat /etc/passwd'
-
-# reload the shell (i.e. invoke as a login shell)
-alias reload="exec $SHELL -l"
-
-alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
 
 # Print each PATH entry on a separate line
 alias path="echo -e ${PATH//:/\\n}"
@@ -110,7 +109,21 @@ if command -v exa >/dev/null; then
   alias dd='exa --long --header --git -T -g'
 fi
 
+# ------------------------------------------------------------------------------
+# | Search and Find                                                            |
+# ------------------------------------------------------------------------------
 
+# super-grep ;)
+alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
+
+# search in files (with fallback)
+if which ack-grep >/dev/null 2>&1; then
+  alias ack=ack-grep
+
+  alias afind="ack-grep -iH"
+else
+  alias afind="ack -iH"
+fi
 
 # ------------------------------------------------------------------------------
 # | php                                                                        |
@@ -142,6 +155,8 @@ alias gc="git clone "
 if command -v htop >/dev/null; then
 alias top_orig="/usr/bin/top"
 fi
+
+
 
 
 # ------------------------------------------------------------------------------
