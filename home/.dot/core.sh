@@ -70,19 +70,19 @@ shootProfile(){
 			CPU_CORES=$(cat /proc/cpuinfo | grep "model name" | wc -l)
 			CPU_TYPE=$(cat /proc/cpuinfo | grep "model name" -m 1 | cut -d: -f2)
 
-			readonly OSSTR
-			readonly CPU_CORES
-			readonly CPU_TYPE
-			readonly OS
-			readonly DIST
-			readonly DistroBasedOn
-			readonly PSUEDONAME
-			readonly REV
-			readonly _KERNEL
-			readonly _MACH
-			readonly MODELL
-			readonly MODELL_TYPE
-			readonly MODELL_SYSTEM
+			export OSSTR
+			export CPU_CORES
+			export CPU_TYPE
+			export OS
+			export DIST
+			export DistroBasedOn
+			export PSUEDONAME
+			export REV
+			export _KERNEL
+			export _MACH
+			export MODELL
+			export MODELL_TYPE
+			export MODELL_SYSTEM
 		fi
 
 	fi

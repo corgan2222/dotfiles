@@ -2,11 +2,40 @@
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
+# prints colored text
+print_style () {
+
+    if [ "$2" == "info" ] ; then
+        COLOR="96m";
+    elif [ "$2" == "success" ] ; then
+        COLOR="92m";
+    elif [ "$2" == "warning" ] ; then
+        COLOR="93m";
+    elif [ "$2" == "danger" ] ; then
+        COLOR="91m";
+    else #default color
+        COLOR="0m";
+    fi
+
+    STARTCOLOR="\e[$COLOR";
+    ENDCOLOR="\e[0m";
+
+    printf "$STARTCOLOR%b$ENDCOLOR" "$1";
+}
+
 
 function _loadFile()
 {
   if [ -r "$1" ]; then
-      printf "%5s%30s%80s\n" loading "$2" "$1"
+      #LAST=$(stat -c%y "$1" | cut -d'.' -f1) 
+      DALTA=$(($(date +%s) - $(date +%s -r "$1"))) 
+
+      LAST=$(date -r $1 +'%H:%M:%S %d-%m-%Y ') 
+      c1=$(print_style " $2" "success")
+      c2=$(print_style " $1" "info")
+      c3=$(print_style " $DALTA" "success")
+      
+      printf "%5s%35s%50s%55s\n" loading "$c1" "$c2" "$LAST (+$c3 sec)" 
       source "$1" 
   fi  
 }
@@ -84,9 +113,8 @@ function resetHome()
 alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
 
 printf "\n" 
-echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | $MODELL_TYPE $MODELL_SYSTEM"
-echo $CPU_TYPE
-
+echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | $MODELL_TYPE $MODELL_SYSTEM $CPU_TYPE"
+printf "\n" 
 
 #autojump
 [[ -s "$HOME"/.autojump/etc/profile.d/autojump.sh ]] && source "$HOME"/.autojump/etc/profile.d/autojump.sh
@@ -96,4 +124,4 @@ echo $CPU_TYPE
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
 homeshick refresh
-
+printf "\n" 

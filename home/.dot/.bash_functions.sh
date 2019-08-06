@@ -1318,6 +1318,68 @@ function is_user_exits() {
   grep -q "^${u}" $PASSWD_FILE && return $TRUE || return $FALSE
 }
 
+##################################################################
+# Purpose: return last mod time of a given file
+# Arguments: $1 (file) 
+# Return:  18:30:14 06-08-2019
+# % stat -c '%y' foobar.txt
+# 2016-07-26 12:15:16.897284828 +0600
+
+# % stat -c '%Y' foobar.txt
+# 1469513716
+
+# % stat -c '%y : %n' foobar.txt
+# 2016-07-26 12:15:16.897284828 +0600 : foobar.txt    
+
+# % stat -c '%Y : %n' foobar.txt
+# 1469513716 : foobar.txt
+
+# If you want the output like Tue Jul 26 15:20:59 BST 2016, use the Epoch time as input to date:
+
+# % date -d "@$(stat -c '%Y' a.out)" '+%a %b %d %T %Z %Y'
+# Tue Jul 26 12:15:21 BDT 2016
+
+# % date -d "@$(stat -c '%Y' a.out)" '+%c'               
+# Tue 26 Jul 2016 12:15:21 PM BDT
+
+# % date -d "@$(stat -c '%Y' a.out)"
+# Tue Jul 26 12:15:21 BDT 2016
+# date -r .bashrc Tue Aug  6 19:14:12 CEST 2019
+ 
+##################################################################
+function lastFileChange() {
+  date -r $1 +'%H:%M:%S %d-%m-%Y'
+  #LAST=$(date -r $1 +'%H:%M:%S %d-%m-%Y ') 
+}
+
+# lastmod(){
+#      #echo "Last modified" $(( $(date +%s) - $(stat -f%c "$1") )) "seconds ago"
+#      #t1=date -r "$1" +%s
+# }
+
+
+# prints colored text
+print_style () {
+
+    if [ "$2" == "info" ] ; then
+        COLOR="96m";
+    elif [ "$2" == "success" ] ; then
+        COLOR="92m";
+    elif [ "$2" == "warning" ] ; then
+        COLOR="93m";
+    elif [ "$2" == "danger" ] ; then
+        COLOR="91m";
+    else #default color
+        COLOR="0m";
+    fi
+
+    STARTCOLOR="\e[$COLOR";
+    ENDCOLOR="\e[0m";
+
+    printf "$STARTCOLOR%b$ENDCOLOR" "$1";
+}
+
+
 # lman
 # center
 # line
