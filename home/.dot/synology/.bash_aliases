@@ -1,4 +1,4 @@
-
+echo "syno alias were loaded"
 
 alias py3='python3'
 alias py='py3'

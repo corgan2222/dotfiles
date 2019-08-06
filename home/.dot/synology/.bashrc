@@ -1,4 +1,6 @@
 # If not running interactively, don't do anything
+echo "syno functions were loaded"
+
 echo $CPU_TYPE
 [ -z "$PS1" ] && return
 
