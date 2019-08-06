@@ -4,6 +4,8 @@
 alias reload="exec $SHELL -l"
 alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
 
+alias makescript="fc -rnl | head -1 >" #Easily make a script out of the last command you ran: makescript [script.sh]
+
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
 # ------------------------------------------------------------------------------
@@ -176,12 +178,15 @@ alias gurl="curl --compressed"
 
 # displays the ports that use the applications
 alias lsport='sudo lsof -i -T -n'
+alias listen="lsof -P -i -n" 
 
 # shows more about the ports on which the applications use
 alias llport='netstat -nape --inet --inet6'
 
 # show only active network listeners
 alias netlisteners='sudo lsof -i -P | grep LISTEN'
+
+getlocation() { lynx -dump http://www.ip-adress.com/ip_tracer/?QRY=$1|grep address|egrep 'city|state|country'|awk '{print $3,$4,$5,$6,$7,$8}'|sed 's\ip address flag \\'|sed 's\My\\';}  #Get your public IP address and host.
 
 
 # ------------------------------------------------------------------------------
@@ -250,6 +255,8 @@ alias du_overview="du -h | grep "^[0-9,]*[MG]" | sort -hr | less"
 # shows the complete disk usage to legibly
 alias df="df -kTh"
 
+alias ps?="ps aux | grep" #Easily find the PID of any process: ps? [name]
+
 # ------------------------------------------------------------------------------
 # | System Utilities                                                           |
 # ------------------------------------------------------------------------------
@@ -301,3 +308,6 @@ alias xxnumalphabet='xxalphabet; echo 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
 alias xxregxmac='echo [0-9a-f]{2}:[0-9a-f]'
 alias xxregxip="echo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'"
 alias xxregxemail='echo "[^[:space:]]+@[^[:space:]]+"'
+
+
+alias histg="history | grep" #To quickly search through your command history: histg [keyword]

@@ -1,81 +1,73 @@
+#!/bin/bash
+
 function_exists() {
-    declare -f -F $1 > /dev/null
-    return $?
+  declare -f -F $1 >/dev/null
+  return $?
 }
 
-function findStringInFiles ()
-{
-#usage findStringInFiles /etc foo exclud
+function findStringInFiles() {
+  #usage findStringInFiles /etc foo exclud
 
- if [ $# -eq 3 ]; then
+  if [ $# -eq 3 ]; then
     grep --exclude="$3" -rnw "$2" -e "$1"
   else
-   grep -rnw "$2" -e "$1"
-fi
-
+    grep -rnw "$2" -e "$1"
+  fi
 
 }
 
-function initHome ()
-{
-  bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh) 
+function initHome() {
+  bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
 }
 
-function saveHome ()
-{
+function saveHome() {
   if [ $# -eq 0 ]; then
-      echo "add commit message"
-      return 1
-    else
-      homeshick cd dotfiles
-      gitadd "${1}"
-      gitp
-      cd -
-    fi
+    echo "add commit message"
+    return 1
+  else
+    homeshick cd dotfiles
+    gitadd "${1}"
+    gitp
+    cd -
+  fi
 }
 
-function loadHome ()
-{
-      homeshick pull dotfiles
-      reload
+function loadHome() {
+  homeshick pull dotfiles
+  reload
 }
 
-function checkHome ()
-{
-      homeshick check dotfiles
+function checkHome() {
+  homeshick check dotfiles
 }
 
-function gitSaveCredential ()
-{
+function gitSaveCredential() {
   homeshick cd dotfiles
   git config credential.helper store
   git pull
 }
 
-function addToHome ()
-{
+function addToHome() {
   if [ $# -eq 0 ]; then
-      echo "usage addToHome [file, file, folder]"
-      return 1
-    else
-      homeshick track dotfiles "${1}"
-    fi
+    echo "usage addToHome [file, file, folder]"
+    return 1
+  else
+    homeshick track dotfiles "${1}"
+  fi
 }
 
-function mkcdir ()
-{
-    mkdir -p -- "$1" &&
-      cd -P -- "$1"
+function mkcdir() {
+  mkdir -p -- "$1" &&
+    cd -P -- "$1"
 }
 
-function psKillAllX ()
-{
- if [ $# -eq 0 ]; then
-      echo "usage addToHome [file, file, folder]"
-      return 1
-    else
-      ps -ef | grep "${1}" | grep -v grep | awk '{print $2}' | xargs -r kill -9
-    fi    
+function psKillAllX() {
+  if [ $# -eq 0 ]; then
+    echo "usage addToHome [file, file, folder]"
+    return 1
+  else
+    ps -ef | grep "${1}" | grep -v grep | awk '{print $2}' | xargs -r kill -9
+  fi
 }
 
 # Convert video to gif file.
@@ -86,134 +78,147 @@ function video2gif() {
   rm "${1}.png"
 }
 
-function _man()
-{
-        env \
-        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-        LESS_TERMCAP_md=$(printf "\e[1;31m") \
-        LESS_TERMCAP_me=$(printf "\e[0m") \
-        LESS_TERMCAP_se=$(printf "\e[0m") \
-        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-        LESS_TERMCAP_ue=$(printf "\e[0m") \
-        LESS_TERMCAP_us=$(printf "\e[1;32m") \
-        man "$@"
+function _man() {
+  env \
+    LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+    LESS_TERMCAP_md=$(printf "\e[1;31m") \
+    LESS_TERMCAP_me=$(printf "\e[0m") \
+    LESS_TERMCAP_se=$(printf "\e[0m") \
+    LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+    LESS_TERMCAP_ue=$(printf "\e[0m") \
+    LESS_TERMCAP_us=$(printf "\e[1;32m") \
+    man "$@"
 }
 
 # extract: unified archive extractor
 # usage: extract <file>
-    extract ()
-    {
-      if [ -f $1 ] ; then
-        case $1 in
-          *.tar.bz2)   tar xjf $1   ;;
-          *.tar.gz)    tar xzf $1   ;;
-          *.bz2)       bunzip2 $1   ;;
-          *.rar)       rar x $1     ;;
-          *.gz)        gunzip $1    ;;
-          *.tar)       tar xf $1    ;;
-          *.tbz2)      tar xjf $1   ;;
-          *.tgz)       tar xzf $1   ;;
-          *.zip)       unzip $1     ;;
-          *.Z)         uncompress $1;;
-          *.7z)        7z x $1      ;;
-          *.exe)       cabextract $1;;
-          *)           echo "'$1' cannot be extracted via extract"; false ;;
-        esac
-      else
-          'echo' -e "'$1' is not a valid file\nusage: extract <file>\n"
-          false
-      fi
-    }
+extract() {
+  if [ -f $1 ]; then
+    case $1 in
+    *.tar.bz2) tar xjf $1 ;;
+    *.tar.gz) tar xzf $1 ;;
+    *.bz2) bunzip2 $1 ;;
+    *.rar) rar x $1 ;;
+    *.gz) gunzip $1 ;;
+    *.tar) tar xf $1 ;;
+    *.tbz2) tar xjf $1 ;;
+    *.tgz) tar xzf $1 ;;
+    *.zip) unzip $1 ;;
+    *.Z) uncompress $1 ;;
+    *.7z) 7z x $1 ;;
+    *.exe) cabextract $1 ;;
+    *)
+      echo "'$1' cannot be extracted via extract"
+      false
+      ;;
+    esac
+  else
+    'echo' -e "'$1' is not a valid file\nusage: extract <file>\n"
+    false
+  fi
+}
 
-function mkdatedir ()
-{
-    mkdir "$(date +%Y-%m-%d_${1})"
+function mkdatedir() {
+  mkdir "$(date +%Y-%m-%d_${1})"
 }
 
 function gifify() {
   [ -z "$1" ] && echo 'Usage: gifify <file_path>' && return 1
   [ ! -f "$1" ] && echo "File $1 does not exist" && return 1
   ffmpeg -i "$1" -r 10 -vcodec png out-static-%05d.png
-  time convert -verbose +dither -layers Optimize -resize 1600x1600\> out-static*.png  GIF:- | gifsicle --colors 128 --delay=5 --loop --optimize=3 --multifile - > "$1.gif"
+  time convert -verbose +dither -layers Optimize -resize 1600x1600\> out-static*.png GIF:- | gifsicle --colors 128 --delay=5 --loop --optimize=3 --multifile - >"$1.gif"
   rm out-static*.png
 }
 
 # get current branch in git repo
 function parse_git_branch() {
-	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
-	if [ ! "${BRANCH}" == "" ]
-	then
-		STAT=`parse_git_dirty`
-		echo "[${BRANCH}${STAT}]"
-	else
-		echo ""
-	fi
+  BRANCH=$(git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  if [ ! "${BRANCH}" == "" ]; then
+    STAT=$(parse_git_dirty)
+    echo "[${BRANCH}${STAT}]"
+  else
+    echo ""
+  fi
 }
 
 # get current status of git repo
-function parse_git_dirty ()
-{
-	status=`git status 2>&1 | tee`
-	dirty=`echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?"`
-	untracked=`echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?"`
-	ahead=`echo -n "${status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?"`
-	newfile=`echo -n "${status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?"`
-	renamed=`echo -n "${status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?"`
-	deleted=`echo -n "${status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?"`
-	bits=''
-	if [ "${renamed}" == "0" ]; then
-		bits=">${bits}"
-	fi
-	if [ "${ahead}" == "0" ]; then
-		bits="*${bits}"
-	fi
-	if [ "${newfile}" == "0" ]; then
-		bits="+${bits}"
-	fi
-	if [ "${untracked}" == "0" ]; then
-		bits="?${bits}"
-	fi
-	if [ "${deleted}" == "0" ]; then
-		bits="x${bits}"
-	fi
-	if [ "${dirty}" == "0" ]; then
-		bits="!${bits}"
-	fi
-	if [ ! "${bits}" == "" ]; then
-		echo " ${bits}"
-	else
-		echo ""
-	fi
+function parse_git_dirty() {
+  status=$(git status 2>&1 | tee)
+  dirty=$(
+    echo -n "${status}" 2>/dev/null | grep "modified:" &>/dev/null
+    echo "$?"
+  )
+  untracked=$(
+    echo -n "${status}" 2>/dev/null | grep "Untracked files" &>/dev/null
+    echo "$?"
+  )
+  ahead=$(
+    echo -n "${status}" 2>/dev/null | grep "Your branch is ahead of" &>/dev/null
+    echo "$?"
+  )
+  newfile=$(
+    echo -n "${status}" 2>/dev/null | grep "new file:" &>/dev/null
+    echo "$?"
+  )
+  renamed=$(
+    echo -n "${status}" 2>/dev/null | grep "renamed:" &>/dev/null
+    echo "$?"
+  )
+  deleted=$(
+    echo -n "${status}" 2>/dev/null | grep "deleted:" &>/dev/null
+    echo "$?"
+  )
+  bits=''
+  if [ "${renamed}" == "0" ]; then
+    bits=">${bits}"
+  fi
+  if [ "${ahead}" == "0" ]; then
+    bits="*${bits}"
+  fi
+  if [ "${newfile}" == "0" ]; then
+    bits="+${bits}"
+  fi
+  if [ "${untracked}" == "0" ]; then
+    bits="?${bits}"
+  fi
+  if [ "${deleted}" == "0" ]; then
+    bits="x${bits}"
+  fi
+  if [ "${dirty}" == "0" ]; then
+    bits="!${bits}"
+  fi
+  if [ ! "${bits}" == "" ]; then
+    echo " ${bits}"
+  else
+    echo ""
+  fi
 }
 
-function nonzero_return() 
-{
-	RETVAL=$?
-	[ $RETVAL -ne 0 ] && echo "$RETVAL"
+function nonzero_return() {
+  RETVAL=$?
+  [ $RETVAL -ne 0 ] && echo "$RETVAL"
 }
 
 # -------------------------------------------------------------------
 # lc: Convert the parameters or STDIN to lowercase.
-function lc()
-{
+function lc() {
   if [ $# -eq 0 ]; then
     python -c 'import sys; print sys.stdin.read().decode("utf-8").lower()'
   else
     for i in "$@"; do
-        echo $i | python -c 'import sys; print sys.stdin.read().decode("utf-8").lower()'
+      echo $i | python -c 'import sys; print sys.stdin.read().decode("utf-8").lower()'
     done
   fi
 }
 
 # -------------------------------------------------------------------
 # uc: Convert the parameters or STDIN to uppercase.
-function uc()
-{
+function uc() {
   if [ $# -eq 0 ]; then
     python -c 'import sys; print sys.stdin.read().decode("utf-8").upper()'
   else
     for i in "$@"; do
-        echo $i | python -c 'import sys; print sys.stdin.read().decode("utf-8").upper()'
+      echo $i | python -c 'import sys; print sys.stdin.read().decode("utf-8").upper()'
     done
   fi
 }
@@ -231,8 +236,7 @@ function uc()
 #   wtfis vi
 #
 # source: https://raw.githubusercontent.com/janmoesen/tilde/master/.bash/commands
-function wtfis()
-{
+function wtfis() {
   local cmd=""
   local type_tmp=""
   local type_command=""
@@ -242,7 +246,7 @@ function wtfis()
   if [ -n "$BASH_VERSION" ]; then
     type_command="type -p"
   else
-    type_command=( whence -p ) # changes variable type as well
+    type_command=(whence -p) # changes variable type as well
   fi
 
   if [ $# -eq 0 ]; then
@@ -273,72 +277,72 @@ function wtfis()
         echo "${type_tmp//$'\e'/\\033}"
 
         case "$(command -v "$cmd")" in
-          'alias')
-            local alias_="$(alias "$cmd")"
+        'alias')
+          local alias_="$(alias "$cmd")"
 
-            # The output looks like "alias foo='bar'" so
-            # strip everything except the body.
-            alias_="${alias_#*\'}"
-            alias_="${alias_%\'}"
+          # The output looks like "alias foo='bar'" so
+          # strip everything except the body.
+          alias_="${alias_#*\'}"
+          alias_="${alias_%\'}"
 
-            # Use "read" to process escapes. E.g. 'test\ it'
-            # will # be read as 'test it'. This allows for
-            # spaces inside command names.
-            read -d ' ' alias_ <<< "$alias_"
+          # Use "read" to process escapes. E.g. 'test\ it'
+          # will # be read as 'test it'. This allows for
+          # spaces inside command names.
+          read -d ' ' alias_ <<<"$alias_"
 
-            # Recurse and indent the output.
-            # TODO: prevent infinite recursion
-            wtfis "$alias_" 2>&2 | sed 's/^/  /'
+          # Recurse and indent the output.
+          # TODO: prevent infinite recursion
+          wtfis "$alias_" 2>&2 | sed 's/^/  /'
 
-            ;;
-          'keyword' | 'builtin')
+          ;;
+        'keyword' | 'builtin')
 
-            # Get the one-line description from the built-in
-            # help, if available. Note that this does not
-            # guarantee anything useful, though. Look at the
-            # output for "help set", for instance.
-            help "$cmd" 2>/dev/null | {
-              local buf line
-              read -r line
-              while read -r line; do
-                buf="$buf${line/.  */.} "
-                if [[ "$buf" =~ \.\ $ ]]; then
-                  echo "$buf"
-                  break
-                fi
-              done
-            }
+          # Get the one-line description from the built-in
+          # help, if available. Note that this does not
+          # guarantee anything useful, though. Look at the
+          # output for "help set", for instance.
+          help "$cmd" 2>/dev/null | {
+            local buf line
+            read -r line
+            while read -r line; do
+              buf="$buf${line/.  */.} "
+              if [[ "$buf" =~ \.\ $ ]]; then
+                echo "$buf"
+                break
+              fi
+            done
+          }
 
-            ;;
+          ;;
         esac
       else
         # For physical paths, get some more info.
         # First, get the one-line description from the man page.
         # ("col -b" gets rid of the backspaces used by OS X's man
         # to get a "bold" font.)
-        (COLUMNS=10000 man "$(basename "$path_tmp")" 2>/dev/null) | col -b | \
-        awk '/^NAME$/,/^$/' | {
-          local buf=""
-          local line=""
+        (COLUMNS=10000 man "$(basename "$path_tmp")" 2>/dev/null) | col -b |
+          awk '/^NAME$/,/^$/' | {
+            local buf=""
+            local line=""
 
-          read -r line
-          while read -r line; do
-            buf="$buf${line/.  */.} "
-            if [[ "$buf" =~ \.\ $ ]]; then
-              echo "$buf"
-              buf=''
-              break
-            fi
-          done
+            read -r line
+            while read -r line; do
+              buf="$buf${line/.  */.} "
+              if [[ "$buf" =~ \.\ $ ]]; then
+                echo "$buf"
+                buf=''
+                break
+              fi
+            done
 
-          [ -n "$buf" ] && echo "$buf"
-        }
+            [ -n "$buf" ] && echo "$buf"
+          }
 
         # Get the absolute path for the binary.
         local full_path_tmp="$(
-          cd "$(dirname "$path_tmp")" \
-            && echo "$PWD/$(basename "$path_tmp")" \
-            || echo "$path_tmp"
+          cd "$(dirname "$path_tmp")" &&
+            echo "$PWD/$(basename "$path_tmp")" ||
+            echo "$path_tmp"
         )"
 
         # Then, combine the output of "type" and "file".
@@ -399,8 +403,7 @@ function wtfis()
 #   Thu Oct 20 13:04:20 PDT 2011
 #
 # For more info, check out http://kak.be/gnudateformats.
-function whenis()
-{
+function whenis() {
   # Default GNU date format as seen in date.c from GNU coreutils.
   local format='%a %b %e %H:%M:%S %Z %Y'
   if [[ "$1" =~ ^--format= ]]; then
@@ -410,9 +413,9 @@ function whenis()
 
   # Concatenate all arguments as one string specifying the date.
   local date="$*"
-  if [[ "$date"  =~ ^[[:space:]]*$ ]]; then
+  if [[ "$date" =~ ^[[:space:]]*$ ]]; then
     date='now'
-  elif [[ "$date"  =~ ^[0-9]{13}$ ]]; then
+  elif [[ "$date" =~ ^[0-9]{13}$ ]]; then
     # Cut the microseconds part.
     date="${date:0:10}"
   fi
@@ -426,8 +429,7 @@ function whenis()
 # box: a function to create a box of '=' characters around a given string
 #
 # usage: box 'testing'
-function box()
-{
+function box() {
   local t="$1xxxx"
   local c=${2:-"#"}
 
@@ -438,8 +440,7 @@ function box()
 
 # -------------------------------------------------------------------
 # htmlEntityToUTF8: convert html-entity to UTF-8
-function htmlEntityToUTF8()
-{
+function htmlEntityToUTF8() {
   if [ $# -eq 0 ]; then
     echo "Usage: htmlEntityToUTF8 \"&#9661;\""
     return 1
@@ -450,8 +451,7 @@ function htmlEntityToUTF8()
 
 # -------------------------------------------------------------------
 # UTF8toHtmlEntity: convert UTF-8 to html-entity
-function UTF8toHtmlEntity()
-{
+function UTF8toHtmlEntity() {
   if [ $# -eq 0 ]; then
     echo "Usage: UTF8toHtmlEntity \"♥\""
     return 1
@@ -464,16 +464,14 @@ function UTF8toHtmlEntity()
 # optiImages: optimized images (png/jpg) in the current dir + sub-dirs
 #
 # INFO: use "grunt-contrib-imagemin" for websites!
-function optiImages()
-{
+function optiImages() {
   find . -iname '*.png' -exec optipng -o7 {} \;
   find . -iname '*.jpg' -exec jpegoptim --force {} \;
 }
 
 # -------------------------------------------------------------------
 # lman: Open the manual page for the last command you executed.
-function lman()
-{
+function lman() {
   local cmd
 
   set -- $(fc -nl -1)
@@ -491,8 +489,7 @@ function lman()
 # usage:
 #   testConnection 1  # will echo 1 || 0
 #   testConnection    # will return 1 || 0
-function testConnection()
-{
+function testConnection() {
   local tmpReturn=1
   $(wget --tries=2 --timeout=2 www.google.com -qO- &>/dev/null 2>&1)
 
@@ -511,19 +508,17 @@ function testConnection()
 
 # -------------------------------------------------------------------
 # netstat_used_local_ports: get used tcp-ports
-function netstat_used_local_ports()
-{
-  netstat -atn \
-    | awk '{printf "%s\n", $4}' \
-    | grep -oE '[0-9]*$' \
-    | sort -n \
-    | uniq
+function netstat_used_local_ports() {
+  netstat -atn |
+    awk '{printf "%s\n", $4}' |
+    grep -oE '[0-9]*$' |
+    sort -n |
+    uniq
 }
 
 # -------------------------------------------------------------------
 # netstat_free_local_port: get one free tcp-port
-function netstat_free_local_port()
-{
+function netstat_free_local_port() {
   # didn't work with zsh / bash is ok
   #read lowerPort upperPort < /proc/sys/net/ipv4/ip_local_port_range
 
@@ -543,31 +538,28 @@ function netstat_free_local_port()
 
 # -------------------------------------------------------------------
 # connection_overview: get stats-overview about your connections
-netstat_connection_overview()
-{
-  netstat -nat \
-    | awk '{print $6}' \
-    | sort \
-    | uniq -c \
-    | sort -n
+netstat_connection_overview() {
+  netstat -nat |
+    awk '{print $6}' |
+    sort |
+    uniq -c |
+    sort -n
 }
 
 # -------------------------------------------------------------------
 # nice mount (http://catonmat.net/blog/another-ten-one-liners-from-commandlingfu-explained)
 #
 # displays mounted drive information in a nicely formatted manner
-mount_info()
-{
-  (echo "DEVICE PATH TYPE FLAGS" && mount | awk '$2="";1') \
-    | column -t;
+mount_info() {
+  (echo "DEVICE PATH TYPE FLAGS" && mount | awk '$2="";1') |
+    column -t
 }
 
 # -------------------------------------------------------------------
 # sniff: view HTTP traffic
 #
 # usage: sniff [eth0]
-function sniff()
-{
+function sniff() {
   if [ $1 ]; then
     local device=$1
   else
@@ -581,15 +573,14 @@ function sniff()
 # httpdump: view HTTP traffic
 #
 # usage: httpdump [eth1]
-function httpdump()
-{
+function httpdump() {
   if [ $1 ]; then
     local device=$1
   else
     local device='eth0'
   fi
 
-  sudo tcpdump -i ${device} -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\"
+  sudo tcpdump -i ${device} -n -s 0 -w - | grep -a -o -E \"Host\: .* | GET \/.*\"
 }
 
 # -------------------------------------------------------------------
@@ -598,8 +589,7 @@ function httpdump()
 # usage: iptablesBlockIP 8.8.8.8
 # -
 
-function iptablesBlockIP()
-{
+function iptablesBlockIP() {
   if [ $# -eq 0 ]; then
     echo "Usage: iptablesBlockIP 123.123.123.123"
     return 1
@@ -610,63 +600,57 @@ function iptablesBlockIP()
 
 # -------------------------------------------------------------------
 # ips: get the local IP's
-function ips()
-{
+function ips() {
   ifconfig | grep "inet " | awk '{ print $2 }' | cut -d ":" -f 2
 }
 
 # -------------------------------------------------------------------
 # os-info: show some info about your system
-function os-info()
-{
+function os-info() {
   lsb_release -a
   uname -a
 
   if [ -z /etc/lsb-release ]; then
-    cat /etc/lsb-release;
-  fi;
+    cat /etc/lsb-release
+  fi
 
   if [ -z /etc/issue ]; then
-    cat /etc/issue;
-  fi;
+    cat /etc/issue
+  fi
 
   if [ -z /proc/version ]; then
-    cat /proc/version;
-  fi;
+    cat /proc/version
+  fi
 }
 
 # -------------------------------------------------------------------
 # command_exists: check if a command exists
-function command_exists()
-{
-    return type "$1" &> /dev/null ;
+function command_exists() {
+  return type "$1" &>/dev/null
 }
 
 # -------------------------------------------------------------------
 # stripspace: strip unnecessary whitespace from file
-function stripspace()
-{
+function stripspace() {
   if [ $# -eq 0 ]; then
     echo "Usage: stripspace FILE"
     exit 1
   else
     local tempfile=mktemp
-    git stripspace < "$1" > tempfile
+    git stripspace <"$1" >tempfile
     mv tempfile "$1"
   fi
 }
 
 # -------------------------------------------------------------------
 # logssh: establish ssh connection + write a logfile
-function logssh()
-{
+function logssh() {
   ssh $1 | tee sshlog
 }
 
 # -------------------------------------------------------------------
 # lsssh: pretty print all established SSH connections
-function lsssh ()
-{
+function lsssh() {
   local ip=""
   local domain=""
   local conn=""
@@ -677,15 +661,14 @@ function lsssh ()
     domain=$(dig -x ${ip%:*} +short)
     domain=${domain%.}
     # display nonstandard port if relevant
-    printf "%s (%s)\n" $domain  ${ip/:ssh}
+    printf "%s (%s)\n" $domain ${ip/:ssh/}
   done | column -t
 }
 
 # -------------------------------------------------------------------
 # calc: Simple calculator
 # usage: e.g.: 3+3 || 6*6/2
-function calc()
-{
+function calc() {
   local result=""
   result="$(printf "scale=10;$*\n" | bc --mathlib | tr -d '\\\n')"
   #                       └─ default (when `--mathlib` is used) is 20
@@ -693,9 +676,10 @@ function calc()
   if [[ "$result" == *.* ]]; then
     # improve the output for decimal numbers
     printf "$result" |
-    sed -e 's/^\./0./'        `# add "0" for cases like ".5"` \
-        -e 's/^-\./-0./'      `# add "0" for cases like "-.5"`\
-        -e 's/0*$//;s/\.$//'   # remove trailing zeros
+      sed -e 's/^\./0./' $(# add "0" for cases like ".5"` \
+        -e 's/^-\./-0./'
+      ) # add "0" for cases like "-.5"`\
+    -e 's/0*$//;s/\.$//' # remove trailing zeros
   else
     printf "$result"
   fi
@@ -704,8 +688,7 @@ function calc()
 
 # -------------------------------------------------------------------
 # mkd: Create a new directory and enter it
-function mkd()
-{
+function mkd() {
   mkdir -p "$@" && cd "$_"
 }
 
@@ -713,8 +696,7 @@ function mkd()
 # mkf: Create a new directory, enter it and create a file
 #
 # usage: mkf /tmp/lall/foo.txt
-function mkf()
-{
+function mkf() {
   mkd $(dirname "$@") && touch $@
 }
 
@@ -722,72 +704,68 @@ function mkf()
 # rand_int: use "urandom" to get random int values
 #
 # usage: rand_int 8 --> e.g.: 32245321
-function rand_int()
-{
+function rand_int() {
   if [ $1 ]; then
     local length=$1
   else
     local length=16
   fi
 
-  tr -dc 0-9 < /dev/urandom  | head -c${1:-${length}}
+  tr -dc 0-9 </dev/urandom | head -c${1:-${length}}
 }
 
 # -------------------------------------------------------------------
 # passwdgen: a password generator
 #
 # usage: passwdgen 8 --> e.g.: f4lwka_2f
-function passwdgen()
-{
+function passwdgen() {
   if [ $1 ]; then
     local length=$1
   else
     local length=16
   fi
 
-  tr -dc A-Za-z0-9_ < /dev/urandom  | head -c${1:-${length}}
+  tr -dc A-Za-z0-9_ </dev/urandom | head -c${1:-${length}}
 }
 
 # -------------------------------------------------------------------
 # targz: Create a .tar.gz archive, using `zopfli`, `pigz` or `gzip` for compression
-function targz()
-{
-  local tmpFile="${@%/}.tar";
-  tar -cvf "${tmpFile}" --exclude=".DS_Store" "${@}" || return 1;
+function targz() {
+  local tmpFile="${@%/}.tar"
+  tar -cvf "${tmpFile}" --exclude=".DS_Store" "${@}" || return 1
 
   local size=$(
-    stat -f"%z" "${tmpFile}" 2> /dev/null; # OS X `stat`
-    stat -c"%s" "${tmpFile}" 2> /dev/null;  # GNU `stat`
-  );
+    stat -f"%z" "${tmpFile}" 2>/dev/null # OS X `stat`
+    stat -c"%s" "${tmpFile}" 2>/dev/null # GNU `stat`
+  )
 
-  local cmd="";
-  if (( size < 52428800 )) && hash zopfli 2> /dev/null; then
+  local cmd=""
+  if ((size < 52428800)) && hash zopfli 2>/dev/null; then
     # the .tar file is smaller than 50 MB and Zopfli is available; use it
-    cmd="zopfli";
+    cmd="zopfli"
   else
-    if hash pigz 2> /dev/null; then
-      cmd="pigz";
+    if hash pigz 2>/dev/null; then
+      cmd="pigz"
     else
-      cmd="gzip";
-    fi;
-  fi;
+      cmd="gzip"
+    fi
+  fi
 
-  echo "Compressing .tar ($((size / 1000)) kB) using \`${cmd}\`…";
-  "${cmd}" -v "${tmpFile}" || return 1;
-  [ -f "${tmpFile}" ] && rm "${tmpFile}";
+  echo "Compressing .tar ($((size / 1000)) kB) using \`${cmd}\`…"
+  "${cmd}" -v "${tmpFile}" || return 1
+  [ -f "${tmpFile}" ] && rm "${tmpFile}"
 
   local zippedSize=$(
-  	stat -f"%z" "${tmpFile}.gz" 2> /dev/null; # OS X `stat`
-  	stat -c"%s" "${tmpFile}.gz" 2> /dev/null; # GNU `stat`
-  );
+    stat -f"%z" "${tmpFile}.gz" 2>/dev/null # OS X `stat`
+    stat -c"%s" "${tmpFile}.gz" 2>/dev/null # GNU `stat`
+  )
 
-  echo "${tmpFile}.gz ($((zippedSize / 1000)) kB) created successfully.";
+  echo "${tmpFile}.gz ($((zippedSize / 1000)) kB) created successfully."
 }
 
 # -------------------------------------------------------------------
 # duh: Sort the "du"-command output and use human-readable units.
-function duh()
-{
+function duh() {
   local unit=""
   local size=""
 
@@ -797,16 +775,15 @@ function duh()
         echo -e "${size} ${unit}\t${fname}"
         break
       fi
-      size=$((size/1024))
+      size=$((size / 1024))
     done
   done
 }
 
 # -------------------------------------------------------------------
 # fs: Determine size of a file or total size of a directory
-function fs()
-{
-  if du -b /dev/null > /dev/null 2>&1; then
+function fs() {
+  if du -b /dev/null >/dev/null 2>&1; then
     local arg=-sbh
   else
     local arg=-sh
@@ -821,37 +798,37 @@ function fs()
 
 # -------------------------------------------------------------------
 # ff: displays all files in the current directory (recursively)
-function ff()
-{
+function ff() {
   find . -type f -iname '*'$*'*' -ls
 }
 
 # -------------------------------------------------------------------
 # fstr: find text in files
-function fstr()
-{
+function fstr() {
   OPTIND=1
   local case=""
   local usage="fstr: find string in files.
   Usage: fstr [-i] \"pattern\" [\"filename pattern\"] "
 
-  while getopts :it opt
-  do
-        case "$opt" in
-        i) case="-i " ;;
-        *) echo "$usage"; return;;
-        esac
+  while getopts :it opt; do
+    case "$opt" in
+    i) case="-i " ;;
+    *)
+      echo "$usage"
+      return
+      ;;
+    esac
   done
 
-  shift $(( $OPTIND - 1 ))
+  shift $(($OPTIND - 1))
   if [ "$#" -lt 1 ]; then
     echo "$usage"
     return 1
   fi
 
-  find . -type f -name "${2:-*}" -print0 \
-    | xargs -0 egrep --color=auto -Hsn ${case} "$1" 2>&- \
-    | more
+  find . -type f -name "${2:-*}" -print0 |
+    xargs -0 egrep --color=auto -Hsn ${case} "$1" 2>&- |
+    more
 }
 
 # -------------------------------------------------------------------
@@ -859,8 +836,7 @@ function fstr()
 # in the current dir
 #
 # usage: file_backup_compressed test.txt
-function file_backup_compressed()
-{
+function file_backup_compressed() {
   if [ $1 ]; then
     if [ -z $1 ]; then
       echo "$1: not found"
@@ -876,17 +852,15 @@ function file_backup_compressed()
 
 # -------------------------------------------------------------------
 # file_backup: creating a backup of a file (with date)
-function file_backup()
-{
-  for FILE ; do
+function file_backup() {
+  for FILE; do
     [[ -e "$1" ]] && cp "$1" "${1}_$(date +%Y-%m-%d_%H-%M-%S)" || echo "\"$1\" not found." >&2
   done
 }
 
 # -------------------------------------------------------------------
 # file_information: output information to a file
-function file_information()
-{
+function file_information() {
   if [ $1 ]; then
     if [ -z $1 ]; then
       echo "$1: not found"
@@ -905,8 +879,7 @@ function file_information()
 
 # -------------------------------------------------------------------
 # dataurl: create a data URL from a file
-function dataurl()
-{
+function dataurl() {
   local mimeType=$(file -b --mime-type "$1")
 
   if [[ $mimeType == text/* ]]; then
@@ -918,8 +891,7 @@ function dataurl()
 
 # -------------------------------------------------------------------
 # server: Start an HTTP server from a directory, optionally specifying the port
-function create_server()
-{
+function create_server() {
   local free_port=$(netstat_free_local_port)
   local port="${1:-${free_port}}"
 
@@ -935,8 +907,7 @@ function create_server()
 #
 # usage:
 # phpserver [port=auto] [ip=127.0.0.1] [FOO_1=BAR_1] [FOO_2=BAR_2]
-function phpserver()
-{
+function phpserver() {
   local free_port=$(netstat_free_local_port)
   local port="${1:-${free_port}}"
   local ip="${2:-127.0.0.1}"
@@ -956,8 +927,7 @@ function phpserver()
 # php-parse-error-check: check for parse errors
 #
 # usage: php-parse-error-check /var/www/web3/
-function php-parse-error-check()
-{
+function php-parse-error-check() {
   if [ $1 ]; then
     local location=$1
   else
@@ -969,9 +939,8 @@ function php-parse-error-check()
 
 # -------------------------------------------------------------------
 # psgrep: grep a process
-function psgrep()
-{
-  if [ ! -z $1 ] ; then
+function psgrep() {
+  if [ ! -z $1 ]; then
     echo "Grepping for processes matching $1..."
     ps aux | grep -i $1 | grep -v grep
   else
@@ -982,9 +951,8 @@ function psgrep()
 
 # -------------------------------------------------------------------
 # cpuinfo: get info about your cpu
-function cpuinfo()
-{
-  if lscpu > /dev/null 2>&1; then
+function cpuinfo() {
+  if lscpu >/dev/null 2>&1; then
     lscpu
   else
     cat /proc/cpuinfo
@@ -995,10 +963,9 @@ function cpuinfo()
 # json: Syntax-highlight JSON strings or files
 #
 # usage: json '{"foo":42}'` or `echo '{"foo":42}' | json
-function jsonc()
-{
+function jsonc() {
   if [ -t 0 ]; then # argument
-    python -mjson.tool <<< "$*" | pygmentize -l javascript
+    python -mjson.tool <<<"$*" | pygmentize -l javascript
   else # pipe
     python -mjson.tool | pygmentize -l javascript
   fi
@@ -1006,8 +973,7 @@ function jsonc()
 
 # -------------------------------------------------------------------
 # escape: Escape UTF-8 characters into their 3-byte format
-function escape()
-{
+function escape() {
   printf "\\\x%s" $(printf "$@" | xxd -p -c1 -u)
   # print a newline unless we’re piping the output to another program
   if [ -t 1 ]; then
@@ -1017,8 +983,7 @@ function escape()
 
 # -------------------------------------------------------------------
 # unidecode: Decode \x{ABCD}-style Unicode escape sequences
-function unidecode()
-{
+function unidecode() {
   perl -e "binmode(STDOUT, ':utf8'); print \"$@\""
   # print a newline unless we’re piping the output to another program
   if [ -t 1 ]; then
@@ -1028,8 +993,7 @@ function unidecode()
 
 # -------------------------------------------------------------------
 # history_top_used: show your most used commands in your history
-function history_top_used()
-{
+function history_top_used() {
   history | awk '{a[$2]++}END{for(i in a){print a[i] " " i}}' | sort -rn | head
 }
 
@@ -1038,53 +1002,51 @@ function history_top_used()
 #               SSL certificate for a given domain.
 #
 # usage: getcertnames moelleken.org
-function getcertnames()
-{
+function getcertnames() {
   if [ -z "${1}" ]; then
-    echo "ERROR: No domain specified.";
-    return 1;
-  fi;
+    echo "ERROR: No domain specified."
+    return 1
+  fi
 
-  local domain="${1}";
-  local newline="";
+  local domain="${1}"
+  local newline=""
 
-  echo "Testing ${domain}…";
-  echo $newline;
+  echo "Testing ${domain}…"
+  echo $newline
 
-  local tmp=$(echo -e "GET / HTTP/1.0\nEOT" \
-    | openssl s_client -connect "${domain}:443" -servername "${domain}" 2>&1);
+  local tmp=$(echo -e "GET / HTTP/1.0\nEOT" |
+    openssl s_client -connect "${domain}:443" -servername "${domain}" 2>&1)
 
-  if [[ "${tmp}" = *"-----BEGIN CERTIFICATE-----"* ]]; then
-    local certText=$(echo "${tmp}" \
-      | openssl x509 -text -certopt "no_aux, no_header, no_issuer, no_pubkey, \
-      no_serial, no_sigdump, no_signame, no_validity, no_version");
-    echo "Common Name:";
-    echo $newline;
-    echo "${certText}" \
-      | grep "Subject:" \
-      | sed -e "s/^.*CN=//" \
-      | sed -e "s/\/emailAddress=.*//";
-    echo $newline;
-    echo "Subject Alternative Name(s):";
-    echo $newline;
-    echo "${certText}" \
-      | grep -A 1 "Subject Alternative Name:" \
-      | sed -e "2s/DNS://g" -e "s/ //g" \
-      | tr "," "\n" \
-      | tail -n +2;
-    return 0;
+  if [[ "${tmp}" == *"-----BEGIN CERTIFICATE-----"* ]]; then
+    local certText=$(echo "${tmp}" |
+      openssl x509 -text -certopt "no_aux, no_header, no_issuer, no_pubkey, \
+      no_serial, no_sigdump, no_signame, no_validity, no_version")
+    echo "Common Name:"
+    echo $newline
+    echo "${certText}" |
+      grep "Subject:" |
+      sed -e "s/^.*CN=//" |
+      sed -e "s/\/emailAddress=.*//"
+    echo $newline
+    echo "Subject Alternative Name(s):"
+    echo $newline
+    echo "${certText}" |
+      grep -A 1 "Subject Alternative Name:" |
+      sed -e "2s/DNS://g" -e "s/ //g" |
+      tr "," "\n" |
+      tail -n +2
+    return 0
   else
-    echo "ERROR: Certificate not found.";
-    return 1;
-  fi;
+    echo "ERROR: Certificate not found."
+    return 1
+  fi
 }
 
 # -------------------------------------------------------------------
 # tail with search highlight
 #
 # usage: t /var/log/Xorg.0.log [kHz]
-function t()
-{
+function t() {
   if [ $# -eq 0 ]; then
     echo "Usage: t /var/log/Xorg.0.log [kHz]"
     return 1
@@ -1101,8 +1063,7 @@ function t()
 # httpDebug: download a web page and show info on what took time
 #
 # usage: httpDebug http://github.com
-function httpDebug()
-{
+function httpDebug() {
   curl $@ -o /dev/null -w "dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\n"
 }
 
@@ -1110,8 +1071,7 @@ function httpDebug()
 # digga: show dns-settings from a domain e.g. MX, IP
 #
 # usage: digga moelleken.org
-function digga()
-{
+function digga() {
   if [ $# -eq 0 ]; then
     echo "Usage: digga moelleken.org"
     return 1
@@ -1125,17 +1085,15 @@ function digga()
 # the `.git` directory, listing directories first. The output gets piped into
 # `less` with options to preserve color and line numbers, unless the output is
 # small enough for one screen.
-function tre()
-{
-  tree -haC -I '.git|node_modules|bower_components|.Spotlight-V100|.TemporaryItems|.DocumentRevisions-V100|.fseventsd' --dirsfirst "$@" | less -FRNX;
+function tre() {
+  tree -haC -I '.git|node_modules|bower_components|.Spotlight-V100|.TemporaryItems|.DocumentRevisions-V100|.fseventsd' --dirsfirst "$@" | less -FRNX
 }
 
 # -------------------------------------------------------------------
 # pidenv: show PID environment in human-readable form
 #
 # https://github.com/darkk/home/blob/master/bin/pidenv
-function pidenv()
-{
+function pidenv() {
   local multipid=false
   local pid=""
 
@@ -1154,9 +1112,9 @@ function pidenv()
 
     if [ -d "/proc/$pid" ]; then
       if $multipid; then
-        sed "s,\x00,\n,g" < /proc/$pid/environ | sed "s,^,$pid:,"
+        sed "s,\x00,\n,g" </proc/$pid/environ | sed "s,^,$pid:,"
       else
-        sed "s,\x00,\n,g" < /proc/$pid/environ
+        sed "s,\x00,\n,g" </proc/$pid/environ
       fi
     else
       echo "$0: $pid is not a pid" 1>&2
@@ -1166,8 +1124,7 @@ function pidenv()
 
 # -------------------------------------------------------------------
 # process: show process-name environment in human-readable form
-function processenv()
-{
+function processenv() {
   if [ $# = 0 ]; then
     echo "Usage: $0: process-name"
     return 0
@@ -1178,8 +1135,7 @@ function processenv()
 
 # -------------------------------------------------------------------
 # shorturl: Create a short URL
-function shorturl()
-{
+function shorturl() {
   if [ -z "${1}" ]; then
     echo "Usage: \`shorturl url\`"
     return 1
@@ -1196,62 +1152,62 @@ function shorturl()
 
 ppp() {
 
-    # Check if ImageMagick's convert command-line tool is installed.
+  # Check if ImageMagick's convert command-line tool is installed.
 
-    if ! command -v "convert" $> /dev/null; then
-        printf "Please install ImageMagick's 'convert' command-line tool!"
-        exit;
-    fi
+  if ! command -v "convert" $ >/dev/null; then
+    printf "Please install ImageMagick's 'convert' command-line tool!"
+    exit
+  fi
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    declare option="$1"
-    declare photo="${2:-*.jpg}"
-    declare geometry="${3:-50%}"
+  declare option="$1"
+  declare photo="${2:-*.jpg}"
+  declare geometry="${3:-50%}"
 
-    if [ "$option" != "clean" ] &&
-       [ "$option" != "resize" ]; then
-        option="resize"
-        photo="${1:-*.jpg}"
-        geometry="${2:-50%}"
-    fi
+  if [ "$option" != "clean" ] &&
+    [ "$option" != "resize" ]; then
+    option="resize"
+    photo="${1:-*.jpg}"
+    geometry="${2:-50%}"
+  fi
 
-    if [[ "$(echo "${photo##*.}" | tr '[:upper:]' '[:lower:]')" != "png" ]]; then
-        newPhotoName="${photo%.*}.png"
-    else
-        newPhotoName="_${photo%.*}.png"
-    fi
+  if [[ "$(echo "${photo##*.}" | tr '[:upper:]' '[:lower:]')" != "png" ]]; then
+    newPhotoName="${photo%.*}.png"
+  else
+    newPhotoName="_${photo%.*}.png"
+  fi
 
-    if [ "$option" == "resize" ]; then
-        convert "$photo" \
-            -colorspace RGB \
-            +sigmoidal-contrast 11.6933 \
-            -define filter:filter=Sinc \
-            -define filter:window=Jinc \
-            -define filter:lobes=3 \
-            -sigmoidal-contrast 11.6933 \
-            -colorspace sRGB \
-            -background transparent \
-            -gravity center \
-            -resize "$geometry" \
-            +append \
-            "$newPhotoName" \
-        && printf "* %s (%s)\n" \
-            "$newPhotoName" \
-            "$geometry"
-
-        return
-    fi
-
+  if [ "$option" == "resize" ]; then
     convert "$photo" \
-        -morphology Convolve DoG:10,10,0 \
-        -negate \
-        -normalize \
-        -blur 0x1 \
-        -channel RBG \
-        -level 10%,91%,0.1 \
+      -colorspace RGB \
+      +sigmoidal-contrast 11.6933 \
+      -define filter:filter=Sinc \
+      -define filter:window=Jinc \
+      -define filter:lobes=3 \
+      -sigmoidal-contrast 11.6933 \
+      -colorspace sRGB \
+      -background transparent \
+      -gravity center \
+      -resize "$geometry" \
+      +append \
+      "$newPhotoName" &&
+      printf "* %s (%s)\n" \
         "$newPhotoName" \
-        && printf "* %s\n" "$newPhotoName"
+        "$geometry"
+
+    return
+  fi
+
+  convert "$photo" \
+    -morphology Convolve DoG:10,10,0 \
+    -negate \
+    -normalize \
+    -blur 0x1 \
+    -channel RBG \
+    -level 10%,91%,0.1 \
+    "$newPhotoName" &&
+    printf "* %s\n" "$newPhotoName"
 
 }
 
@@ -1260,12 +1216,12 @@ ppp() {
 # Search history.
 
 function qh() {
-    #           ┌─ enable colors for pipe
-    #           │  ("--color=auto" enables colors only if
-    #           │  the output is in the terminal)
-    grep --color=always "$*" "$HISTFILE" |       less -RX
-    # display ANSI color escape sequences in raw form ─┘│
-    #       don't clear the screen after quitting less ─┘
+  #           ┌─ enable colors for pipe
+  #           │  ("--color=auto" enables colors only if
+  #           │  the output is in the terminal)
+  grep --color=always "$*" "$HISTFILE" | less -RX
+  # display ANSI color escape sequences in raw form ─┘│
+  #       don't clear the screen after quitting less ─┘
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1273,45 +1229,49 @@ function qh() {
 # Search for text within the current directory.
 
 function qt() {
-    grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
-    #     │└─ search all files under each directory, recursively
-    #     └─ ignore case
+  grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
+  #     │└─ search all files under each directory, recursively
+  #     └─ ignore case
 }
 
 # Print a line of dashes or the given string across the entire screen.
-function line {
-	width=$(tput cols);
-	str=${1--};
-	len=${#str};
-	for ((i = 0; i < $width; i += $len)); do
-		echo -n "${str:0:$(($width - $i))}";
-	done;
-	echo;
+function line() {
+  width=$(tput cols)
+  str=${1--}
+  len=${#str}
+  for ((i = 0; i < $width; i += $len)); do
+    echo -n "${str:0:$(($width - $i))}"
+  done
+  echo
 }
 # Print the given text in the center of the screen.
-function center {
-	width=$(tput cols);
-	str="$@";
-	len=${#str};
-	[ $len -ge $width ] && echo "$str" && return;
-	for ((i = 0; i < $(((($width - $len)) / 2)); i++)); do
-		echo -n " ";
-	done;
-	echo "$str";
+function center() {
+  width=$(tput cols)
+  str="$@"
+  len=${#str}
+  [ $len -ge $width ] && echo "$str" && return
+  for ((i = 0; i < $(((($width - $len)) / 2)); i++)); do
+    echo -n " "
+  done
+  echo "$str"
 }
 
 # Open the man page for the previous command.
-function lman () { set -- $(fc -nl -1); while [ "$#" -gt 0 -a '(' "sudo" = "$1" -o "-" = "${1:0:1}" ')' ]; do shift; done; man "$1" || help "$1"; }
-
-function xxgetmac() {
-if [ $# -eq 1 ]; then
-	ip -o link show dev $1 | grep -Po 'ether \K[^ ]*'
-	return 1
-fi
-echo 'Usage: xxgetmac INTERFACE'
+function lman() {
+  set -- $(fc -nl -1)
+  while [ "$#" -gt 0 -a '(' "sudo" = "$1" -o "-" = "${1:0:1}" ')' ]; do shift; done
+  man "$1" || help "$1"
 }
 
-# set variables 
+function xxgetmac() {
+  if [ $# -eq 1 ]; then
+    ip -o link show dev $1 | grep -Po 'ether \K[^ ]*'
+    return 1
+  fi
+  echo 'Usage: xxgetmac INTERFACE'
+}
+
+# set variables
 #declare -r TRUE=0
 #declare -r FALSE=1
 #declare -r PASSWD_FILE=/etc/passwd
@@ -1321,12 +1281,11 @@ echo 'Usage: xxgetmac INTERFACE'
 # Arguments:
 #   $1 -> String to convert to lower case
 ##################################################################
-function to_lower() 
-{
-    local str="$@"
-    local output     
-    output=$(tr '[A-Z]' '[a-z]'<<<"${str}")
-    echo $output
+function to_lower() {
+  local str="$@"
+  local output
+  output=$(tr '[A-Z]' '[a-z]' <<<"${str}")
+  echo $output
 }
 ##################################################################
 # Purpose: Display an error message and die
@@ -1334,21 +1293,19 @@ function to_lower()
 #   $1 -> Message
 #   $2 -> Exit status (optional)
 ##################################################################
-function die() 
-{
-    local m="$1"	# message
-    local e=${2-1}	# default exit status 1
-    echo "$m" 
-    exit $e
+function die() {
+  local m="$1"   # message
+  local e=${2-1} # default exit status 1
+  echo "$m"
+  exit $e
 }
 ##################################################################
 # Purpose: Return true if script is executed by the root user
 # Arguments: none
 # Return: True or False
 ##################################################################
-function is_root() 
-{
-   [ $(id -u) -eq 0 ] && return $TRUE || return $FALSE
+function is_root() {
+  [ $(id -u) -eq 0 ] && return $TRUE || return $FALSE
 }
 
 ##################################################################
@@ -1356,10 +1313,9 @@ function is_root()
 # Arguments: $1 (username) -> Username to check in /etc/passwd
 # Return: True or False
 ##################################################################
-function is_user_exits() 
-{
-    local u="$1"
-    grep -q "^${u}" $PASSWD_FILE && return $TRUE || return $FALSE
+function is_user_exits() {
+  local u="$1"
+  grep -q "^${u}" $PASSWD_FILE && return $TRUE || return $FALSE
 }
 
 # lman
