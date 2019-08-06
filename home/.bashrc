@@ -5,6 +5,7 @@ source "$HOME"/.dot/core.sh
 shootProfile
 
 echo "$OS $DIST $MACH $REV $PSUEDONAME | Kernel $KERNEL | based on $DistroBasedOn | $MODELL_TYPE $MODELL_SYSTEM"
+echo $CPU_TYPE
 
 #load basisc
 source "$HOME"/.dot/.bash_aliases
@@ -47,6 +48,7 @@ if [ "$DIST" = "asuswrt" ]; then
   unset file
 fi 
 
+alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
 
 #autojump
 [[ -s "$HOME"/.autojump/etc/profile.d/autojump.sh ]] && source "$HOME"/.autojump/etc/profile.d/autojump.sh
