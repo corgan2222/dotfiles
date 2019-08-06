@@ -1,4 +1,4 @@
-#!/bin/bash
+
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
@@ -45,11 +45,14 @@ fi
 #ToDo cat file1 ... fileN > combinedFile;
 
 if [ "$DIST" = "Synology" ]; then 
-  echo "welcome to $DIST"
-  for file in "$HOME"/.dot/synology/.{bashrc,exports,bash_aliases}; do
-      [ -r "$file" ] && [ -f "$file" ] && source "$file"
-  done
-  unset file
+  #echo "welcome to $DIST"
+  #for file in "$HOME"/.dot/synology/.{bashrc,exports,bash_aliases}; do
+  #    [ -r "$file" ] && [ -f "$file" ] && source "$file"
+  #done
+  #unset file
+  _loadFile "$HOME"/.dot/synology/.bashrc "$DIST Userpromt"
+  _loadFile "$HOME"/.dot/synology/.exports " $DIST Exports"
+  _loadFile "$HOME"/.dot/synology/.bash_aliases "$DIST Alias"
 fi  
 
 
