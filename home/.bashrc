@@ -50,8 +50,8 @@ fi
 
 function resetHome()
 {
-  rmd "$HOME"/.dot/.bash_aliases -f
-  rmd "$HOME"/.homeshick/.bash_aliases -f
+  rmd "$HOME"/.dot/ -f
+  rmd "$HOME"/.homesick/ -f
   rm .profile 
   rm .bashrc
   bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
