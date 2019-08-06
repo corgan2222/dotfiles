@@ -48,6 +48,16 @@ if [ "$DIST" = "asuswrt" ]; then
   unset file
 fi 
 
+function resetHome()
+{
+  rmd "$HOME"/.dot/.bash_aliases -f
+  rmd "$HOME"/.homeshick/.bash_aliases -f
+  rm .profile 
+  rm .bashrc
+  bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+  gitSaveCredential
+}
+
 alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
 
 #autojump
