@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 cyan='\e[1;37;44m'
 red='\e[1;31m'
