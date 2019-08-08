@@ -98,12 +98,11 @@ if [ "$DIST" = "Synology" ]; then
   _loadFile "$HOME"/.dot/synology/.bash_aliases "$DIST Alias"
 fi  
 
-echo $DIST 
+echo "$DIST "
 if [ "$DIST" = "raspbian" ]; then 
-  for file in ~/.dot/raspi/.{.bashrc,.exports,.bash_aliases}; do
-      [ -r "$file" ] && [ -f "$file" ] && source "$file"source
-  done
-  unset file
+ _loadFile "$HOME"/.dot/raspi/.bashrc "$DIST raspbian bashrc"
+ _loadFile "$HOME"/.dot/raspi/.exports "$DIST raspbian exports"
+ _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST raspbian bash_aliases"  
 fi 
 
 
