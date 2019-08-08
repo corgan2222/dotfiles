@@ -2,6 +2,10 @@
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
+# reload the shell (i.e. invoke as a login shell)
+alias reload="exec $SHELL -l"
+alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
+
 # prints colored text
 print_style () {
 
@@ -41,6 +45,16 @@ function _loadFile()
 }
 
 _loadFile "$HOME"/.dot/core.sh "Core System"
+
+function resetHome()
+{
+  rmd "$HOME"/.dot/ -f
+  rmd "$HOME"/.homesick/ -f
+  rm .profile 
+  rm .bashrc
+  bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+  gitSaveCredential
+}
 
 #OS Check
 shootProfile
@@ -99,16 +113,6 @@ if [ "$DIST" = "asuswrt" ]; then
   done
   unset file
 fi 
-
-function resetHome()
-{
-  rmd "$HOME"/.dot/ -f
-  rmd "$HOME"/.homesick/ -f
-  rm .profile 
-  rm .bashrc
-  bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
-  gitSaveCredential
-}
 
 alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
 

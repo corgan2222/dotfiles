@@ -77,7 +77,7 @@ alias userls='cat /etc/passwd'
 # Print each PATH entry on a separate line
 alias path="echo -e ${PATH//:/\\n}"
 
-aliascd_Aptlist='cd /etc/apt/'
+alias cd_Aptlist='cd /etc/apt/'
 alias cd_git="cd $HOME/git"
 alias cd_Scripts="cd $HOME/git/scripts"
 

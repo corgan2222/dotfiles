@@ -1150,7 +1150,7 @@ function shorturl() {
 
 # Process phone photo.
 
-ppp() {
+function ppp() {
 
   # Check if ImageMagick's convert command-line tool is installed.
 
@@ -1383,6 +1383,21 @@ function ps() {
 
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
+
+function telegrafAfterUpdate()
+{
+  echo "lnav /var/log/telegraf/telegraf.log"
+  echo "locate telegraf.service"
+  echo "joe /etc/systemd/system/multi-user.target.wants/telegraf.service"  
+  echo "joe /lib/systemd/system/telegraf.service"  
+  echo "joe /usr/lib/telegraf/scripts/telegraf.service"
+  echo "service telegraf restart"
+  echo "systemctl daemon-reload2"
+  echo "service telegraf restart"
+  echo "/var/log/telegraf/telegraf.log"
+
+}
+
 
 
 # lman
