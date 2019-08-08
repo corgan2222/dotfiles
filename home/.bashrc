@@ -99,7 +99,7 @@ if [ "$DIST" = "Synology" ]; then
 fi  
 
 
-if [ "$DIST" = "raspi" ]; then 
+if [ "$DIST" = "raspbian" ]; then 
   for file in ~/.dot/raspi/.{.bashrc,.exports,.bash_aliases}; do
       [ -r "$file" ] && [ -f "$file" ] && source "$file"source
   done
@@ -118,7 +118,8 @@ alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[
 
 printf "\n" 
 #echo "$OS DIST:$DIST MACH:$_MACH REV:$REV PS:$PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | Type:$MODELL_TYPE System:$MODELL_SYSTEM CPU:$CPU_TYPE"
-echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | \n $MODELL_TYPE $MODELL_SYSTEM $CPU_TYPE"
+echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
+echo "$MODELL_TYPE $MODELL_SYSTEM $CPU_TYPE"
    #OS:linux DIST:Ubuntu MACH:x86_64 REV:16.04 PS:xenial | Kernel 4.15.0-45-generic | based on debian | Type: System: CPU: Intel(R) Xeon(R) CPU E3-1246 v3 @ 3.50GHz
 printf "\n" 
 
