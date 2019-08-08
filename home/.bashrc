@@ -98,11 +98,10 @@ if [ "$DIST" = "Synology" ]; then
   _loadFile "$HOME"/.dot/synology/.bash_aliases "$DIST Alias"
 fi  
 
-echo "$DIST "
 if [ "$DIST" = "raspbian" ]; then 
- _loadFile "$HOME"/.dot/raspi/.bashrc "$DIST raspbian bashrc"
- _loadFile "$HOME"/.dot/raspi/.exports "$DIST raspbian exports"
- _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST raspbian bash_aliases"  
+ _loadFile "$HOME"/.dot/raspi/.bashrc "$DIST bashrc"
+ _loadFile "$HOME"/.dot/raspi/.exports "$DIST exports"
+ _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST bash_aliases"  
 fi 
 
 
