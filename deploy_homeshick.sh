@@ -30,7 +30,12 @@ corgan2222/dotfiles
 #secret@example.org:securerc.git
 EOF
 
-${VISUAL:-joe} $tmpfile
+if command -v joe >/dev/null; then
+  ${VISUAL:-joe} $tmpfile
+else  
+  ${VISUAL:-nano} $tmpfile
+fi  
+
 
 code=$?
 
@@ -54,7 +59,11 @@ if [[ ${#castles[@]} -eq 0 ]]; then
 fi
 
 if [[ ! -f $HOME/.homesick/repos/homeshick/homeshick.sh ]]; then
-  git clone git://github.com/andsens/homeshick.git $HOME/.homesick/repos/homeshick
+  if command -v git >/dev/null; then
+      git clone git://github.com/andsens/homeshick.git $HOME/.homesick/repos/homeshick
+  else
+    echo "no git found... path?"    
+  fi    
 fi
 
 source $HOME/.homesick/repos/homeshick/homeshick.sh
