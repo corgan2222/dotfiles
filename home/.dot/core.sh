@@ -65,10 +65,11 @@ shootProfile(){
 				DIST=$(cat /etc/os-release | grep '^NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-
+				
 				MODELL=$(cat /sys/firmware/devicetree/base/model)
 				#MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				MODELL_SYSTEM=$(cat /etc/os-release | grep '^ID' | awk -F=  '{ print $2 }' 
+				MODELL_SYSTEM=$(cat /etc/os-release | grep '^ID' | awk -F=  '{ print $2 }' )	
+				
 			fi
 
 
