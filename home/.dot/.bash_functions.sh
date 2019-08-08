@@ -1359,7 +1359,12 @@ function lastFileChange() {
 
 
 # prints colored text
-print_style () {
+# print_style "This is a green text " "success";
+# print_style "This is a yellow text " "warning";
+# print_style "This is a light blue with a \t tab " "info";
+# print_style "This is a red text with a \n new line " "danger";
+# print_style "This has no color";
+function ps() {
 
     if [ "$2" == "info" ] ; then
         COLOR="96m";
