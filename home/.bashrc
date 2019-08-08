@@ -118,7 +118,7 @@ alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[
 
 printf "\n" 
 echo "OS:$OS DIST:$DIST MACH:$_MACH REV:$REV PS:$PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | Type:$MODELL_TYPE System:$MODELL_SYSTEM CPU:$CPU_TYPE"
-     #linux Ubuntu x86_64 16.04 xenial | Kernel 4.15.0-45-generic | based on debian |    Intel(R) Xeon(R) CPU E3-1246 v3 @ 3.50GHz
+   #OS:linux DIST:Ubuntu MACH:x86_64 REV:16.04 PS:xenial | Kernel 4.15.0-45-generic | based on debian | Type: System: CPU: Intel(R) Xeon(R) CPU E3-1246 v3 @ 3.50GHz
 printf "\n" 
 
 #autojump

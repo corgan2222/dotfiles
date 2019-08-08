@@ -60,6 +60,17 @@ shootProfile(){
 				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")					
 			fi
 
+			if [ -f /etc/os-release ] ; then
+				
+				DIST=$(cat /etc/os-release | grep '^NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				PSUEDONAME=$(cat /etc/os-release| grep '^PRETTY_NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				MODELL=$(cat /sys/firmware/devicetree/base/model)
+				#MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				MODELL_SYSTEM=$(cat /etc/os-release | grep '^ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")	
+			fi
+
+
 			if [ -f /etc/UnitedLinux-release ] ; then
 				DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
 			fi
