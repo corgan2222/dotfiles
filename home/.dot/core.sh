@@ -23,66 +23,63 @@ shootProfile(){
 
 	if [ "${OS1}" == "windowsnt" ]; then
 		OS=windows
-	# elif [ "${OS1}" == "darwin" ]; then
-	# 	OS=mac
-	# else
-	# 	OS=$(uname)
-	# 	if [ "${OS}" = "SunOS" ] ; then
-	# 		OS=Solaris
-	# 		ARCH=$(uname -p)
-	# 		OSSTR="${OS} ${REV}(${ARCH} $(uname -v))"
-	# 	elif [ "${OS}" = "AIX" ] ; then
-	# 		OSSTR="${OS} $(oslevel) ($(oslevel -r))"
-	# 	elif [ "${OS}" = "Linux" ] ; then
-	# 		if [ -f /etc/redhat-release ] ; then
-	# 			DistroBasedOn='RedHat'
-	# 			DIST=$(cat /etc/redhat-release |sed s/\ release.*//)
-	# 			PSUEDONAME=$(cat /etc/redhat-release | sed s/.*\(// | sed s/\)//)
-	# 			REV=$(cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//)
-	# 		elif [ -f /etc/SuSE-release ] ; then
-	# 			DistroBasedOn='SuSe'
-	# 			PSUEDONAME=$(cat /etc/SuSE-release | tr "\n" ' '| sed s/VERSION.*//)
-	# 			REV=$(cat /etc/SuSE-release | tr "\n" ' ' | sed s/.*=\ //)
-	# 		elif [ -f /etc/mandrake-release ] ; then
-	# 			DistroBasedOn='Mandrake'
-	# 			PSUEDONAME=$(cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//)
-	# 			REV=$(cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//)
-	# 		elif [ -f /etc/debian_version ] ; then
-	# 			DistroBasedOn='Debian'
-	# 			if [ -f /etc/lsb-release ] ; then
-	# 		        	DIST=$(cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }')
-	# 		                PSUEDONAME=$(cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }')
-	# 		                REV=$(cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }')
-    #         			fi
-	# 		elif [ -f /etc/VERSION ] ; then
-	# 		 	DistroBasedOn='Synology'
-	# 			DIST=$(cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-	# 			PSUEDONAME="DSM"
-	# 			REV=$(cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-	# 			MODELL=$(cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-	# 			MODELL_TYPE=$(cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-	# 			MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")				
+	elif [ "${OS1}" == "darwin" ]; then
+		OS=mac
+	else
+		OS=$(uname)
+		if [ "${OS}" = "SunOS" ] ; then
+			OS=Solaris
+			ARCH=$(uname -p)
+			OSSTR="${OS} ${REV}(${ARCH} $(uname -v))"
+		elif [ "${OS}" = "AIX" ] ; then
+			OSSTR="${OS} $(oslevel) ($(oslevel -r))"
+		elif [ "${OS}" = "Linux" ] ; then
+			if [ -f /etc/redhat-release ] ; then
+				DistroBasedOn='RedHat'
+				DIST=$(cat /etc/redhat-release |sed s/\ release.*//)
+				PSUEDONAME=$(cat /etc/redhat-release | sed s/.*\(// | sed s/\)//)
+				REV=$(cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//)
+			elif [ -f /etc/SuSE-release ] ; then
+				DistroBasedOn='SuSe'
+				PSUEDONAME=$(cat /etc/SuSE-release | tr "\n" ' '| sed s/VERSION.*//)
+				REV=$(cat /etc/SuSE-release | tr "\n" ' ' | sed s/.*=\ //)
+			elif [ -f /etc/mandrake-release ] ; then
+				DistroBasedOn='Mandrake'
+				PSUEDONAME=$(cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//)
+				REV=$(cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//)
+			elif [ -f /etc/debian_version ] ; then
+				DistroBasedOn='Debian'
+				if [ -f /etc/lsb-release ] ; then
+			        	DIST=$(cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }')
+			                PSUEDONAME=$(cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }')
+			                REV=$(cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }')
+            			fi
+			elif [ -f /etc/VERSION ] ; then
+			 	DistroBasedOn='Synology'
+				DIST=$(cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				PSUEDONAME="DSM"
+				REV=$(cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				MODELL=$(cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				MODELL_TYPE=$(cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")				
 			
 				#AsusWRT
 			elif [ -f /opt/etc/entware_release ] ; then
+				PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
+				PSUE2=$(cat /proc/version | awk -F" " '{ print $6}')
+				PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
 
-				# PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
-				# PSUE2=$(cat /proc/version | awk -F" " '{ print $6}')
-				# PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
+	 			DistroBasedOn='Ubuntu'
+				DIST=$(cat /proc/version | awk -F" " '{ print $4}')
+				PSUEDONAME="$PSUE1 $PSUE2 $PSUE3"
 
-	 			# DistroBasedOn='Ubuntu'
-				# DIST=$(cat /proc/version | awk -F" " '{ print $4}')
-				# PSUEDONAME="$PSUE1 $PSUE2 $PSUE3"
-
-				# #REV=$(cat /proc/version | awk -F" " '{ print $3}')
-
-				# #MODELL=
-				# MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
-				# MODELL_SYSTEM=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				
+				#REV=$(cat /proc/version | awk -F" " '{ print $3}')
+				#MODELL=
+				MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
+				MODELL_SYSTEM=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				
 			
-				# CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
-				# CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)
-	
+				CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
+				CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)	
 			fi
 
 			if [ -f /etc/os-release ] ; then				
