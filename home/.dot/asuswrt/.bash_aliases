@@ -5,7 +5,7 @@
 
 alias ap='opkg install '
 alias apuu='opkg update'
-alias aptList="opkg list"
+alias aptList="$HOME/.dot/asuswrt/.EntwareApps.sh.sh"
 
 
 function help(){
