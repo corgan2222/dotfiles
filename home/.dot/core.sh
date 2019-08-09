@@ -17,6 +17,10 @@ shootProfile(){
 	_KERNEL=$(uname -r)
 	_MACH=$(uname -m)
 
+
+	CPU_CORES=$(cat /proc/cpuinfo | grep "model name" | wc -l)
+	CPU_TYPE=$(cat /proc/cpuinfo | grep "model name" -m 1 | cut -d: -f2)
+
 	if [ "${OS1}" == "windowsnt" ]; then
 		OS=windows
 	elif [ "${OS1}" == "darwin" ]; then
@@ -53,11 +57,49 @@ shootProfile(){
 			elif [ -f /etc/VERSION ] ; then
 			 	DistroBasedOn='Synology'
 				DIST=$(cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				PSUEDONAME="DSM"
-				REV=$(cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+				PSUEDONAME="$(cat /proc/version | awk -F" " '{ print $4}')"
+				REV=$(cat /proc/version | awk -F" " '{ print $3}')
 				MODELL=$(cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				MODELL_TYPE=$(cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")					
+				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")				
+			
+				#AsusWRT
+			elif [ -f /opt/etc/entware_release ] ; then
+
+				PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
+				PSUE2=$(cat /proc/version | awk -F" " '{ print $6}')
+				PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
+
+	 			DistroBasedOn='Ubuntu'
+				DIST=$(cat /proc/version | awk -F" " '{ print $5}')
+				PSUEDONAME="$("$PSUE1 $PSUE2 $PSUE3")"
+
+				#REV=$(cat /proc/version | awk -F" " '{ print $3}')
+
+				MODELL=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
+				MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}')
+				MODELL_SYSTEM=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				
+			
+				CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
+				CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)
+# /opt/etc/entware_release
+# release=entware
+
+
+
+# admin@router:~# cat /proc/version | awk -F" " '{ print $1}'
+# Linux
+# admin@router:~# 
+# 4.1.51
+# admin@router:~# 
+# (merlin@ubuntu-dev)
+# admin@router:~# 
+# (gcc
+# admin@router:~# cat /proc/version | awk -F" " '{ print $6}'
+# version
+# admin@router:~# cat /proc/version | awk -F" " '{ print $7}'
+# 5.5.0
+	
 			fi
 
 			if [ -f /etc/os-release ] ; then				
@@ -85,8 +127,6 @@ shootProfile(){
 			OS=$(lowercase $OS)
 			DistroBasedOn=$(lowercase $DistroBasedOn)
 
-			CPU_CORES=$(cat /proc/cpuinfo | grep "model name" | wc -l)
-			CPU_TYPE=$(cat /proc/cpuinfo | grep "model name" -m 1 | cut -d: -f2)
 
 			export OSSTR
 			export CPU_CORES
