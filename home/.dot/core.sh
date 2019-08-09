@@ -66,22 +66,22 @@ shootProfile(){
 				#AsusWRT
 			elif [ -f /opt/etc/entware_release ] ; then
 
-				#PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
-				#PSUE2=$(cat /proc/version | awk -F" " '{ print $6}')
-				#PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
+				# PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
+				# PSUE2=$(cat /proc/version | awk -F" " '{ print $6}')
+				# PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
 
-	 			DistroBasedOn='Ubuntu'
-				DIST=$(cat /proc/version | awk -F" " '{ print $4}')
-				PSUEDONAME="$PSUE1 $PSUE2 $PSUE3"
+	 			# DistroBasedOn='Ubuntu'
+				# DIST=$(cat /proc/version | awk -F" " '{ print $4}')
+				# PSUEDONAME="$PSUE1 $PSUE2 $PSUE3"
 
-				#REV=$(cat /proc/version | awk -F" " '{ print $3}')
+				# #REV=$(cat /proc/version | awk -F" " '{ print $3}')
 
-				#MODELL=
-				MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
-				MODELL_SYSTEM=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				
+				# #MODELL=
+				# MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
+				# MODELL_SYSTEM=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				
 			
-				CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
-				CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)
+				# CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
+				# CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)
 	
 			fi
 
