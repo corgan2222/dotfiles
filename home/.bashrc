@@ -1,4 +1,4 @@
-
+#!/bin/sh -x
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
@@ -143,4 +143,5 @@ printf "\n"
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
 homeshick refresh
+
 printf "\n" 
