@@ -27,6 +27,7 @@ esac
             fi
     }
 
+
     # get current status of git repo
     function parse_git_dirty {
         status=`git status 2>&1 | tee`

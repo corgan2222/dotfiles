@@ -111,10 +111,6 @@ if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then
  _loadFile "$HOME"/.dot/asuswrt/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/asuswrt/.bash_aliases "$DIST bash_aliases"  
  _loadFile "$HOME"/.dot/asuswrt/.raspi_bash_functions.sh "$DIST Functions"  
-  # for file in ~/.dot/asuswrt/.{.bashrc,.exports,.bash_aliases}; do
-  #     [ -r "$file" ] && [ -f "$file" ] && source "$file"
-  # done
-  # unset file
 fi 
 
 alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
@@ -142,6 +138,11 @@ printf "\n"
 
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
-#homeshick refresh
+
+if (( $norefresg <= 1 )); then
+  homeshick refresh
+fi
+
+
 
 printf "\n" 
