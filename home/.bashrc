@@ -105,7 +105,7 @@ if [ "$DIST" = "raspbian" ]; then
  _loadFile "$HOME"/.dot/raspi/.raspi_bash_functions.sh "$DIST Functions"  
 fi 
 
-
+echo $DIST
 if [ "$DIST" = "ASUSWRT-Merlin" ]; then 
  _loadFile "$HOME"/.dot/asuswrt/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/asuswrt/.exports "$DIST exports"
