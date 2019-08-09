@@ -117,11 +117,11 @@ alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[
 
 tempfile_c="/var/log/apt/apt-updates_count.log"
 if [ -f "$tempfile_c" ]; then
-  AptCount=$(cat $tempfile_c | wc -l)  
-  UPDATED=$(print_style " $AptCount" "success")
+  AptCount=$(cat $tempfile_c )  
+  if (( $AptCount > 0 )); then
+    UPDATED=$(print_style " $AptCount" "success")
+  fi
 fi
-
-
 
 printf "\n" 
 #echo "$OS DIST:$DIST MACH:$_MACH REV:$REV PS:$PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | Type:$MODELL_TYPE System:$MODELL_SYSTEM CPU:$CPU_TYPE"

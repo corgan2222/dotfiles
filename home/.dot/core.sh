@@ -62,8 +62,10 @@ shootProfile(){
 
 			if [ -f /etc/os-release ] ; then				
 				#DIST=$(cat /etc/os-release | grep '^NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')
-				echo "------ $DIST --------"
+				if [ -z "$DIST" ]; then
+					DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')				
+				fi
+				
 				if [ "$DIST" = "raspbian" ]; then 
 					PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")								
