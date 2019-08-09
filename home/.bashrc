@@ -77,8 +77,8 @@ if [ "$DIST" = "Ubuntu" ]; then
   _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
   _loadFile "$HOME"/.dot/ubuntu16/.bash_aliases "Debian Alias"
   _loadFile "$HOME"/.dot/ubuntu16/.srv1.bash_aliases "srv1"
- 
-  unset file
+  reload=yes
+  
 fi  
 
 #PROG="`basename $0`" 
@@ -96,6 +96,7 @@ if [ "$DIST" = "Synology" ]; then
   _loadFile "$HOME"/.dot/synology/.bashrc "$DIST Userpromt"
   _loadFile "$HOME"/.dot/synology/.exports " $DIST Exports"
   _loadFile "$HOME"/.dot/synology/.bash_aliases "$DIST Alias"
+  reload=yes
 fi  
 
 if [ "$DIST" = "raspbian" ]; then 
@@ -103,6 +104,7 @@ if [ "$DIST" = "raspbian" ]; then
  _loadFile "$HOME"/.dot/raspi/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST bash_aliases"  
  _loadFile "$HOME"/.dot/raspi/.raspi_bash_functions.sh "$DIST Functions"  
+ reload=yes
 fi 
 
 
@@ -139,10 +141,10 @@ printf "\n"
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
 
-if (( $norefresg <= 1 )); then
+ 
+
+if [ "$reload" = "yes" ]; then
   homeshick refresh
 fi
-
-
 
 printf "\n" 
