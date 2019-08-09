@@ -31,37 +31,37 @@ shootProfile(){
 			OS=Solaris
 			ARCH=$(uname -p)
 			OSSTR="${OS} ${REV}(${ARCH} $(uname -v))"
-		elif [ "${OS}" = "AIX" ] ; then
-			OSSTR="${OS} $(oslevel) ($(oslevel -r))"
-		elif [ "${OS}" = "Linux" ] ; then
-			if [ -f /etc/redhat-release ] ; then
-				DistroBasedOn='RedHat'
-				DIST=$(cat /etc/redhat-release |sed s/\ release.*//)
-				PSUEDONAME=$(cat /etc/redhat-release | sed s/.*\(// | sed s/\)//)
-				REV=$(cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//)
-			elif [ -f /etc/SuSE-release ] ; then
-				DistroBasedOn='SuSe'
-				PSUEDONAME=$(cat /etc/SuSE-release | tr "\n" ' '| sed s/VERSION.*//)
-				REV=$(cat /etc/SuSE-release | tr "\n" ' ' | sed s/.*=\ //)
-			elif [ -f /etc/mandrake-release ] ; then
-				DistroBasedOn='Mandrake'
-				PSUEDONAME=$(cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//)
-				REV=$(cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//)
-			elif [ -f /etc/debian_version ] ; then
-				DistroBasedOn='Debian'
-				if [ -f /etc/lsb-release ] ; then
-			        	DIST=$(cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }')
-			                PSUEDONAME=$(cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }')
-			                REV=$(cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }')
-            			fi
-			elif [ -f /etc/VERSION ] ; then
-			 	DistroBasedOn='Synology'
-				DIST=$(cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				PSUEDONAME="DSM"
-				REV=$(cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				MODELL=$(cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				MODELL_TYPE=$(cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")				
+		# elif [ "${OS}" = "AIX" ] ; then
+		# 	OSSTR="${OS} $(oslevel) ($(oslevel -r))"
+		# elif [ "${OS}" = "Linux" ] ; then
+		# 	if [ -f /etc/redhat-release ] ; then
+		# 		DistroBasedOn='RedHat'
+		# 		DIST=$(cat /etc/redhat-release |sed s/\ release.*//)
+		# 		PSUEDONAME=$(cat /etc/redhat-release | sed s/.*\(// | sed s/\)//)
+		# 		REV=$(cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//)
+		# 	elif [ -f /etc/SuSE-release ] ; then
+		# 		DistroBasedOn='SuSe'
+		# 		PSUEDONAME=$(cat /etc/SuSE-release | tr "\n" ' '| sed s/VERSION.*//)
+		# 		REV=$(cat /etc/SuSE-release | tr "\n" ' ' | sed s/.*=\ //)
+		# 	elif [ -f /etc/mandrake-release ] ; then
+		# 		DistroBasedOn='Mandrake'
+		# 		PSUEDONAME=$(cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//)
+		# 		REV=$(cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//)
+		# 	elif [ -f /etc/debian_version ] ; then
+		# 		DistroBasedOn='Debian'
+		# 		if [ -f /etc/lsb-release ] ; then
+		# 	        	DIST=$(cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }')
+		# 	                PSUEDONAME=$(cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }')
+		# 	                REV=$(cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }')
+        #     			fi
+		# 	elif [ -f /etc/VERSION ] ; then
+		# 	 	DistroBasedOn='Synology'
+		# 		DIST=$(cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+		# 		PSUEDONAME="DSM"
+		# 		REV=$(cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+		# 		MODELL=$(cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+		# 		MODELL_TYPE=$(cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+		# 		MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")				
 			
 				#AsusWRT
 			elif [ -f /opt/etc/entware_release ] ; then
@@ -76,36 +76,36 @@ shootProfile(){
 				#REV=$(cat /proc/version | awk -F" " '{ print $3}')
 				#MODELL=
 				MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
-				MODELL_SYSTEM=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				
+				MODELL_SYSTEM="$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				"
 			
 				CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
 				CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)	
 			fi
 
-			if [ -f /etc/os-release ] ; then				
-				#DIST=$(cat /etc/os-release | grep '^NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				if [ -z "$DIST" ]; then
-					DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')				
-				fi
+			# if [ -f /etc/os-release ] ; then				
+			# 	#DIST=$(cat /etc/os-release | grep '^NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+			# 	if [ -z "$DIST" ]; then
+			# 		DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')				
+			# 	fi
 				
-				if [ "$DIST" = "raspbian" ]; then 
-					PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")								
-					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+			# 	if [ "$DIST" = "raspbian" ]; then 
+			# 		PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+			# 		REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")								
+			# 		MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 					
-					IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
-					MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
-				fi	
-				#MODELL=$(cat /etc/os-release | grep '^PRETTY_NAME=' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-			fi
+			# 		IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
+			# 		MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
+			# 	fi	
+			# 	#MODELL=$(cat /etc/os-release | grep '^PRETTY_NAME=' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+			# fi
 
 
-			if [ -f /etc/UnitedLinux-release ] ; then
-				DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
-			fi
+			# if [ -f /etc/UnitedLinux-release ] ; then
+			# 	DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
+			# fi
 
-			OS=$(lowercase $OS)
-			DistroBasedOn=$(lowercase $DistroBasedOn)
+			# OS=$(lowercase $OS)
+			# DistroBasedOn=$(lowercase $DistroBasedOn)
 
 
 			export OSSTR
