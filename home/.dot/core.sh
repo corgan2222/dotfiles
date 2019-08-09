@@ -72,13 +72,13 @@ shootProfile(){
 
 	 			DistroBasedOn='Ubuntu'
 				DIST=$(cat /proc/version | awk -F" " '{ print $4}')
-				PSUEDONAME=$("$PSUE1 $PSUE2 $PSUE3")
+				PSUEDONAME="$PSUE1 $PSUE2 $PSUE3"
 
 				#REV=$(cat /proc/version | awk -F" " '{ print $3}')
 
-				MODELL=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
-				MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}')
-				MODELL_SYSTEM=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				
+				#MODELL=
+				MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
+				MODELL_SYSTEM=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')				
 			
 				CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
 				CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)
