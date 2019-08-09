@@ -57,8 +57,8 @@ shootProfile(){
 			elif [ -f /etc/VERSION ] ; then
 			 	DistroBasedOn='Synology'
 				DIST=$(cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				PSUEDONAME="$(cat /proc/version | awk -F" " '{ print $4}')"
-				REV=$(cat /proc/version | awk -F" " '{ print $3}')
+				PSUEDONAME="DSM"
+				REV=$(cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				MODELL=$(cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				MODELL_TYPE=$(cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")				
@@ -71,8 +71,8 @@ shootProfile(){
 				PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
 
 	 			DistroBasedOn='Ubuntu'
-				DIST=$(cat /proc/version | awk -F" " '{ print $5}')
-				PSUEDONAME="$("$PSUE1 $PSUE2 $PSUE3")"
+				DIST=$(cat /proc/version | awk -F" " '{ print $4}')
+				PSUEDONAME=$("$PSUE1 $PSUE2 $PSUE3")
 
 				#REV=$(cat /proc/version | awk -F" " '{ print $3}')
 

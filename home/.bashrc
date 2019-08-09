@@ -119,7 +119,7 @@ tempfile_c="/var/log/apt/apt-updates_count.log"
 if [ -f "$tempfile_c" ]; then
   AptCount=$(cat $tempfile_c )  
   if (( $AptCount > 0 )); then
-    UPDATED=$(print_style " $AptCount" "success")
+    UPDATED="$(print_style " $AptCount" "success") Apt Update available - #apuu"
   fi
 fi
 
@@ -127,7 +127,7 @@ printf "\n"
 #echo "$OS DIST:$DIST MACH:$_MACH REV:$REV PS:$PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | Type:$MODELL_TYPE System:$MODELL_SYSTEM CPU:$CPU_TYPE"
 echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
 echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
-echo "$UPDATED Apt Update available - #apuu"
+echo "$UPDATED"
    #OS:linux DIST:Ubuntu MACH:x86_64 REV:16.04 PS:xenial | Kernel 4.15.0-45-generic | based on debian | Type: System: CPU: Intel(R) Xeon(R) CPU E3-1246 v3 @ 3.50GHz
 printf "\n" 
 
