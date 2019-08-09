@@ -102,6 +102,7 @@ if [ "$DIST" = "raspbian" ]; then
  _loadFile "$HOME"/.dot/raspi/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/raspi/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST bash_aliases"  
+ _loadFile "$HOME"/.dot/raspi/.raspi_bash_functions.sh "$DIST Functions"  
 fi 
 
 

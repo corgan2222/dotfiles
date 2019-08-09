@@ -3,3 +3,4 @@ alias lnav_cloud="lnav /var/www/vhosts/knaak.org/logs/cloud.knaak.org/error_log 
 alias php73="/opt/plesk/php/7.3/bin/php"
 alias peclInstallapcu="/opt/plesk/php/7.3/bin/pecl install apcu"
 alias OCC="sudo -u knaak  /opt/plesk/php/7.3/bin/php /var/www/vhosts/knaak.org/cloud.knaak.org/occ"
+alias cdknaak='cd /var/www/vhosts/knaak.org/httpdocs'
