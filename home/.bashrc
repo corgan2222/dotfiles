@@ -106,7 +106,7 @@ if [ "$DIST" = "raspbian" ]; then
 fi 
 
 
-if [ "$DIST" = "asuswrt" ]; then 
+if [ "$DIST" = "ASUSWRT-Merlin" ]; then 
  _loadFile "$HOME"/.dot/asuswrt/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/asuswrt/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/asuswrt/.bash_aliases "$DIST bash_aliases"  
