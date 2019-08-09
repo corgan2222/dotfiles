@@ -66,9 +66,9 @@ shootProfile(){
 				#AsusWRT
 			elif [ -f /opt/etc/entware_release ] ; then
 
-				PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
-				PSUE2=$(cat /proc/version | awk -F" " '{ print $6}')
-				PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
+				#PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
+				#PSUE2=$(cat /proc/version | awk -F" " '{ print $6}')
+				#PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
 
 	 			DistroBasedOn='Ubuntu'
 				DIST=$(cat /proc/version | awk -F" " '{ print $4}')
