@@ -113,6 +113,7 @@ if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then
  _loadFile "$HOME"/.dot/asuswrt/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/asuswrt/.bash_aliases "$DIST bash_aliases"  
  _loadFile "$HOME"/.dot/asuswrt/.raspi_bash_functions.sh "$DIST Functions"  
+ _loadFile "$HOME"/.dot/asuswrt/.EntwareApps.sh.sh "$DIST EntwareApps.sh"  
 fi 
 
 alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
