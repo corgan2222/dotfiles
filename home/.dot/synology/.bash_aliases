@@ -8,18 +8,15 @@ alias p='py3'
 # | Navigation                                                                 |
 # ------------------------------------------------------------------------------
 
-alias cdknaak='cd /var/www/vhosts/knaak.org/httpdocs'
-alias cd_Aptlist='cd /etc/apt/'
-alias cd_git="cd $HOME/git"
 alias cd_Scripts="cd $HOME/git/scripts"
 
 # ------------------------------------------------------------------------------
 # | Apt                                                                        |
 # ------------------------------------------------------------------------------
 
-alias ap='apt-get install'
-alias aptGetVersion="dpkg -l | grep -i "
-alias aptList="dpkg -l"
+alias ap='opkg install '
+alias apuu='opkg update'
+alias aptList="opkg list"
 
 # ------------------------------------------------------------------------------
 # | php                                                                        |
