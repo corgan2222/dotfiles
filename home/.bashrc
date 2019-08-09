@@ -107,10 +107,14 @@ fi
 
 
 if [ "$DIST" = "asuswrt" ]; then 
-  for file in ~/.dot/asuswrt/.{.bashrc,.exports,.bash_aliases}; do
-      [ -r "$file" ] && [ -f "$file" ] && source "$file"
-  done
-  unset file
+ _loadFile "$HOME"/.dot/asuswrt/.bashrc "$DIST bashrc"
+ _loadFile "$HOME"/.dot/asuswrt/.exports "$DIST exports"
+ _loadFile "$HOME"/.dot/asuswrt/.bash_aliases "$DIST bash_aliases"  
+ _loadFile "$HOME"/.dot/asuswrt/.raspi_bash_functions.sh "$DIST Functions"  
+  # for file in ~/.dot/asuswrt/.{.bashrc,.exports,.bash_aliases}; do
+  #     [ -r "$file" ] && [ -f "$file" ] && source "$file"
+  # done
+  # unset file
 fi 
 
 alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"

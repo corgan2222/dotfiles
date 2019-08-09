@@ -82,23 +82,6 @@ shootProfile(){
 			
 				CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
 				CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)
-# /opt/etc/entware_release
-# release=entware
-
-
-
-# admin@router:~# cat /proc/version | awk -F" " '{ print $1}'
-# Linux
-# admin@router:~# 
-# 4.1.51
-# admin@router:~# 
-# (merlin@ubuntu-dev)
-# admin@router:~# 
-# (gcc
-# admin@router:~# cat /proc/version | awk -F" " '{ print $6}'
-# version
-# admin@router:~# cat /proc/version | awk -F" " '{ print $7}'
-# 5.5.0
 	
 			fi
 
