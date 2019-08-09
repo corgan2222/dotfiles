@@ -60,19 +60,16 @@ shootProfile(){
 				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")					
 			fi
 
-			if [ -f /etc/os-release ] ; then
-				
+			if [ -f /etc/os-release ] ; then				
 				DIST=$(cat /etc/os-release | grep '^NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-								
-				MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')
-				 
-				
-				IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
-				MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
-
+				if [ "$DIST" = "raspbian" ]; then 
+					PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")								
+					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+					DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')
+					IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
+					MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
+				fi	
 				#MODELL=$(cat /etc/os-release | grep '^PRETTY_NAME=' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 			fi
 
