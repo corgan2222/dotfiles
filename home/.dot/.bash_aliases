@@ -135,6 +135,7 @@ alias aptList="dpkg -l"
 
 alias listLoadedPhpInis7="php --ini"
 alias listLoadedPhpInis73="php73 --ini"
+alias phplint='find . -name "*.php" -exec php -l {} \; | grep "Parse error"'
 
 # ------------------------------------------------------------------------------
 # | Docker                                                                     |
@@ -154,6 +155,26 @@ alias gitsubget='git submodule init && git submodule update'
 alias gitadd="git add * && git commit -m "
 alias gc="git clone "
 
+alias prettyGitLog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+# git config --global alias.lg "log --color --graph --pretty=format:'%C(#dc322f)%h%C(#b58900)%d %C(#eee8d5)%s %C(#dc322f)| %C(#586f75)%cr %C(#dc322f)| %C(#586e75)%an%Creset' --abbrev-commit"
+alias prettyGitLog_clean=" --format='%Cred%h%Creset %s %Cgreen(%cr) %C(blue)<%an>%Creset%C(yellow)%d%Creset' --no-merges"
+
+#git clone -b <branch> <remote_repo>
+#Example:
+#git clone -b develop git@github.com:user/myproject.git
+
+alias createGitChangelog="git log v2.1.0...v2.1.1 --pretty=format:'<li> <a href=\"https://github.com/corgan2222/dotfiles/commit/%H\">view commit &bull;</a> %s</li> ' --reverse | grep \"#changelog\""
+#https://jerel.co/blog/2011/07/generating-a-project-changelog-using-git-log
+
+
+git-search () {
+    git log --all -S"$@" --pretty=format:%H | map git show 
+}
+
+
+alias map="xargs -n1"
+#find * -name models.py | map dirname
+#core
 
 # replace top with htop
 if command -v htop >/dev/null; then
@@ -421,3 +442,5 @@ unset -f alias_completion
     alias traceroute="colour traceroute"
     alias syslog="sudo colour tail -f -n 100 /var/log/syslog"
   fi
+
+  alias pretty=" python -m json.tool"

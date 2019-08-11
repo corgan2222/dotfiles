@@ -1398,7 +1398,55 @@ function telegrafAfterUpdate()
 
 }
 
+#https://coderwall.com/p/xatm5a/bash-one-liner-to-read-yaml-files
+function yaml_r() {
+    hashdot=$(gem list hash_dot);
+    if ! [ "$hashdot" != "" ]; then sudo gem install "hash_dot" ; fi
+    if [ -f $1 ];then
+        cmd=" Hash.use_dot_syntax = true; hash = YAML.load(File.read('$1'));";
+        if [ "$2" != "" ] ;then 
+            cmd="$cmd puts hash.$2;"
+        else
+            cmd="$cmd puts hash;"
+        fi
+        ruby  -r yaml -r hash_dot <<< $cmd;
+    fi
+}
 
+
+function perlver {
+    lib=${1//::/\/}
+    perl -e "use $1; printf(\"%s\n\tPath:   %s\n\tVersion: %s\n\", '$1', \$INC{'$lib.pm'}, \$$1::VERSION);" 2>/dev/null || echo "$1 is not installed"
+}
+
+function timeInfo(){
+cat << EOD
+        Format/result           |       Command              |          Output
+--------------------------------+----------------------------+------------------------------
+YYYY-MM-DD_hh:mm:ss             | date +%F_%T                | $(date +%F_%T)
+YYYYMMDD_hhmmss                 | date +%Y%m%d_%H%M%S        | $(date +%Y%m%d_%H%M%S)
+YYYYMMDD_hhmmss (UTC version)   | date --utc +%Y%m%d_%H%M%SZ | $(date --utc +%Y%m%d_%H%M%SZ)
+YYYYMMDD_hhmmss (with local TZ) | date +%Y%m%d_%H%M%S%Z      | $(date +%Y%m%d_%H%M%S%Z)
+YYYYMMSShhmmss                  | date +%Y%m%d%H%M%S         | $(date +%Y%m%d%H%M%S)
+YYYYMMSShhmmssnnnnnnnnn         | date +%Y%m%d%H%M%S%N       | $(date +%Y%m%d%H%M%S%N)
+YYMMDD_hhmmss                   | date +%y%m%d_%H%M%S        | $(date +%y%m%d_%H%M%S)
+
+Seconds since UNIX epoch:       | date +%s                   | $(date +%s)
+Nanoseconds only:               | date +%N                   | $(date +%N)
+Nanoseconds only:               | \`date +%s\`000000000      | `date +%s`000000000
+Nanoseconds since UNIX epoch:   | date +%s%N                 | $(date +%s%N)
+Milliseconds since UNIX epoch:  | date +%s%N                 | $(date +%s%N)/1000000))
+
+ISO8601 UTC timestamp           | date --utc +%FT%TZ         | $(date --utc +%FT%TZ)
+ISO8601 UTC timestamp + ms      | date --utc +%FT%T.%3NZ     | $(date --utc +%FT%T.%3NZ)
+ISO8601 Local TZ timestamp      | date +%FT%T%Z              | $(date +%FT%T%Z)
+YYYY-MM-DD (Short day)          | date +%F\(%a\)             | $(date +%F\(%a\))
+YYYY-MM-DD (Long day)           | date +%F\(%A\)             | $(date +%F\(%A\))
+EOD
+
+
+
+}
 
 # lman
 # center
