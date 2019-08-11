@@ -128,6 +128,7 @@ alias apuu='sudo apt-get update && sudo apt-get -y upgrade'
 alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 alias aptGetVersion="dpkg -l | grep -i "
 alias aptList="dpkg -l"
+alias aptReconf="dpkg-reconfigure "
 
 # ------------------------------------------------------------------------------
 # | php                                                                        |
@@ -225,6 +226,8 @@ alias date_hour='date "+%H"'
 alias date_minute='date "+%M"'
 alias date_second='date "+%S"'
 alias date_time='date "+%H:%M:%S"'
+
+alias setTimeZone="sudo dpkg-reconfigure tzdata"
 
 # stopwatch
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'

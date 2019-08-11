@@ -1433,7 +1433,7 @@ YYMMDD_hhmmss                   | date +%y%m%d_%H%M%S        | $(date +%y%m%d_%H
 
 Seconds since UNIX epoch:       | date +%s                   | $(date +%s)
 Nanoseconds only:               | date +%N                   | $(date +%N)
-Nanoseconds only:               | \`date +%s\`000000000      | `date +%s`000000000
+Nanoseconds only:               | \`date +%s\`000000000        | `date +%s`000000000
 Nanoseconds since UNIX epoch:   | date +%s%N                 | $(date +%s%N)
 Milliseconds since UNIX epoch:  | date +%s%N                 | $(date +%s%N)/1000000))
 
