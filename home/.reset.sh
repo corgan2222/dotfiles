@@ -1,12 +1,14 @@
 #!/bin/sh -x 
  
-echo "delete all bashscript?"
-select yn in "Yes" "No"; do
-    case $yn in
-        Yes ) delete break;;
-        No ) exit;;
-    esac
-done
+echo -n "Delete all? (y/n)? "
+old_stty_cfg=$(stty -g)
+stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg # Careful playing with stty
+if echo "$answer" | grep -iq "^y" ;then
+    echo Yes 
+    delete
+else
+    #
+fi
 
  delete(){
   rm -r "$HOME"/.dot/ -f
