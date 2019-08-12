@@ -1,4 +1,7 @@
 # https://github.com/voku/dotfiles
+# ------------------------------------------------------------------------------
+# | Defaults                                                                   |
+# ------------------------------------------------------------------------------
 
 alias c="cheat "
 alias a="alias | grep "
@@ -8,10 +11,6 @@ alias l="loadHome"
 # reload the shell (i.e. invoke as a login shell)
 alias reload="exec $SHELL -l"
 alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
-
-alias makescript="fc -rnl | head -1 >" #Easily make a script out of the last command you ran: makescript [script.sh]
-
-findLastFile=$(find . -type f -printf "%T@ %p\n" | sort -n | cut -d' ' -f 2- | tail -n 1 | xargs -d'\n' ls -la)
 
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
@@ -69,7 +68,7 @@ alias cd.....='cd ../../../..'
 
 alias ll='ls -alF'
 alias la='ls -A'
-alias l='ls -CF'
+
 
 alias dir='ls -la'
 alias d='ls -l'
@@ -85,7 +84,7 @@ fi
 alias userls='cat /etc/passwd'
 
 # Print each PATH entry on a separate line
-alias path="echo -e ${PATH//:/\\n}"
+alias path='echo -e ${PATH//:/\\n}'
 
 alias cd_Aptlist='cd /etc/apt/'
 alias cd_git="cd $HOME/git"
@@ -108,6 +107,8 @@ if which ack-grep >/dev/null 2>&1; then
 else
   alias afind="ack -iH"
 fi
+
+alias findLastFile="find . -type f -printf \"%T@ %p\n\" | sort -n | cut -d' ' -f 2- | tail -n 1 | xargs -d'\n' ls -la"
 
 # ------------------------------------------------------------------------------
 # | services                                                                   |
@@ -175,25 +176,18 @@ alias prettyGitLog_clean=" --format='%Cred%h%Creset %s %Cgreen(%cr) %C(blue)<%an
 alias createGitChangelog="git log v2.1.0...v2.1.1 --pretty=format:'<li> <a href=\"https://github.com/corgan2222/dotfiles/commit/%H\">view commit &bull;</a> %s</li> ' --reverse | grep \"#changelog\""
 #https://jerel.co/blog/2011/07/generating-a-project-changelog-using-git-log
 
-
-git-search () {
-    git log --all -S"$@" --pretty=format:%H | map git show 
-}
-
+git-search () {git log --all -S"$@" --pretty=format:%H | map git show }
 
 alias map="xargs -n1"
 #find * -name models.py | map dirname
 #core
 
-# replace top with htop
-if command -v htop >/dev/null; then
-alias top_orig="/usr/bin/top"
-fi
+alias makescript="fc -rnl | head -1 >" #Easily make a script out of the last command you ran: makescript [script.sh]
 
 # ------------------------------------------------------------------------------
 # | Network                                                                    |
 # ------------------------------------------------------------------------------
-
+alias wget='wget -c'
 alias checkport='lsof -i '
 alias ports="netstat -lnpt4e | grep -w 'LISTEN'"
 alias portsu="netstat -lnp"
@@ -202,6 +196,9 @@ alias portsu="netstat -lnp"
 alias myip_dns="dig +short myip.opendns.com @resolver1.opendns.com"
 alias myip_http="GET http://ipecho.net/plain && echo"
 
+alias ping='ping -c 5'
+# Do not wait interval 1 second, go fast #
+alias fastping='ping -c 100 -s.2'
 
 # Gzip-enabled `curl`
 alias gurl="curl --compressed"
@@ -218,6 +215,13 @@ alias netlisteners='sudo lsof -i -P | grep LISTEN'
 
 getlocation() { lynx -dump http://www.ip-adress.com/ip_tracer/?QRY=$1|grep address|egrep 'city|state|country'|awk '{print $3,$4,$5,$6,$7,$8}'|sed 's\ip address flag \\'|sed 's\My\\';}  #Get your public IP address and host.
 
+ #also pass it via sudo so whoever is admin can reload it without calling yo
+alias nginxreload='sudo /usr/local/nginx/sbin/nginx -s reload'
+alias nginxtest='sudo /usr/local/nginx/sbin/nginx -t'
+alias lightyload='sudo /etc/init.d/lighttpd reload'
+alias lightytest='sudo /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf -t'
+alias httpdreload='sudo /usr/sbin/apachectl -k graceful'
+alias httpdtest='sudo /usr/sbin/apachectl -t && /usr/sbin/apachectl -t -D DUMP_VHOSTS'
 
 # ------------------------------------------------------------------------------
 # | Date & Time                                                                |
@@ -234,7 +238,6 @@ alias date_hour='date "+%H"'
 alias date_minute='date "+%M"'
 alias date_second='date "+%S"'
 alias date_time='date "+%H:%M:%S"'
-
 alias setTimeZone="sudo dpkg-reconfigure tzdata"
 
 # stopwatch
@@ -260,6 +263,17 @@ alias pscpu10="pscpu | tail -10"
 
 # shows the corresponding process to ...
 alias psx="ps auxwf | grep "
+
+## Get server cpu info ##
+if command -v lscpu >/dev/null; then
+  # older system use /proc/cpuinfo ##
+  alias cpuinfo='less /proc/cpuinfo' ##
+else
+  alias cpuinfo='lscpu'
+fi  
+
+## get GPU ram on desktop / laptop##
+alias gpumeminfo='grep -i --color memory /var/log/Xorg.0.log'
 
 #kill all process with name
 alias psKillAll="pkill -f "
@@ -287,7 +301,7 @@ alias du_overview="du -h | grep "^[0-9,]*[MG]" | sort -hr | less"
 # shows the complete disk usage to legibly
 alias df="df -kTh"
 
-alias ps?="ps aux | grep" #Easily find the PID of any process: ps? [name]
+alias ps="ps aux | grep" #Easily find the PID of any process: ps? [name]
 
 alias renameImagaExif="exiftool '-filename<DateTimeOriginal' -d %Y-%m-%d_%H-%M-%S%%-c.%%le ."
 
@@ -297,7 +311,7 @@ alias renameImagaExif="exiftool '-filename<DateTimeOriginal' -d %Y-%m-%d_%H-%M-%
 
 # becoming root + executing last command
 alias sulast="su -c !-1 root"
-
+alias mount='mount |column -t'
 
 # ------------------------------------------------------------------------------
 # | Other                                                                      |
@@ -306,10 +320,8 @@ alias sulast="su -c !-1 root"
 # decimal to hexadecimal value
 alias dec2hex="printf "%x\n" $1"
 
-
 # Canonical hex dump; some systems have this symlinked
 command -v hd > /dev/null || alias hd="hexdump -C"
-
 
 # urldecode - url http network decode
 alias urldecode='python -c import sys, urllib as ul; print ul.unquote_plus(sys.argv[1])"'
@@ -319,29 +331,27 @@ alias urldecode='python -c import sys, urllib as ul; print ul.unquote_plus(sys.a
 # ROT13-encode text. Works for decoding, too! ;)
 alias rot13='tr a-zA-Z n-za-mN-ZA-M'
 
-
 # intuitive map function
 #
 # For example, to list all directories that contain a certain file:
 # find . -name .gitattributes | map dirname
 alias map="xargs -n1"
 
-
 #### Validators
-alias xxyamlcheck='yamllint '
-alias xxjsoncheck='jq "." >/dev/null <'
-alias xxxmlcheck='xmlstarlet val '
+alias yamlcheck='yamllint '
+alias jsoncheck='jq "." >/dev/null <'
+alias xmlcheck='xmlstarlet val '
 
 #### Characters
-alias xxascii='man ascii | grep -m 1 -A 63 --color=never Oct'
-alias xxalphabet='echo a b c d e f g h i j k l m n o p q r s t u v w x y z'
-alias xxunicode='echo ✓ ™  ♪ ♫ ☃ ° Ɵ ∫'
-alias xxnumalphabet='xxalphabet; echo 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6'
+alias ascii_='man ascii | grep -m 1 -A 63 --color=never Oct'
+alias alphabet_='echo a b c d e f g h i j k l m n o p q r s t u v w x y z'
+alias unicode_='echo ✓ ™  ♪ ♫ ☃ ° Ɵ ∫'
+alias numalphabet_='xxalphabet; echo 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6'
 
 #### Regular Expressions
-alias xxregxmac='echo [0-9a-f]{2}:[0-9a-f]'
-alias xxregxip="echo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'"
-alias xxregxemail='echo "[^[:space:]]+@[^[:space:]]+"'
+alias regxmac='echo [0-9a-f]{2}:[0-9a-f]'
+alias regxip="echo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'"
+alias regxemail='echo "[^[:space:]]+@[^[:space:]]+"'
 
 alias histg="history | grep" #To quickly search through your command history: histg [keyword]
 
@@ -457,3 +467,33 @@ unset -f alias_completion
   fi
 
   alias pretty=" python -m json.tool"
+
+
+
+# ------------------------------------------------------------------------------
+# | backup                                                                     |
+# ------------------------------------------------------------------------------
+
+  # if cron fails or if you want backup on demand just run these commands #
+# again pass it via sudo so whoever is in admin group can start the job #
+# Backup scripts #
+alias backup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type local --taget /raid1/backups'
+alias nasbackup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type nas --target nas01'
+alias s3backup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type nas --target nas01 --auth /home/scripts/admin/.authdata/amazon.keys'
+alias rsnapshothourly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys --config /home/scripts/admin/scripts/backup/config/adsl.conf'
+alias rsnapshotdaily='sudo  /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
+alias rsnapshotweekly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
+alias rsnapshotmonthly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
+alias amazonbackup=s3backup
+
+
+# ------------------------------------------------------------------------------
+# | Memcache                                                                   |
+# ------------------------------------------------------------------------------
+
+## Memcached server status  ##
+alias mcdstats='/usr/bin/memcached-tool 127.0.0.1:11211 stats'
+alias mcdshow='/usr/bin/memcached-tool 127.0.0.1:11211 display'
+
+## quickly flush out memcached server ##
+alias flushmcd='echo "flush_all" | nc 127.0.0.1 11211'
