@@ -2,6 +2,16 @@
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
+############# INCLUDE ####################################
+
+source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
+
+ 
+if [ "$reload" = "yes" ]; then
+  homeshick refresh
+fi
+
 # reload the shell (i.e. invoke as a login shell)
 alias reload='exec "$SHELL" -l'
 alias load='source "$HOME"/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh'
@@ -26,7 +36,6 @@ print_style () {
 
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
-
 
 _loadFile()
 {
@@ -132,24 +141,11 @@ fi
 
 
 printf "\n" 
-#echo "$OS DIST:$DIST MACH:$_MACH REV:$REV PS:$PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | Type:$MODELL_TYPE System:$MODELL_SYSTEM CPU:$CPU_TYPE"
 echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
 echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
 echo "$UPDATED"
-   #OS:linux DIST:Ubuntu MACH:x86_64 REV:16.04 PS:xenial | Kernel 4.15.0-45-generic | based on debian | Type: System: CPU: Intel(R) Xeon(R) CPU E3-1246 v3 @ 3.50GHz
-printf "\n" 
 
 #autojump
 [[ -s "$HOME"/.autojump/etc/profile.d/autojump.sh ]] && source "$HOME"/.autojump/etc/profile.d/autojump.sh
-
-############# INCLUDE ####################################
-
-source "$HOME/.homesick/repos/homeshick/homeshick.sh"
-source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
-
- 
-if [ "$reload" = "yes" ]; then
-  homeshick refresh
-fi
 
 printf "\n" 
