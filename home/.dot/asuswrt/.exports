@@ -1,0 +1,2 @@
+export PATH=$PATH:/opt/bin/go/bin
+GOROOT=/opt/bin/go 
