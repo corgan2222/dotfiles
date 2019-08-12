@@ -10,8 +10,8 @@ alias l="loadHome"
 alias keyboardDE="setxkbmap -layout de"
 
 # reload the shell (i.e. invoke as a login shell)
-alias reload="exec $SHELL -l"
-alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
+alias reload='exec "$SHELL" -l'
+alias load='source "$HOME"/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh'
 
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
@@ -88,10 +88,8 @@ alias userls='cat /etc/passwd'
 alias path='echo -e ${PATH//:/\\n}'
 
 alias cd_Aptlist='cd /etc/apt/'
-alias cd_git="cd $HOME/git"
-alias cd_Scripts="cd $HOME/git/scripts"
-
-
+alias cd_git='cd "$HOME"/git'
+alias cd_Scripts='cd $HOME/git/scripts'
 
 # ------------------------------------------------------------------------------
 # | Search and Find                                                            |
@@ -101,9 +99,8 @@ alias cd_Scripts="cd $HOME/git/scripts"
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 
 # search in files (with fallback)
-if which ack-grep >/dev/null 2>&1; then
-  alias ack=ack-grep
-
+if command ack-grep >/dev/null 2>&1; then
+  alias ack="ack-grep"
   alias afind="ack-grep -iH"
 else
   alias afind="ack -iH"
@@ -153,8 +150,7 @@ alias phplint='find . -name "*.php" -exec php -l {} \; | grep "Parse error"'
 
 alias dl='docker ps'
 alias dr='docker restart'
-alias dockerContainerSize="docker stats --no-stream $(docker ps --format "{{.Names}}") | sed 's/\.[0-9]*\([kGM]i*B \)/\1/' | sort -h -k 4"
-
+alias dockerContainerSize='docker stats --no-stream $(docker ps --format "{{.Names}}") | sed "s/\.[0-9]*\([kGM]i*B \)/\1/" | sort -h -k 4'
 
 # ------------------------------------------------------------------------------
 # | git                                                                        |
@@ -176,8 +172,6 @@ alias prettyGitLog_clean=" --format='%Cred%h%Creset %s %Cgreen(%cr) %C(blue)<%an
 
 alias createGitChangelog="git log v2.1.0...v2.1.1 --pretty=format:'<li> <a href=\"https://github.com/corgan2222/dotfiles/commit/%H\">view commit &bull;</a> %s</li> ' --reverse | grep \"#changelog\""
 #https://jerel.co/blog/2011/07/generating-a-project-changelog-using-git-log
-
-git-search () {git log --all -S"$@" --pretty=format:%H | map git show }
 
 alias map="xargs -n1"
 #find * -name models.py | map dirname
@@ -213,8 +207,6 @@ alias llport='netstat -nape --inet --inet6'
 
 # show only active network listeners
 alias netlisteners='sudo lsof -i -P | grep LISTEN'
-
-getlocation() { lynx -dump http://www.ip-adress.com/ip_tracer/?QRY=$1|grep address|egrep 'city|state|country'|awk '{print $3,$4,$5,$6,$7,$8}'|sed 's\ip address flag \\'|sed 's\My\\';}  #Get your public IP address and host.
 
  #also pass it via sudo so whoever is admin can reload it without calling yo
 alias nginxreload='sudo /usr/local/nginx/sbin/nginx -s reload'
@@ -252,6 +244,8 @@ alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date
 # pass options to free
 alias meminfo="free -m -l -t"
 
+alias ps="ps aux | grep" #Easily find the PID of any process: ps? [name]
+
 # get top process eating memory
 alias psmem="ps -o time,ppid,pid,nice,pcpu,pmem,user,comm -A | sort -n -k 6"
 alias psmem5="psmem | tail -5"
@@ -283,7 +277,7 @@ alias psKillAll="pkill -f "
 alias pst="pstree -Alpha"
 
 # shows all your processes
-alias psmy="ps -ef | grep $USER"
+alias psmy='ps -ef | grep $USER'
 
 # the load-avg
 alias loadavg="cat /proc/loadavg"
@@ -297,12 +291,12 @@ alias du5="du -kh | tail -5"
 alias du10="du -kh | tail -10"
 
 # show the biggest files in a folder first
-alias du_overview="du -h | grep "^[0-9,]*[MG]" | sort -hr | less"
+alias du_overview='du -h | grep "^[0-9,]*[MG]" | sort -hr | less'
 
 # shows the complete disk usage to legibly
 alias df="df -kTh"
 
-alias ps="ps aux | grep" #Easily find the PID of any process: ps? [name]
+
 
 alias renameImagaExif="exiftool '-filename<DateTimeOriginal' -d %Y-%m-%d_%H-%M-%S%%-c.%%le ."
 
@@ -357,7 +351,7 @@ alias regxemail='echo "[^[:space:]]+@[^[:space:]]+"'
 alias histg="history | grep" #To quickly search through your command history: histg [keyword]
 
 # tree (with fallback)
-if which tree >/dev/null 2>&1; then
+if command tree >/dev/null 2>&1; then
   # displays a directory tree
   alias tree="tree -Csu"
   # displays a directory tree - paginated
@@ -373,78 +367,13 @@ fi
 # ------------------------------------------------------------------------------
 
 #alias nyancat="telnet miku.acm.uiuc.edu"  # offline
-
 alias starwars="telnet towel.blinkenlights.nl"
 
-
-
-
-# ------------------------------------------------------------------------------
-# | auto-completion (for bash)                                                 |
-# ------------------------------------------------------------------------------
-
-# Automatically add completion for all aliases to commands having completion functions
-# source: http://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
-alias_completion()
-{
-  local namespace="alias_completion"
-
-  # parse function based completion definitions, where capture group 2 => function and 3 => trigger
-  local compl_regex='complete( +[^ ]+)* -F ([^ ]+) ("[^"]+"|[^ ]+)'
-  # parse alias definitions, where capture group 1 => trigger, 2 => command, 3 => command arguments
-  local alias_regex="alias ([^=]+)='(\"[^\"]+\"|[^ ]+)(( +[^ ]+)*)'"
-
-  # create array of function completion triggers, keeping multi-word triggers together
-  eval "local completions=($(complete -p | sed -rne "/$compl_regex/s//'\3'/p"))"
-  (( ${#completions[@]} == 0 )) && return 0
-
-  # create temporary file for wrapper functions and completions
-  rm -f "/tmp/${namespace}-*.XXXXXXXXXX" # preliminary cleanup
-  local tmp_file="$(mktemp "/tmp/${namespace}-${RANDOM}.XXXXXXXXXX")" || return 1
-
-  # read in "<alias> '<aliased command>' '<command args>'" lines from defined aliases
-  local line; while read line; do
-    eval "local alias_tokens=($line)" 2>/dev/null || continue # some alias arg patterns cause an eval parse error
-    local alias_name="${alias_tokens[0]}" alias_cmd="${alias_tokens[1]}" alias_args="${alias_tokens[2]# }"
-
-    # skip aliases to pipes, boolan control structures and other command lists
-    # (leveraging that eval errs out if $alias_args contains unquoted shell metacharacters)
-    eval "local alias_arg_words=($alias_args)" 2>/dev/null || continue
-
-    # skip alias if there is no completion function triggered by the aliased command
-    [[ " ${completions[*]} " =~ " $alias_cmd " ]] || continue
-    local new_completion="$(complete -p "$alias_cmd")"
-
-    # create a wrapper inserting the alias arguments if any
-    if [[ -n $alias_args ]]; then
-     local compl_func="${new_completion/#* -F /}"; compl_func="${compl_func%% *}"
-     # avoid recursive call loops by ignoring our own functions
-     if [[ "${compl_func#_$namespace::}" == $compl_func ]]; then
-       local compl_wrapper="_${namespace}::${alias_name}"
-         echo "function $compl_wrapper {
-           (( COMP_CWORD += ${#alias_arg_words[@]} ))
-           COMP_WORDS=($alias_cmd $alias_args \${COMP_WORDS[@]:1})
-           $compl_func
-         }" >> "$tmp_file"
-         new_completion="${new_completion/ -F $compl_func / -F $compl_wrapper }"
-     fi
-    fi
-
-    # replace completion trigger by alias
-    new_completion="${new_completion% *} $alias_name"
-    echo "$new_completion" >> "$tmp_file"
-  done < <(alias -p | sed -rne "s/$alias_regex/\1 '\2' '\3'/p")
-  source "$tmp_file" && rm -f "$tmp_file"
-}
-if [ -n "$BASH_VERSION" ]; then
-  alias_completion
-fi
-unset -f alias_completion
 
 [[ -s "/etc/grc.bashrc" ]] && source /etc/grc.bashrc
 
  # Use GRC for additionnal colorization
-  if which grc >/dev/null 2>&1; then
+  if command grc >/dev/null 2>&1; then
     alias colour="grc -es --colour=auto"
     alias as="colour as"
     alias configure="colour ./configure"
@@ -468,8 +397,6 @@ unset -f alias_completion
   fi
 
   alias pretty=" python -m json.tool"
-<<<<<<< HEAD
-
 
 
 # ------------------------------------------------------------------------------
@@ -499,5 +426,3 @@ alias mcdshow='/usr/bin/memcached-tool 127.0.0.1:11211 display'
 
 ## quickly flush out memcached server ##
 alias flushmcd='echo "flush_all" | nc 127.0.0.1 11211'
-=======
->>>>>>> 2d833ac2db58eebde90445e65a5ea2b6a4e6e90a

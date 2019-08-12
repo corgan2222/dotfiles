@@ -194,6 +194,10 @@ function parse_git_dirty() {
   fi
 }
 
+function git-search () { 
+  git log --all -S"$@" --pretty=format:%H | map git show 
+}
+
 function nonzero_return() {
   RETVAL=$?
   [ $RETVAL -ne 0 ] && echo "$RETVAL"
@@ -1521,3 +1525,4 @@ function _cheat_autocomplete {
 }
 
 complete -F _cheat_autocomplete cheat
+
