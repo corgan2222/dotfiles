@@ -128,8 +128,8 @@ fi
 
 if [ $AptCount -gt 0 ]; then
     UPDATED="$(print_style " $AptCount" "success") Apt Update available - #apuu"
-  fi
 fi
+
 
 printf "\n" 
 #echo "$OS DIST:$DIST MACH:$_MACH REV:$REV PS:$PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn | Type:$MODELL_TYPE System:$MODELL_SYSTEM CPU:$CPU_TYPE"
