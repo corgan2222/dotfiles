@@ -7,6 +7,7 @@ alias c="cheat "
 alias a="alias | grep "
 alias s="saveHome"
 alias l="loadHome"
+alias keyboardDE="setxkbmap -layout de"
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload="exec $SHELL -l"
@@ -467,6 +468,7 @@ unset -f alias_completion
   fi
 
   alias pretty=" python -m json.tool"
+<<<<<<< HEAD
 
 
 
@@ -497,3 +499,5 @@ alias mcdshow='/usr/bin/memcached-tool 127.0.0.1:11211 display'
 
 ## quickly flush out memcached server ##
 alias flushmcd='echo "flush_all" | nc 127.0.0.1 11211'
+=======
+>>>>>>> 2d833ac2db58eebde90445e65a5ea2b6a4e6e90a

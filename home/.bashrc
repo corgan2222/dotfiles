@@ -116,6 +116,14 @@ if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then
  _loadFile "$HOME"/.dot/asuswrt/EntwareApps.sh "$DIST EntwareApps.sh"  
 fi 
 
+
+if [ "$DIST" = "Kali" ]; then 
+ _loadFile "$HOME"/.dot/kali/.bashrc "$DIST bashrc"
+ _loadFile "$HOME"/.dot/kali/.exports "$DIST exports"
+ _loadFile "$HOME"/.dot/kali/.bash_aliases "$DIST bash_aliases"   
+fi 
+
+
 alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
 
 tempfile_c="/var/log/apt/apt-updates_count.log"
