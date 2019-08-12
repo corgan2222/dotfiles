@@ -4,6 +4,7 @@ alias c="cheat "
 alias a="alias | grep "
 alias s="saveHome"
 alias l="loadHome"
+alias keyboardDE="setxkbmap -layout de"
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload="exec $SHELL -l"
