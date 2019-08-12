@@ -32,3 +32,4 @@ export PATH="$HOME/.local/bin:$PATH"
 #export CHEAT_PATH='/path/to/my/cheats'
 export CHEAT_COLORS=true
 export CHEAT_COLORSCHEME=dark
+export CHEAT_HIGHLIGHT=blue
