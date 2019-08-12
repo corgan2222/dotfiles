@@ -3,8 +3,8 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
 # reload the shell (i.e. invoke as a login shell)
-alias reload="exec $SHELL -l"
-alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
+alias reload='exec "$SHELL" -l'
+alias load='source "$HOME"/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh'
 
 # prints colored text
 print_style () {
@@ -28,31 +28,33 @@ print_style () {
 }
 
 
-function _loadFile()
+_loadFile()
 {
   if [ -r "$1" ]; then
       #LAST=$(stat -c%y "$1" | cut -d'.' -f1) 
       DALTA=$(($(date +%s) - $(date +%s -r "$1"))) 
 
-      LAST=$(date -r $1 +'%H:%M:%S %d-%m-%Y ') 
+      LAST=$(date -r "$1" +'%H:%M:%S %d-%m-%Y ') 
       c1=$(print_style " $2" "success")
       c2=$(print_style " $1" "info")
       c3=$(print_style " $DALTA" "success")
       
       printf "%5s%35s%50s%55s\n" loading "$c1" "$c2" "$LAST (+$c3 sec)" 
-      source "$1" 
+      source "$1"
   fi  
 }
 
+#load core system
 _loadFile "$HOME"/.dot/core.sh "Core System"
 
-function resetHome()
+resetHome()
 {
-  rmd "$HOME"/.dot/ -f
-  rmd "$HOME"/.homesick/ -f
+  rm -r "$HOME"/.dot/ -f
+  rm -r "$HOME"/.homesick/ -f
   rm .profile 
   rm .bashrc
   bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+  source .bashrc
   gitSaveCredential
 }
 
@@ -88,11 +90,6 @@ fi
 #ToDo cat file1 ... fileN > combinedFile;
 
 if [ "$DIST" = "Synology" ]; then 
-  #echo "welcome to $DIST"
-  #for file in "$HOME"/.dot/synology/.{bashrc,exports,bash_aliases}; do
-  #    [ -r "$file" ] && [ -f "$file" ] && source "$file"
-  #done
-  #unset file
   _loadFile "$HOME"/.dot/synology/.bashrc "$DIST Userpromt"
   _loadFile "$HOME"/.dot/synology/.exports " $DIST Exports"
   _loadFile "$HOME"/.dot/synology/.bash_aliases "$DIST Alias"
@@ -124,12 +121,12 @@ if [ "$DIST" = "Kali" ]; then
 fi 
 
 
-alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
-
 tempfile_c="/var/log/apt/apt-updates_count.log"
 if [ -f "$tempfile_c" ]; then
   AptCount=$(cat $tempfile_c )  
-  if (( $AptCount > 0 )); then
+fi  
+
+if [ $AptCount -gt 0 ]; then
     UPDATED="$(print_style " $AptCount" "success") Apt Update available - #apuu"
   fi
 fi
@@ -151,7 +148,6 @@ source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
 
  
-
 if [ "$reload" = "yes" ]; then
   homeshick refresh
 fi
