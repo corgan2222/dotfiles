@@ -4,7 +4,7 @@
 
 
 alias ap='opkg install '
-alias apuu='opkg update'
+alias apuu='opkg list-upgradable | awk '\{ print $1; \}' | xargs opkg upgrade'
 alias aptList="$HOME/.dot/asuswrt/.EntwareApps.sh.sh"
 #https://bin.entware.net/mipselsf-k3.4/Packages.html
 

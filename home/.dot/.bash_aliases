@@ -1,12 +1,17 @@
 # https://github.com/voku/dotfiles
 
-alias c="cheat"
+alias c="cheat "
+alias a="alias | grep "
+alias s="saveHome"
+alias l="loadHome"
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload="exec $SHELL -l"
 alias load="source $HOME/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh"
 
 alias makescript="fc -rnl | head -1 >" #Easily make a script out of the last command you ran: makescript [script.sh]
+
+findLastFile=$(find . -type f -printf "%T@ %p\n" | sort -n | cut -d' ' -f 2- | tail -n 1 | xargs -d'\n' ls -la)
 
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
@@ -146,6 +151,7 @@ alias phplint='find . -name "*.php" -exec php -l {} \; | grep "Parse error"'
 
 alias dl='docker ps'
 alias dr='docker restart'
+alias dockerContainerSize="docker stats --no-stream $(docker ps --format "{{.Names}}") | sed 's/\.[0-9]*\([kGM]i*B \)/\1/' | sort -h -k 4"
 
 
 # ------------------------------------------------------------------------------
@@ -282,6 +288,8 @@ alias du_overview="du -h | grep "^[0-9,]*[MG]" | sort -hr | less"
 alias df="df -kTh"
 
 alias ps?="ps aux | grep" #Easily find the PID of any process: ps? [name]
+
+alias renameImagaExif="exiftool '-filename<DateTimeOriginal' -d %Y-%m-%d_%H-%M-%S%%-c.%%le ."
 
 # ------------------------------------------------------------------------------
 # | System Utilities                                                           |
