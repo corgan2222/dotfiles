@@ -41,8 +41,7 @@ function checkHome() {
   homeshick check dotfiles
 }
 
-function gitSaveCredential() {
-  homeshick cd dotfiles
+function gitSaveCredential() {  
   git config credential.helper store
   git pull
 }
