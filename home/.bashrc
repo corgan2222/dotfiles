@@ -2,15 +2,6 @@
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
-############# INCLUDE ####################################
-
-source "$HOME/.homesick/repos/homeshick/homeshick.sh"
-source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
-
- 
-if [ "$reload" = "yes" ]; then
-  homeshick refresh
-fi
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload='exec "$SHELL" -l'
@@ -147,5 +138,16 @@ echo "$UPDATED"
 
 #autojump
 [[ -s "$HOME"/.autojump/etc/profile.d/autojump.sh ]] && source "$HOME"/.autojump/etc/profile.d/autojump.sh
+
+
+############# INCLUDE ####################################
+
+source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
+
+ 
+if [ "$reload" = "yes" ]; then
+  homeshick refresh
+fi
 
 printf "\n" 
