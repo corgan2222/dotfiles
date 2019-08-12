@@ -27,3 +27,8 @@ export EDITOR=joe
 #
 # Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
 #export PYTHONIOENCODING="UTF-8"
+
+export PATH="$HOME/.local/bin:$PATH"
+#export CHEAT_PATH='/path/to/my/cheats'
+export CHEAT_COLORS=true
+export CHEAT_COLORSCHEME=dark
