@@ -126,7 +126,7 @@ if [ -f "$tempfile_c" ]; then
   AptCount=$(cat $tempfile_c )  
 fi  
 
-if [ $AptCount -gt 0 ]; then
+if [[ $AptCount -gt 0 ]]; then
     UPDATED="$(print_style " $AptCount" "success") Apt Update available - #apuu"
 fi
 
