@@ -1,4 +1,5 @@
-#!/bin/sh -x
+#!/bin/bash -x
+
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
@@ -37,14 +38,7 @@ _loadFile()
 {
   if [ -r "$1" ]; then
       #LAST=$(stat -c%y "$1" | cut -d'.' -f1) 
-      DALTA=$(($(date +%s) - $(date +%s -r "$1"))) 
-
-      LAST=$(date -r "$1" +'%H:%M:%S %d-%m-%Y ') 
-      c1=$(print_style " $2" "success")
-      c2=$(print_style " $1" "info")
-      c3=$(print_style " $DALTA" "success")
-      
-      #printf "%5s%35s%50s%55s\n" loading "$c1" "$c2" "$LAST (+$c3 sec)"     
+   
       source "$1"
   fi  
 }
@@ -67,7 +61,7 @@ resetHome()
 shootProfile
 
 #load basisc
-printf "\t%s \t%s \n" loading "Base" 
+printf "\t%s \t%s \n" fresh "Base" 
 _loadFile "$HOME"/.dot/.bash_aliases "Base Alias"
 _loadFile "$HOME"/.dot/.bash_functions.sh "Base Functions"
 _loadFile "$HOME"/.dot/.exports "Base Exports"
@@ -80,7 +74,7 @@ if [ "$DIST" = "Ubuntu" ]; then
   #for file in ~/.dot/ubuntu16/{.bashrc,.exports,.bash_aliases,.srv1.bash_aliases,debian.sh}; do
   #    [ -r "$file" ] && [ -f "$file" ] && _loadFile "$file"
   #done
-  printf "\t%s \t%s \n" loading "Ubuntu" 
+  printf "\t%s \t%s \n" fresh "Ubuntu" 
   _loadFile "$HOME"/.dot/ubuntu16/debian.sh "Debian Server Functions"
   _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
   _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
