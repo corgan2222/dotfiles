@@ -217,6 +217,13 @@ alias lightytest='sudo /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf -t'
 alias httpdreload='sudo /usr/sbin/apachectl -k graceful'
 alias httpdtest='sudo /usr/sbin/apachectl -t && /usr/sbin/apachectl -t -D DUMP_VHOSTS'
 
+alias interfaces_IP="ifconfig | grep 'inet addr:' | awk {'print $2'}  | grep -v '127.0.0.1' | sed -e 's/addr://'"
+alias interfaces_IP2="ip addr | grep 'inet ' | sed 's/^ //g' | grep -v '127.0.0.1'"                    
+alias interfaces_IP3="ifconfig | awk -v RS=\"\n\n\" '{ for (i=1; i<=NF; i++) if ($i == \"inet\" && $(i+1) ~ /^addr:/) address = substr($(i+1), 6); if (address != \"127.0.0.1\") printf \"%s\t%s\n\", $1, address }'"
+alias routesIP="ip route show"
+alias metricsIP="ip -statistics link show"
+
+
 # ------------------------------------------------------------------------------
 # | Date & Time                                                                |
 # ------------------------------------------------------------------------------

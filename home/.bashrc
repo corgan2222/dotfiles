@@ -2,6 +2,11 @@
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
+############# INCLUDE ####################################
+
+source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
+
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload='exec "$SHELL" -l'
@@ -39,7 +44,7 @@ _loadFile()
       c2=$(print_style " $1" "info")
       c3=$(print_style " $DALTA" "success")
       
-      printf "%5s%35s%50s%55s\n" loading "$c1" "$c2" "$LAST (+$c3 sec)" 
+      #printf "%5s%35s%50s%55s\n" loading "$c1" "$c2" "$LAST (+$c3 sec)"     
       source "$1"
   fi  
 }
@@ -62,6 +67,7 @@ resetHome()
 shootProfile
 
 #load basisc
+printf "\t%s \t%s \n" loading "Base" 
 _loadFile "$HOME"/.dot/.bash_aliases "Base Alias"
 _loadFile "$HOME"/.dot/.bash_functions.sh "Base Functions"
 _loadFile "$HOME"/.dot/.exports "Base Exports"
@@ -74,6 +80,7 @@ if [ "$DIST" = "Ubuntu" ]; then
   #for file in ~/.dot/ubuntu16/{.bashrc,.exports,.bash_aliases,.srv1.bash_aliases,debian.sh}; do
   #    [ -r "$file" ] && [ -f "$file" ] && _loadFile "$file"
   #done
+  printf "\t%s \t%s \n" loading "Ubuntu" 
   _loadFile "$HOME"/.dot/ubuntu16/debian.sh "Debian Server Functions"
   _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
   _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
@@ -131,19 +138,20 @@ if [[ $AptCount -gt 0 ]]; then
 fi
 
 
-printf "\n" 
-echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
-echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
-echo "$UPDATED"
+# printf "\n" 
+# echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
+# echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
+# echo "$UPDATED"
+# echo 
+# ______ ______   _____________________ __________________________
+# ___  //_/__  | / /__    |__    |__  //_/__  __ \__  __ \_  ____/
+# __  ,<  __   |/ /__  /| |_  /| |_  ,<   _  / / /_  /_/ /  / __  
+# _  /| | _  /|  / _  ___ |  ___ |  /| |__/ /_/ /_  _, _// /_/ /  
+# /_/ |_| /_/ |_/  /_/  |_/_/  |_/_/ |_|(_)____/ /_/ |_| \____/   
+
 
 #autojump
 [[ -s "$HOME"/.autojump/etc/profile.d/autojump.sh ]] && source "$HOME"/.autojump/etc/profile.d/autojump.sh
-
-
-############# INCLUDE ####################################
-
-source "$HOME/.homesick/repos/homeshick/homeshick.sh"
-source "$HOME/.homesick/repos/homeshick/completions/homeshick-completion.bash"
 
  
 if [ "$reload" = "yes" ]; then
