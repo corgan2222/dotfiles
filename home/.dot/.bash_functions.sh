@@ -17,7 +17,7 @@ function findStringInFiles() {
 }
 
 function initHome() {
-  #bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+  /bin/bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
 }
 
 function saveHome() {
