@@ -6,7 +6,11 @@ if [ "$BASH" ]; then
   fi
 fi
 
-mesg n || true
+ if [ -f /bin/mseg ]; then
+    mesg n || true
+  fi
+
+
 
 #[ ! -s ~/.plesk_banner ] || . ~/.plesk_banner
  
