@@ -1,3 +1,4 @@
+#!/bin/bash -x
 # If not running interactively, don't do anything
 HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend

@@ -1,0 +1,3 @@
+if [ -d /usr/bin/dircolors ]; then 
+    export PATH=$PATH":/opt/bin/opkg
+fi    
