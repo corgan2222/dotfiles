@@ -138,9 +138,9 @@ fi
 
 
 # printf "\n" 
-# echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
-# echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
-# echo "$UPDATED"
+ echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
+ echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
+ echo "$UPDATED"
 # echo 
 # ______ ______   _____________________ __________________________
 # ___  //_/__  | / /__    |__    |__  //_/__  __ \__  __ \_  ____/

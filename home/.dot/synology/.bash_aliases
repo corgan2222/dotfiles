@@ -99,28 +99,4 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 unset -f alias_completion
 
-[[ -s "/etc/grc.bashrc" ]] && source /etc/grc.bashrc
-
- # Use GRC for additionnal colorization
-  if which grc >/dev/null 2>&1; then
-    alias colour="grc -es --colour=auto"
-    alias as="colour as"
-    alias configure="colour ./configure"
-    alias diff="colour diff"
-    alias dig="colour dig"
-    alias g++="colour g++"
-    alias gas="colour gas"
-    alias gcc="colour gcc"
-    alias head="colour head"
-    alias ifconfig="colour ifconfig"
-    alias ld="colour ld"
-    alias ls="colour ls"
-    alias make="colour make"
-    alias mount="colour mount"
-    alias netstat="colour netstat"
-    alias ping="colour ping"
-    alias ps="colour ps"
-    alias tail="colour tail"
-    alias traceroute="colour traceroute"
-    alias syslog="sudo colour tail -f -n 100 /var/log/syslog"
-  fi
+source "$HOME/.dot/synology/motd.sh"
