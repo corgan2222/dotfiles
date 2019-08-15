@@ -1,5 +1,9 @@
 #!/bin/bash
 
+green="\e[1;32m"
+red="\e[1;31m"
+undim="\e[0m"
+
 # fail2ban-client status to get all jails, takes about ~70ms
 jails=($(fail2ban-client status | grep "Jail list:" | sed "s/ //g" | awk '{split($2,a,",");for(i in a) print a[i]}'))
 
@@ -12,7 +16,11 @@ for jail in ${jails[@]}; do
     totalfailed=$(echo "$status" | grep -ioP '(?<=Total failed:\t)[[:digit:]]+')
     banned=$(echo "$status" | grep -ioP '(?<=Currently banned:\t)[[:digit:]]+')
     totalbanned=$(echo "$status" | grep -ioP '(?<=Total banned:\t)[[:digit:]]+')
-    out+="$jail,$failed,$totalfailed,$banned,$totalbanned\n"
+    
+    
+    if [[ $totalbanned -gt 0 ]]; then  
+        out+="$jail,$failed,$totalfailed,$banned,${red}$totalbanned${undim}\n"
+    fi    
 done
 
 printf "\nfail2ban status:\n"
