@@ -58,9 +58,9 @@ resetHome()
   rm -r "$HOME"/.homesick/ -f
   rm .profile 
   rm .bashrc
-  bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
-  source .bashrc
-  gitSaveCredential
+  #bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+  #source .bashrc
+  #gitSaveCredential
 }
 
 #OS Check
