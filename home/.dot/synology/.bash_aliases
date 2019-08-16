@@ -99,4 +99,8 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 unset -f alias_completion
 
-source "$HOME/.dot/synology/motd.sh"
+if [ "$MODELL_TYPE" == "DS1817+" ]; then
+  source "$HOME/.dot/synology/motd.sh"
+else  
+  source "$HOME/.dot/synology/motd_415.sh"
+fi  
