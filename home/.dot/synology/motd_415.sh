@@ -2,13 +2,13 @@
 # dynamische MOTD
 # Aufruf in .bashrc
 
-echo -e "\033[31m"
+echo -e "\033[1;33m"
 cat << "EOF" 
-                                   _____
-   _____ ___   _____ _   __ ____ _|__  /
-  / ___// _ \ / ___/| | / // __ `/ /_ < 
- (__  )/  __// /    | |/ // /_/ /___/ / 
-/____/ \___//_/     |___/ \__,_//____/  
+                                   ___ 
+   _____ ___   _____ _   __ ____ _|__ \
+  / ___// _ \ / ___/| | / // __ `/__/ /
+ (__  )/  __// /    | |/ // /_/ // __/ 
+/____/ \___//_/     |___/ \__,_//____/ 
 EOF
 echo -e "\033[34m"
 echo -e "\033[34m$CPU_CORES x $CPU_TYPE\033[0;37m " 
@@ -58,11 +58,11 @@ done
     #cat $T_HD
 
 
-input=($(find /sys/devices/platform -name temp?_input))
-for (( m=0; m<${#input[@]}; m++ )); do
-   TEMP=$[TEMP + $(cat "${input[m]}")]
-done
-TEMP=$[TEMP/1000/m]
+# input=($(find /sys/devices/platform -name temp?_input))
+# for (( m=0; m<${#input[@]}; m++ )); do
+#    TEMP=$[TEMP + $(cat "${input[m]}")]
+# done
+# TEMP=$[TEMP/1000/m]
 
 # HDD Temperaturen
 #sdatemp=$(smartctl -d ata -a /dev/sda | grep "194 Temperature" | cut -c 129-130)
@@ -81,7 +81,8 @@ sddtemp=$(snmpwalk -v 2c  -c syno -O qv 127.0.0.1 1.3.6.1.4.1.6574.2.1.1.6.3)
 #"Volume 1" "Storage Pool 1" 13 13 11331124744192 268435456 65253266329600 67972433444864
 raid=$(snmpwalk -v 2c  -c syno -O qv 127.0.0.1 .1.3.6.1.4.1.6574.3)
 raid_name=`echo $raid | awk '{print $1 $2}'`
-raid_stat_number=`echo $raid | awk '{print $6}'` 
+raid_stat_number=`echo $raid | awk '{print $3}'` 
+
 
 RStat[1]="\033[32m RAID is functioning normally"
 RStat[2]="\e[5m\e[31m Migrating"
@@ -108,9 +109,9 @@ RStat[21]="\e[5m\e[31m RaidUnknownStatus (21)"
 echo -e "Raid: \033[1;33m$raid_name\033[0;37m Status: $raid_stat_number ${RStat[$raid_stat_number]}"
 
 # Speicherbelegung
-DISK1=`df -h | grep '/volume1/photo' | awk '{print $2}'`    # Gesamtspeicher
-DISK2=`df -h | grep '/volume1/photo' | awk '{print $3}'`    # Belegt
-DISK3=`df -h | grep '/volume1/photo' | awk '{print $4}'`    # Frei
+DISK1=`df -h | grep '/volume1/' | awk '{print $2}'`    # Gesamtspeicher
+DISK2=`df -h | grep '/volume1/' | awk '{print $3}'`    # Belegt
+DISK3=`df -h | grep '/volume1/' | awk '{print $4}'`    # Frei
 
 # Arbeitsspeicher
 RAM1=`free -h | grep 'Mem' | awk '{print $2}'`    # Total
@@ -122,22 +123,22 @@ RAM6=`free -h | grep 'Swap' | awk '{print $3}'`    # Swap used
 RAM7=`free -h | grep 'Swap' | awk '{print $4}'`    # Swap free
 
 # IP-Adressen ermitteln
-if ( ifconfig | grep -q "ovs_eth4" ) ; then IP_LAN=`ifconfig ovs_eth4 | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_LAN="---" ; fi ;
+if ( ifconfig | grep -q "ovs_eth0" ) ; then IP_LAN=`ifconfig ovs_eth0 | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_LAN="---" ; fi ;
 if ( ifconfig | grep -q "eth50" ) ; then IP_WLAN=`ifconfig eth50 | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_WLAN="---" ; fi ;
 
 # Ausgabe
 echo -e "\033[0;37m
-\033[0;37m  ~~~~~~~~~~~~~~~~~~~~~~~
-\033[0;37m |  \033[32m1\033[0;37m   \033[32m2\033[0;37m  \033[32m3\033[0;37m   \033[32m4\033[0;37m  |  Datum.........: \033[1;32m\033[1;36m$DATUM\033[0;37m
-\033[0;37m | \033[1;33m$sdatemp\033[0;37m  \033[1;33m$sdbtemp\033[0;37m  \033[1;33m$sdctemp\033[0;37m \033[1;33m$sddtemp\033[0;37m  \033[1;33m$sdetemp\033[0;37m  \033[1;33m$sdftemp\033[0;37m  \033[1;33m$sdhtemp\033[0;37m  \033[1;33m$sditemp\033[0;37m \033[32m°C\033[0;37m|  Hostname......: \033[1;33m$HOSTNAME\033[0;37m
-\033[0;37m |                              \033[32m-\033[0;37m|  Uptime........: $UP1 Tage, $UP2:$UP3 Stunden
-\033[0;37m |                              \033[32m-\033[0;37m|  Ø Auslastung..: \033[1;33m$LOAD1\033[0;37m (1 Min.) | \033[1;33m$LOAD2\033[0;37m (5 Min.) | \033[1;33m$LOAD3\033[0;37m (5 Min.) (15 Min.)
-\033[0;37m |                               |  Temperaturen..: CPU: \033[1;33m$T_CPU\033[0;37m °C 
-\033[0;37m |                            \033[34m[]\033[0;37m |  Speicher......: Gesamt: \033[1;32m\033[1;36m$DISK1\033[0;37m | Belegt: $DISK2 | Frei: \033[32m$DISK3\033[0;37m
-\033[0;37m |                            \033[0;32m(c)\033[0;37m|  RAM...........: Gesamt: \033[1;32m\033[1;36m$RAM1\033[0;37m | Belegt: $RAM2 | Frei: \033[32m$RAM3\033[0;37m | Cache: $RAM4
-\033[0;37m |                            \033[34m(\033[31m'\033[34m)\033[0;37m|  Swap..........: Gesamt: \033[1;32m\033[1;36m$RAM5\033[0;37m | Belegt: $RAM6 | Frei: \033[32m$RAM7\033[0;37m
-\033[0;37m | $MODELL_TYPE                       |  IP-Adressen...: LAN: \033[1;35m$IP_LAN\033[0;37m | Zerotier: \033[1;35m$IP_WLAN\033[0;37m
-\033[0;37m  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\033[0;37m  ~~~~~~~~~~~~~~~~~
+\033[0;37m |  \033[32m1\033[0;37m   \033[32m2\033[0;37m  \033[32m3\033[0;37m   \033[32m4\033[0;37m   |  Datum.........: \033[1;32m\033[1;36m$DATUM\033[0;37m
+\033[0;37m | \033[1;33m$sdatemp\033[0;37m  \033[1;33m$sdbtemp\033[0;37m  \033[1;33m$sdctemp\033[0;37m \033[1;33m$sddtemp\033[0;37m \033[32m°C\033[0;37m|  Hostname......: \033[1;33m$HOSTNAME\033[0;37m
+\033[0;37m |                \033[32m-\033[0;37m|  Uptime........: $UP1 Tage, $UP2:$UP3 Stunden
+\033[0;37m |                \033[32m-\033[0;37m|  Ø Auslastung..: \033[1;33m$LOAD1\033[0;37m (1 Min.) | \033[1;33m$LOAD2\033[0;37m (5 Min.) | \033[1;33m$LOAD3\033[0;37m (5 Min.) (15 Min.)
+\033[0;37m |                 |  Temperaturen..: CPU: \033[1;33m$T_CPU\033[0;37m °C 
+\033[0;37m |              \033[34m[]\033[0;37m |  Speicher......: Gesamt: \033[1;32m\033[1;36m$DISK1\033[0;37m | Belegt: $DISK2 | Frei: \033[32m$DISK3\033[0;37m
+\033[0;37m |              \033[0;32m(c)\033[0;37m|  RAM...........: Gesamt: \033[1;32m\033[1;36m$RAM1\033[0;37m | Belegt: $RAM2 | Frei: \033[32m$RAM3\033[0;37m | Cache: $RAM4
+\033[0;37m |              \033[34m(\033[31m'\033[34m)\033[0;37m|  Swap..........: Gesamt: \033[1;32m\033[1;36m$RAM5\033[0;37m | Belegt: $RAM6 | Frei: \033[32m$RAM7\033[0;37m
+\033[0;37m | $MODELL_TYPE          |  IP-Adressen...: LAN: \033[1;35m$IP_LAN\033[0;37m | Zerotier: \033[1;35m$IP_WLAN\033[0;37m
+\033[0;37m  ~~~~~~~~~~~~~~~~~
 \033[m"
 
  #\033[1;32m\033[1;36m$RAM5\033[0;37m
