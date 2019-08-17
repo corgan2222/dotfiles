@@ -98,9 +98,9 @@ if [ ! -f /opt/bin/column ];then                        # Untidy multi-columns! 
     ls /opt/sbin | grep -v "opkg" | grep -v "\." | awk -v GREEN="$cBGRE" -v BLACK="$cRESET" -v WHITE_ON_RED="$cWRED" 'BEGIN {print WHITE_ON_RED"\nEntware Apps installed /opt/sbin:"BLACK"\n"} {printf GREEN"%10s\t"$0} END {print BLACK}'
 else
 
-    echo -e $cRESET"\n"$cWRED"List of Installed packages:"$cRESET"\n"$cBMAG
-    opkg list-installed >/tmp/column.txt
-    column -or /tmp/column.txt
+    # echo -e $cRESET"\n"$cWRED"List of Installed packages:"$cRESET"\n"$cBMAG
+    # opkg list-installed >/tmp/column.txt
+    # column -or /tmp/column.txt
 
     echo -e $cRESET"\n"$cWRED"Entware Apps/Scripts installed /opt/bin:"$cRESET"\n"$cBGRE
     #ls /opt/bin | grep -v "opkg" | grep -v "\." >/tmp/column.txt
