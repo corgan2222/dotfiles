@@ -117,6 +117,7 @@ if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then
  _loadFile "$HOME"/.dot/asuswrt/.bash_aliases "$DIST bash_aliases"  
  _loadFile "$HOME"/.dot/asuswrt/.raspi_bash_functions.sh "$DIST Functions"  
  _loadFile "$HOME"/.dot/asuswrt/EntwareApps.sh "$DIST EntwareApps.sh"  
+ _loadFile "$HOME"/.dot/asuswrt/motd_asus.sh "$DIST motd_asus.sh"  
 fi 
 
 
