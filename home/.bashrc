@@ -120,7 +120,7 @@ if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then
 fi 
 
 
-if [ "$DIST" = "Kali" ]; then 
+if [ "$DIST" = "kali" ]; then 
  _loadFile "$HOME"/.dot/kali/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/kali/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/kali/.bash_aliases "$DIST bash_aliases"   
