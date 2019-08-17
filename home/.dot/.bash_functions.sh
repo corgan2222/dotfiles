@@ -1217,24 +1217,23 @@ function ppp() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Search history.
-
-function qh() {
   #           ┌─ enable colors for pipe
   #           │  ("--color=auto" enables colors only if
   #           │  the output is in the terminal)
-  grep --color=always "$*" "$HISTFILE" | less -RX
+  #grep --color=always "$*" "$HISTFILE" | less -RX
   # display ANSI color escape sequences in raw form ─┘│
   #       don't clear the screen after quitting less ─┘
+function qh() {
+  grep --color=always "$*" "$HISTFILE" | less -RX
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Search for text within the current directory.
-
-function qt() {
-  grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
+#grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
   #     │└─ search all files under each directory, recursively
   #     └─ ignore case
+function qt() {
+  grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
 }
 
 # Print a line of dashes or the given string across the entire screen.
@@ -1514,6 +1513,27 @@ EOD
 
 #source ~/.dot/eachdir
 
+#prints all functions from file
+function scriptInfoPerl(){
+  if [ -z "${1}" ]; then
+    echo "Usage: scriptInfoPerl file"
+    return 1
+  fi
+
+perl -0777 -ne '
+    while (/^((?:[ \t]*\#.*\n)*)               # preceding comments
+             [ \t]*(?:(\w+)[ \t]*\(\)|         # foo ()
+                      function[ \t]+(\w+).*)   # function foo
+             ((?:\n[ \t]+\#.*)*)               # following comments
+           /mgx) {
+        $name = "$2$3";
+        $comments = "$1$4";
+        $comments =~ s/^[ \t]*#+/#/mg;
+        chomp($comments);
+        print "\033[31m$name\033[0;37m()\n\033[32m$comments\n";
+    }' "$1"
+}    
+
 
 function _cheat_autocomplete {
     sheets=$(cheat -l | cut -d' ' -f1)
@@ -1522,8 +1542,21 @@ function _cheat_autocomplete {
         COMPREPLY=(`compgen -W "$sheets" -- $2`)
     fi
 }
-
 complete -F _cheat_autocomplete cheat
+
+#search in aliases, functions and cheats for the string
+function h()
+{
+  if [ -z "${1}" ]; then
+    echo "Usage: h 'searchstring'"
+    return 1
+  fi
+
+alias | grep $1
+grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' "$HOME"/.dot/.bash_functions.sh | grep $1
+cheat $1
+
+}
 
 
 # ------------------------------------------------------------------------------
@@ -1588,8 +1621,9 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 unset -f alias_completion
 
+ #Get your public IP address and host.
 function getlocation() 
 {
    lynx -dump http://www.ip-adress.com/ip_tracer/?QRY=$1|grep address|egrep 'city|state|country'|awk '{print $3,$4,$5,$6,$7,$8}'|sed 's\ip address flag \\'|sed 's\My\\';
    
-}  #Get your public IP address and host.
+} 
