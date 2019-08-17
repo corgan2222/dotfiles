@@ -4,12 +4,12 @@
 
 
 alias ap='opkg install '
-alias apuu='opkg list-upgradable | awk '\{ print $1; \}' | xargs opkg upgrade'
+alias apuu="opkg list-upgradable | awk '\{ print $1; \}' | xargs opkg upgrade"
 alias aptList="$HOME/.dot/asuswrt/.EntwareApps.sh.sh"
 #https://bin.entware.net/mipselsf-k3.4/Packages.html
 
-alias sta_info='( [ -z "$WL" ] && WL="wl"; set -- `$WL assoclist` ; while [ _$1 = _assoclist ] ; do wl sta_info $2 ; shift 2 ; done )'
-alias sta_info7='( [ -z "$WL" ] && WL="wl"; set -- `$WL -i eth7 assoclist` ; while [ _$1 = _assoclist ] ; do wl sta_info $2 ; shift 2 ; done )'
+alias wifi_sta_info='( [ -z "$WL" ] && WL="wl"; set -- `$WL assoclist` ; while [ _$1 = _assoclist ] ; do wl sta_info $2 ; shift 2 ; done )'
+alias wifi_sta_info7='( [ -z "$WL" ] && WL="wl"; set -- `$WL -i eth7 assoclist` ; while [ _$1 = _assoclist ] ; do wl sta_info $2 ; shift 2 ; done )'
 alias pktq_stats='( [ -z "$WL" ] && WL="wl"; STAS="C:" ; set -- `$WL assoclist` ; while [ _$1 = _assoclist ] ; do STAS="$STAS A:$2" ; shift 2 ; done ; $WL pktq_stats $STAS )'
 alias wlver='$WL ver; $WL cap; $WL revinfo; $WL status; $WL assoclist'
 
