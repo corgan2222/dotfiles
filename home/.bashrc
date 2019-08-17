@@ -93,8 +93,6 @@ fi
 #BASEDIR=$(dirname "$0")
 #echo "$BASEDIR"
 
-#ToDo cat file1 ... fileN > combinedFile;
-
 if [ "$DIST" = "Synology" ]; then 
   _loadFile "$HOME"/.dot/synology/.bashrc "$DIST Userpromt"
   _loadFile "$HOME"/.dot/synology/.exports " $DIST Exports"
@@ -138,6 +136,7 @@ if [[ $AptCount -gt 0 ]]; then
 fi
 
 
+
 # printf "\n" 
  #echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
  #echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
@@ -159,3 +158,5 @@ if [ "$reload" = "yes" ]; then
 fi
 
 printf "\n" 
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

@@ -1,25 +1,48 @@
 #!/bin/bash
 
+#prints all functions from file
+function scriptInfoPerl(){
+  if [ -z "${1}" ]; then
+    echo "Usage: scriptInfoPerl file"
+    file="$HOME"/.dot/.bash_functions.sh
+    #return 1
+  fi
+
+  perl -0777 -ne '
+      while (/^((?:[ \t]*\#.*\n)*)               # preceding comments
+              [ \t]*(?:(\w+)[ \t]*\(\)|         # foo ()
+                        function[ \t]+(\w+).*)   # function foo
+              ((?:\n[ \t]+\#.*)*)               # following comments
+            /mgx) {
+          $name = "$2$3";
+          $comments = "$1$4";
+          $comments =~ s/^[ \t]*#+/#/mg;
+          chomp($comments);
+          print "\033[31m$name\033[0;37m()\n\033[32m$comments\n";
+      }' "$file"
+}   
+
+#return 0 on exist and 1 if not
 function_exists() {
   declare -f -F $1 >/dev/null
   return $?
 }
 
+#usage findStringInFiles /etc foo exclud
 function findStringInFiles() {
-  #usage findStringInFiles /etc foo exclud
-
-  if [ $# -eq 3 ]; then
+    if [ $# -eq 3 ]; then
     grep --exclude="$3" -rnw "$2" -e "$1"
   else
     grep -rnw "$2" -e "$1"
   fi
-
 }
 
+#init homeShick
 function initHome() {
   /bin/bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
 }
 
+#save changes in dotfiles
 function saveHome() {
   if [ $# -eq 0 ]; then
     echo "add commit message"
@@ -32,20 +55,24 @@ function saveHome() {
   fi
 }
 
+#load newest dotfiles
 function loadHome() {
   homeshick pull dotfiles
   reload
 }
 
+#check dotfiles
 function checkHome() {
   homeshick check dotfiles
 }
 
+#save git infos
 function gitSaveCredential() {  
   git config credential.helper store
   git pull
 }
 
+#add new files or folder to dotfiles
 function addToHome() {
   if [ $# -eq 0 ]; then
     echo "usage addToHome [file, file, folder]"
@@ -55,11 +82,13 @@ function addToHome() {
   fi
 }
 
+#create folder and enter it
 function mkcdir() {
   mkdir -p -- "$1" &&
     cd -P -- "$1"
 }
 
+#kill all processess
 function psKillAllX() {
   if [ $# -eq 0 ]; then
     echo "usage addToHome [file, file, folder]"
@@ -77,7 +106,8 @@ function video2gif() {
   rm "${1}.png"
 }
 
-function _man() {
+#color man
+function man() {
   env \
     LESS_TERMCAP_mb=$(printf "\e[1;31m") \
     LESS_TERMCAP_md=$(printf "\e[1;31m") \
@@ -117,6 +147,7 @@ extract() {
   fi
 }
 
+#create folder with the current date
 function mkdatedir() {
   mkdir "$(date +%Y-%m-%d_${1})"
 }
@@ -1347,9 +1378,13 @@ function is_user_exits() {
 # % date -d "@$(stat -c '%Y' a.out)"
 # Tue Jul 26 12:15:21 BDT 2016
 # date -r .bashrc Tue Aug  6 19:14:12 CEST 2019
- 
 ##################################################################
 function lastFileChange() {
+  if [ -z "${1}" ]; then
+    echo "Usage: lastFileChange folder"
+    return 1
+  fi
+
   date -r $1 +'%H:%M:%S %d-%m-%Y'
   #LAST=$(date -r $1 +'%H:%M:%S %d-%m-%Y ') 
 }
@@ -1386,6 +1421,7 @@ function ps() {
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
 
+#what to do after telegraf update
 function telegrafAfterUpdate()
 {
   echo "lnav /var/log/telegraf/telegraf.log"
@@ -1415,12 +1451,13 @@ function yaml_r() {
     fi
 }
 
-
+#info about perl
 function perlver {
     lib=${1//::/\/}
     perl -e "use $1; printf(\"%s\n\tPath:   %s\n\tVersion: %s\n\", '$1', \$INC{'$lib.pm'}, \$$1::VERSION);" 2>/dev/null || echo "$1 is not installed"
 }
 
+#all about the time
 function timeInfo(){
 cat << EOD
         Format/result           |       Command              |          Output
@@ -1445,96 +1482,9 @@ ISO8601 Local TZ timestamp      | date +%FT%T%Z              | $(date +%FT%T%Z)
 YYYY-MM-DD (Short day)          | date +%F\(%a\)             | $(date +%F\(%a\))
 YYYY-MM-DD (Long day)           | date +%F\(%A\)             | $(date +%F\(%A\))
 EOD
-
-
-
 }
 
-# lman
-# center
-# line
-# qt
-# qh
-# ppp
-# video2gif
-# _man
-# gifify
-# parse_git_branch
-# nonzero_return
-# lc
-# uc
-# wtfis
-# whenis
-# box
-# htmlEntityToUTF8
-# UTF8toHtmlEntity
-# optiImages
-# lman
-# testConnection
-# netstat_used_local_ports
-# netstat_free_local_port
-# sniff
-# httpdump
-# iptablesBlockIP
-# ips
-# command_exists
-# stripspace
-# logssh
-# calc
-# mkd
-# mkf
-# rand_int
-# passwdgen
-# targz
-# duh
-# fs
-# ff
-# fstr
-# file_backup_compressed
-# file_backup
-# file_information
-# dataurl
-# create_server
-# phpserver
-# psgrep
-# cpuinfo
-# jsonc
-# escape
-# unidecode
-# history_top_used
-# getcertnames
-# t
-# httpDebug
-# digga
-# tre
-# pidenv
-# processenv
-# shorturl
-
-#source ~/.dot/eachdir
-
-#prints all functions from file
-function scriptInfoPerl(){
-  if [ -z "${1}" ]; then
-    echo "Usage: scriptInfoPerl file"
-    return 1
-  fi
-
-perl -0777 -ne '
-    while (/^((?:[ \t]*\#.*\n)*)               # preceding comments
-             [ \t]*(?:(\w+)[ \t]*\(\)|         # foo ()
-                      function[ \t]+(\w+).*)   # function foo
-             ((?:\n[ \t]+\#.*)*)               # following comments
-           /mgx) {
-        $name = "$2$3";
-        $comments = "$1$4";
-        $comments =~ s/^[ \t]*#+/#/mg;
-        chomp($comments);
-        print "\033[31m$name\033[0;37m()\n\033[32m$comments\n";
-    }' "$1"
-}    
-
-
+#_cheat_autocomplete
 function _cheat_autocomplete {
     sheets=$(cheat -l | cut -d' ' -f1)
     COMPREPLY=()
@@ -1627,3 +1577,67 @@ function getlocation()
    lynx -dump http://www.ip-adress.com/ip_tracer/?QRY=$1|grep address|egrep 'city|state|country'|awk '{print $3,$4,$5,$6,$7,$8}'|sed 's\ip address flag \\'|sed 's\My\\';
    
 } 
+
+
+# lman
+# center
+# line
+# qt
+# qh
+# ppp
+# video2gif
+# _man
+# gifify
+# parse_git_branch
+# nonzero_return
+# lc
+# uc
+# wtfis
+# whenis
+# box
+# htmlEntityToUTF8
+# UTF8toHtmlEntity
+# optiImages
+# lman
+# testConnection
+# netstat_used_local_ports
+# netstat_free_local_port
+# sniff
+# httpdump
+# iptablesBlockIP
+# ips
+# command_exists
+# stripspace
+# logssh
+# calc
+# mkd
+# mkf
+# rand_int
+# passwdgen
+# targz
+# duh
+# fs
+# ff
+# fstr
+# file_backup_compressed
+# file_backup
+# file_information
+# dataurl
+# create_server
+# phpserver
+# psgrep
+# cpuinfo
+# jsonc
+# escape
+# unidecode
+# history_top_used
+# getcertnames
+# t
+# httpDebug
+# digga
+# tre
+# pidenv
+# processenv
+# shorturl
+
+#source ~/.dot/eachdir

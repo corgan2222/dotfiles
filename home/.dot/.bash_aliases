@@ -8,6 +8,7 @@ alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[
 alias c="cheat "
 alias cl="cheat -l"
 alias a="alias | grep "
+alias f="scriptInfoPerl | grep "
 alias s="saveHome"
 alias l="loadHome"
 alias keyboardDE="setxkbmap -layout de"
