@@ -24,7 +24,6 @@ UP0=`cut -d. -f1 /proc/uptime`
 UP1=$(($UP0/86400))        # Tage
 UP2=$(($UP0/3600%24))        # Stunden
 UP3=$(($UP0/60%60))        # Minuten
-UP4=$(($UP0%60))        # Sekunden
 
 # Durchschnittliche Auslasung
 LOAD1=`cat /proc/loadavg | awk '{print $1}'`    # Letzte Minute
@@ -51,7 +50,7 @@ RAM7=`free -h | grep 'Swap' | awk '{print $4}'`    # Swap free
 # IP-Adressen ermitteln
 if ( ifconfig | grep -q "br0" ) ; then IP_LAN=`ifconfig br0 | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_LAN="---" ; fi ;
 if ( ifconfig | grep -q "eth0" ) ; then IP_WLAN=`ifconfig eth0 | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_WLAN="---" ; fi ;
-if ( ifconfig | grep -q "ztr2qtgtyt" ) ; then IP_ZLAN=`ifconfig ztr2qtgtyt | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_WLAN="
+if ( ifconfig | grep -q "ztr2qtgtyt" ) ; then IP_ZLAN=`ifconfig ztr2qtgtyt | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_ZLAN="---" ; fi ;
 
 # Ausgabe
 echo -e "\033[0;37m
@@ -64,6 +63,6 @@ echo -e "\033[0;37m
 \033[0;37m |                |  Speicher......: Gesamt: \033[1;32m\033[1;36m$DISK1\033[0;37m | Belegt: $DISK2 | Frei: \033[32m$DISK3\033[0;37m
 \033[0;37m |                |  RAM...........: Gesamt: \033[1;32m\033[1;36m$RAM1\033[0;37m | Belegt: $RAM2 | Frei: \033[32m$RAM3\033[0;37m | Cache:
 \033[0;37m |                |  Swap..........: Gesamt: \033[1;32m\033[1;36m$RAM5\033[0;37m | Belegt: $RAM6 | Frei: \033[32m$RAM7\033[0;37m
-\033[0;37m | $MODELL_TYPE |  IP-Adressen...: LAN: \033[1;35m$IP_LAN\033[0;37m | Vodafone: \033[1;35m$IP_WLAN\033[0;37m | Zerotier: \033[1;35m$IP_ZL
+\033[0;37m | $MODELL_TYPE |  IP-Adressen...: LAN: \033[1;35m$IP_LAN\033[0;37m | Vodafone: \033[1;35m$IP_WLAN\033[0;37m | Zerotier: \033[1;35m$IP_ZLAN\033[0;37m
 \033[0;37m  ~~~~~~~~~~~~~~~~
-\033[m
+\033[m"
