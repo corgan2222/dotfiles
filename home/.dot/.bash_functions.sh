@@ -29,7 +29,18 @@ function_exists() {
 }
 
 #usage findStringInFiles /etc foo exclud
-function findStringInFiles() {
+function findStringInFiles() 
+{
+  if [ -z "${1}" ]; then
+    echo "Usage:  findStringInFiles 'string' 'folder' ['exclude']"
+    return 1
+  fi
+
+  if [ -z "${2}" ]; then
+    echo "Usage:  findStringInFiles 'string' 'folder' ['exclude']"
+    return 1
+  fi
+
     if [ $# -eq 3 ]; then
     grep --exclude="$3" -rnw "$2" -e "$1"
   else

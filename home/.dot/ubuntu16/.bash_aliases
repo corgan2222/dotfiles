@@ -27,3 +27,15 @@ alias cd_git="cd $HOME/git"
 alias cd_Scripts="cd $HOME/git/scripts"
 
 alias grep='grep --color=auto'
+
+function help_(){
+echo -e "
+\e[0;32m h \e[0m \e[0;34m#search a+c+f\e[0m
+\e[0;32m a \e[0m \e[0;34m#search aliases\e[0m
+\e[0;32m c \e[0m \e[0;34m#search cheats\e[0m
+\e[0;32m f \e[0m \e[0;34m#search functions\e[0m
+\e[0;32m s \e[0m \e[0;34m#savehome\e[0m
+\e[0;32m l \e[0m \e[0;34m#loadhome\e[0m
+\e[0;32m eg \e[0m \e[0;34m#search eg cheats\e[0m
+"
+    }
