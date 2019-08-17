@@ -1,3 +1,4 @@
+#!/bin/bash
 # https://github.com/voku/dotfiles
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
@@ -5,6 +6,7 @@
 alias scriptinfo="grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)'"
 
 alias c="cheat "
+alias cl="cheat -l"
 alias a="alias | grep "
 alias s="saveHome"
 alias l="loadHome"
@@ -434,3 +436,12 @@ alias mcdshow='/usr/bin/memcached-tool 127.0.0.1:11211 display'
 
 ## quickly flush out memcached server ##
 alias flushmcd='echo "flush_all" | nc 127.0.0.1 11211'
+
+# ------------------------------------------------------------------------------
+# | #apache Ubuntu 16                                                          |
+# ------------------------------------------------------------------------------
+
+alias apacheModsAvailable="ls -l /etc/apache2/mods-available/"
+alias apacheModsEnabled="ls -l /etc/apache2/mods-enabled/"
+alias restartApachePhp="service apache2 restart" 
+alias restartPhp73fpm="service plesk-php73-fpm restart"
