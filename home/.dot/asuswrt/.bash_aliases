@@ -13,6 +13,9 @@ alias wifi_sta_info7='( [ -z "$WL" ] && WL="wl"; set -- `$WL -i eth7 assoclist` 
 alias pktq_stats='( [ -z "$WL" ] && WL="wl"; STAS="C:" ; set -- `$WL assoclist` ; while [ _$1 = _assoclist ] ; do STAS="$STAS A:$2" ; shift 2 ; done ; $WL pktq_stats $STAS )'
 alias wlver='$WL ver; $WL cap; $WL revinfo; $WL status; $WL assoclist'
 
+alias asus_temp1=$(wl -i eth6 phy_tempsense | awk '{ print $1 * .5 + 20 }')
+alias asus_temp2=$(wl -i eth7 phy_tempsense | awk '{ print $1 * .5 + 20 }')
+
 function help(){
 echo '        
 Folders:

@@ -44,7 +44,7 @@ _loadFile()
       c2=$(print_style " $1" "info")
       c3=$(print_style " $DALTA" "success")
 
-      printf "%5s%35s%50s%55s\n" loading "$c1" "$c2" "$LAST (+$c3 sec)"     
+      #printf "%5s%35s%50s%55s\n" loading "$c1" "$c2" "$LAST (+$c3 sec)"     
       source "$1"
   fi  
 }
@@ -80,7 +80,7 @@ if [ "$DIST" = "Ubuntu" ]; then
   #for file in ~/.dot/ubuntu16/{.bashrc,.exports,.bash_aliases,.srv1.bash_aliases,debian.sh}; do
   #    [ -r "$file" ] && [ -f "$file" ] && _loadFile "$file"
   #done
-  #printf "\t%s \t%s \n" fresh "Ubuntu" 
+  printf "\t%s \t%s \n" fresh "Ubuntu" 
   _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
   _loadFile "$HOME"/.dot/ubuntu16/debian.sh "Debian Server Functions"
   _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
@@ -139,9 +139,9 @@ fi
 
 
 # printf "\n" 
- echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
- echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
- echo "$UPDATED"
+ #echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
+ #echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
+ #echo "$UPDATED"
 # echo 
 # ______ ______   _____________________ __________________________
 # ___  //_/__  | / /__    |__    |__  //_/__  __ \__  __ \_  ____/
