@@ -1552,8 +1552,8 @@ function h()
     return 1
   fi
 
-alias | grep $1
-grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' "$HOME"/.dot/.bash_functions.sh | grep $1
+alias | grep -i $1
+grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' "$HOME"/.dot/.bash_functions.sh | grep -i $1 
 cheat $1
 
 }

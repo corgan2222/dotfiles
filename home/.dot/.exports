@@ -8,10 +8,10 @@ PROMPT_COMMAND='history -a'
 export EDITOR=joe
 
 # lazy add local bin
-#LOCAL_BIN="$HOME/.local/bin"
-#if [ -d $LOCAL_BIN ]; then
-#  export PATH="$PATH:$LOCAL_BIN"
-#fi
+LOCAL_BIN="$HOME/.local/bin"
+if [ -d $LOCAL_BIN ]; then
+  export PATH="$PATH:$LOCAL_BIN"
+fi
 
 
 # node-js settings
