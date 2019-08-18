@@ -122,7 +122,9 @@ fi
 if [ "$DIST" = "kali" ]; then 
  _loadFile "$HOME"/.dot/kali/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/kali/.exports "$DIST exports"
- _loadFile "$HOME"/.dot/kali/.bash_aliases "$DIST bash_aliases"   
+ _loadFile "$HOME"/.dot/kali/.bash_aliases "$DIST bash_aliases" 
+ _loadFile "$HOME"/.dot/kali/motd_kali.sh "$DIST motd_kali.sh"
+ reload=yes   
 fi 
 
 
