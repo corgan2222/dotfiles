@@ -1,6 +1,6 @@
 # ~/.profile: executed by Bourne-compatible login shells.
 
-if [ "$DIST" != "Synology" ] && [ "$DIST" != "kali" ] ; then
+if [ "$DIST" != "Synology" ] || [ "$DIST" != "kali" ] ; then
   if [ -f ~/.bashrc ]; then
     . ~/.bashrc
   fi
