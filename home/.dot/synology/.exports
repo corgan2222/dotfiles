@@ -2,3 +2,7 @@
 if [ -d /opt/bin/ ]; then 
     export PATH=$PATH":/opt/bin/"
 fi    
+
+if [ -d /opt/sbin/ ]; then 
+    export PATH=$PATH":/opt/sbin/"
+fi    
