@@ -20,7 +20,7 @@ alias load='source "$HOME"/.bashrc && source $HOME/.dot/.bash_aliases && source 
 alias logs_multi_all="multitail --mergeall /var/log/*log --no-mergeall"
 alias logs_lnav_all="lnav /var/log"
 
-
+alias zabbix_server_reload="zabbix_server -R config_cache_reload"
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
 # ------------------------------------------------------------------------------

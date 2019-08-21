@@ -1669,16 +1669,6 @@ function mail_test_ssl_server_SMTP_star()
   echo "$stats";
 }
 
-function mail_test_ssl_all()
-{
-  echo $(mail_test_ssl_server_imap "$@")
-  echo $(mail_test_ssl_server_pop3 "$@")
-  echo $(mail_test_ssl_server_SMTP "$@")
-  echo $(mail_test_ssl_server_SMTP_star "$@")
-}
-
-
-
 
 # lman
 # center
