@@ -1,0 +1,169 @@
+#!/bin/bash
+
+# Author/Maintainer: caltlgin
+# Credits: https://github.com/thedevs-network/kutt#api
+#          https://github.com/univa64/kutt-cli
+# License: GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+# Date created: 2018-12-06
+# Script Version: n/a
+# Source page: https://git.fossdaily.xyz/caltlgin/kutt-bash
+# Homepage: https://fossdaily.xyz
+# Contact: https://fossdaily.xyz/contact
+
+
+# Dependency check
+# https://stackoverflow.com/questions/226703/how-do-i-prompt-for-yes-no-cancel-input-in-a-linux-shell-script#answer-27875395
+
+# kutt [option]
+# Simple command line program for https://kutt.it/
+# API Key required. Get API Key from https://kutt.it/settings
+
+# Options:
+# -h                          Show this help message and exit
+# -k                          Add/Update API Key
+# -a [options] <url>          Add url
+#     -c <custom_url STRING>  Set a custom URL (Optional)
+#     -p <password STRING>    Set a password (Optional)
+# -a -r <url>                 Reuse existing url if available
+# -l                          Get list of last five shortened URLs
+# -d <url_id>                 Delete a shortened URL
+# -s <url_id>                 Get stats for a shortened URL
+
+# Examples:
+# kutt -a https://github.com/thedevs-network/kutt/releases
+# Returns: https://kutt.it/Xg0IBA
+
+# kutt -a -c 'website' https://fossdaily.xyz
+# Returns: https://kutt.it/website
+
+# kutt -a -c api-docs -p 123 https://github.com/thedevs-network/kutt#api
+# Returns: https://kutt.it/api-docs
+
+# kutt -s api-docs
+# Returns formatted json output
+
+# kutt -d api-docs
+# Returns: Sort URL deleted successfully
+
+
+if which jq > /dev/null 2> /dev/null; then
+    :
+else
+    echo "jq is required but not installed"
+	echo -n "Do you want to install jq (y/n)? "
+	read answer
+	if [ "$answer" != "${answer#[Yy]}" ] ;then
+    	sudo apt update && sudo apt install jq -y
+	fi
+	exit 1
+fi
+
+base_url="https://l.knaak.org"  # Set base url
+[ -f ~/.dot/.secrets ] && source ~/.dot/.secrets 
+
+# Check API Key is valid
+if [ -z "$kutt_key" ]; then
+	echo "Unable to load API Key "
+	exit
+else
+	key=$kutt_key	
+fi
+
+# Submit url
+if [[ "$1" == "-a" ]]; then
+	if [[ "$2" == "-c" ]]; then
+		if [[ "$4" == "-p" ]]; then  # -a -c <custom_url STRING> -p <password STRING> <URL>
+			data="target=$6&customurl=$3&password=$5"
+		else  # -a -c <custom_url STRING> <URL>
+			data="target=$4&customurl=$3"
+		fi
+	elif [[ "$2" == "-p" ]]; then  # -a -p <password STRING> <URL>
+		data="target=$4&password=$3"
+	elif [[ "$2" == "-r" ]]; then  # -a -r <URL>
+		data="target=$3&reuse=True"
+	else  # -a <URL>
+		data="target=$2"
+	fi
+	response=$(curl -s -w "HTTPSTATUS:%{http_code}" -d "$data" -H "X-API-Key: $key" -X POST "$base_url/api/url/submit")
+
+# List Kutt urls
+elif [[ "$1" == "-l" ]]; then  # -l
+	response=$(curl -s -w "HTTPSTATUS:%{http_code}" -H "X-API-Key: $key" "$base_url/api/url/geturls")
+
+# Delete Kutt url
+elif [[ "$1" == "-d" ]]; then  # -d <url_id>
+	if [ -z "$2" ]; then
+		echo 'Invalid url ID'
+		exit 1
+	else
+		response=$(curl -s -w "HTTPSTATUS:%{http_code}" -d "id=$2" -H "X-API-Key: $key" -X POST "$base_url/api/url/deleteurl")
+	fi
+
+# Get stats on Kutt url
+elif [[ "$1" == "-s" ]]; then  # -s <url_id>
+	if [ -z "$2" ]; then
+		echo 'Invalid url ID'
+		exit 1
+	else
+		response=$(curl -s -w "HTTPSTATUS:%{http_code}" -H "X-API-Key: $key" "$base_url/api/url/stats?id=$2")
+	fi
+
+# Display help
+else
+	echo "kutt [option]"
+	echo "Simple command line program for https://kutt.it/"
+	echo "API Key required. Get API Key from https://kutt.it/settings"
+	echo
+	echo "Options:"
+	echo "-h                          Show this help message and exit"
+	echo "-k                          Add/Update API Key"
+	echo "-a [options] <url>          Add url"
+	echo "    -c <custom_url STRING>  Set a custom URL (Optional)"
+	echo "    -p <password STRING>    Set a password (Optional)"
+	echo "-a -r <url>                 Reuse existing url if available"
+	echo "-l                          Get list of last five shortened URLs"
+	echo "-d <url_id>                 Delete a shortened URL"
+	echo "-s <url_id>                 Get stats for a shortened URL"
+	echo
+	echo "Examples:"
+	echo "kutt -a https://github.com/thedevs-network/kutt/releases"
+	echo "Returns: https://kutt.it/Xg0IBA"
+	echo
+	echo "kutt -a -c 'website' https://fossdaily.xyz"
+	echo "Returns: https://kutt.it/website"
+	echo
+	echo "kutt -a -c api-docs -p 123 https://github.com/thedevs-network/kutt#api"
+	echo "Returns: https://kutt.it/api-docs"
+	echo
+	echo "kutt -s api-docs"
+	echo "Returns formatted json output"
+	echo
+	echo "kutt -d api-docs"
+	echo "Returns: Sort URL deleted successfully"
+	exit 1
+fi
+
+# Display output/errors
+# https://linuxacademy.com/howtoguides/posts/show/topic/13852-understanding-curl-and-http-headers
+# https://gist.github.com/maxcnunes/9f77afdc32df354883df
+body=$(echo $response | sed -e 's/HTTPSTATUS\:.*//g')
+status=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+if [ ! $status -eq 200  ]; then
+	echo "Error [HTTP status: $status]"
+	message=$(echo $body | jq -r ".error")
+	if [[ "$message" == "reCAPTCHA is not valid. Try again." ]]; then
+		echo "Invalid API Key"
+	else
+		echo $message
+	fi
+	exit 1
+else
+	if [[ "$1" == "-a" ]]; then
+		message=$(echo $body | jq -r ".shortUrl")
+	elif [[ "$1" == "-d" ]]; then
+		message=$(echo $body | jq -r ".message")
+	else
+		message=$(echo $body | jq .)
+	fi
+	echo $message
+fi

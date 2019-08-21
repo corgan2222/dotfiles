@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+GIT_REPO="rstacruz/cheatsheets"
+GIT_URI="https://github.com/$GIT_REPO.git"
+CACHE_DIR=$HOME/.hints
+
+function help() {
+    cat << EOF
+devhints.io CLI
+
+usage:
+hint [--help] [--update] [hint]
+EOF
+}
+
+function check_prerequisite() {
+    local prerequisites=(git fzf)
+    for tool in ${prerequisites[@]}; do
+        type ${tool} >/dev/null 2>&1 || { echo >&2 "I require $tool but it's not installed."; exit 1; }
+    done
+}
+
+function clone_hints_if_not_present() {
+    if [ ! -d "$CACHE_DIR" ]; then
+        git clone $GIT_URI $CACHE_DIR
+    fi
+}
+
+function update_hints() {
+    cd $CACHE_DIR
+    git pull
+}
+
+function choice_to_path() {
+    if [[ -n $1 ]]; then
+        echo $CACHE_DIR/$1.md
+    fi
+}
+
+function pick_hint() {
+    local choice=$(gfind $CACHE_DIR -maxdepth 1 -name '*.md' -printf "%f\n" | sed 's/\.md$//g' | sort | fzf)
+    echo $(choice_to_path $choice)
+}
+
+function open_path_if_present() {
+    if [[ -z $1 ]]; then
+        return
+    elif [[ ! -f $1 ]]; then
+        echo >&2 "$2 does not exist. Perhaps try to update hints with hint --update"
+        exit 1
+    else
+        if [[ -f $(which pygmentize) ]]; then
+            pygmentize $1 | less -R
+        else
+            less $1
+        fi
+    fi
+}
+
+function main() {
+    check_prerequisite
+    clone_hints_if_not_present
+
+    if [[ -n $1 ]]; then
+        case $1 in
+            "--update")
+                update_hints
+                ;;
+            "--help")
+                help
+                ;;
+            *)
+                open_path_if_present $(choice_to_path $1) $1
+        esac
+    else
+        open_path_if_present $(pick_hint)
+    fi
+}
+
+main $@

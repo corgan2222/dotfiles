@@ -52,7 +52,7 @@ alias nodels='pm2 ls'
 alias py3='python3'
 alias py='py3'
 alias p3='py3'
-alias p='py3'
+alias p='python'
 
 alias cx="chmod +x "
 alias bd=". bd -s"

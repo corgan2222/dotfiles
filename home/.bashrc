@@ -159,6 +159,14 @@ if [ "$reload" = "yes" ]; then
   homeshick refresh
 fi
 
-printf "\n" 
-
+#a command-line fuzzy finde
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+#locals
+[ -f ~/.dot/.secrets ] && source ~/.dot/.secrets 
+
+if [ -d ~/.dot/bin ] ; then
+  export PATH=~/.dot/bin:$PATH
+fi
+
+printf "\n" 
