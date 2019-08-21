@@ -1613,6 +1613,21 @@ function getlocation()
    
 } 
 
+# -------------------------------------------------------------------
+# err: error message along with a status information
+#
+# example:
+#
+# if ! do_something; then
+#   err "Unable to do_something"
+#   exit "${E_DID_NOTHING}"
+# fi
+#
+err()
+{
+  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
+}
+
 
 # lman
 # center
