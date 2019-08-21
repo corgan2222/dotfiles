@@ -133,12 +133,16 @@ alias enable_service="systemctl enable "
 # | Apt                                                                        |
 # ------------------------------------------------------------------------------
 
-alias ap='apt-get install'
+alias ap='sudo apt-get install'
 alias apuu='sudo apt-get update && sudo apt-get -y upgrade'
 alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 alias aptGetVersion="dpkg -l | grep -i "
 alias aptList="dpkg -l"
 alias aptReconf="dpkg-reconfigure "
+alias aptListAll_names="dpkg -l |awk '/^[hi]i/{print $2}' "
+alias aptListAll_Path="apt list --installed"
+
+
 
 # ------------------------------------------------------------------------------
 # | php                                                                        |
@@ -481,4 +485,17 @@ fi
     alias tail="colour tail"
     alias traceroute="colour traceroute"
     alias syslog="sudo colour tail -f -n 100 /var/log/syslog"
+  fi
+
+    # Use "colordiff" or "highlight" to colour diffs.
+  if command -v colordiff > /dev/null; then
+    alias difflight="colordiff"
+  elif command -v highlight > /dev/null; then
+    alias difflight="highlight --dark-red ^-.* \
+      | highlight --dark-green ^+.* \
+      | highlight --yellow ^Only.* \
+      | highlight --yellow ^Files.*differ$ \
+      | less -XFIRd"
+  else
+    alias difflight="less -XFIRd"
   fi
