@@ -1519,6 +1519,30 @@ cheat $1
 
 }
 
+#wrapper for cheat.sh
+#cheatsh tar~list
+function cheatsh()
+{
+
+    topic=$1
+
+  case $2 in
+  "--color" | "-c")
+      curl cheat.sh/$topic | lolcat
+      ;;
+  "--pager" | "-p")
+      curl cheat.sh/$topic | less
+      ;;
+  "--help" | "-h")
+      echo "-p for pager\n -c for colorized output"
+      ;;
+  *)
+      curl cheat.sh/$topic
+      ;;
+  esac
+
+}
+
 
 # ------------------------------------------------------------------------------
 # | auto-completion (for bash)                                                 |
