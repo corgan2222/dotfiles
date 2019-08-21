@@ -17,6 +17,10 @@ alias keyboardDE="setxkbmap -layout de"
 alias reload='exec "$SHELL" -l'
 alias load='source "$HOME"/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh && homeshick link'
 
+alias logs_multi_all="multitail --mergeall /var/log/*log --no-mergeall"
+alias logs_lnav_all="lnav /var/log"
+
+
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
 # ------------------------------------------------------------------------------
