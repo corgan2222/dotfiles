@@ -70,6 +70,7 @@ function saveHome() {
 function loadHome() {
   homeshick pull dotfiles
   reload
+  homeshick link
 }
 
 #check dotfiles
