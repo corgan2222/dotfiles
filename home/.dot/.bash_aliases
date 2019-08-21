@@ -15,7 +15,7 @@ alias keyboardDE="setxkbmap -layout de"
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload='exec "$SHELL" -l'
-alias load='source "$HOME"/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh'
+alias load='source "$HOME"/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh && homeshick link'
 
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
