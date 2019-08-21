@@ -1641,6 +1641,45 @@ function yt2mp3()
 
 }
 
+function mail_test_ssl_server_imap()
+{
+  stats=$(openssl s_client -showcerts -connect $1:993)
+
+  return "$stats";
+}
+
+function mail_test_ssl_server_pop3()
+{
+  stats=$(openssl s_client -showcerts -connect $1:995)
+
+  echo "$stats";
+}
+
+function mail_test_ssl_server_SMTP()
+{
+  stats=$(openssl s_client -showcerts -connect $1:465)
+
+  echo "$stats";
+}
+
+function mail_test_ssl_server_SMTP_star()
+{
+  stats=$(openssl s_client -starttls smtp -showcerts -connect $1:25)
+
+  echo "$stats";
+}
+
+function mail_test_ssl_all()
+{
+  echo $(mail_test_ssl_server_imap "$@")
+  echo $(mail_test_ssl_server_pop3 "$@")
+  echo $(mail_test_ssl_server_SMTP "$@")
+  echo $(mail_test_ssl_server_SMTP_star "$@")
+}
+
+
+
+
 # lman
 # center
 # line
