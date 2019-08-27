@@ -1742,6 +1742,20 @@ function check_files_in_zip () {
         fi
 }
 
+#geo-ip 144.178.0.0
+function geo-ip() { 
+
+  if [ -z "${1}" ]; then
+    echo "Usage: h 'searchstring'"
+    return 1
+  else  
+
+    ret=$(curl --silent "http://api.db-ip.com/v2/free/$1")    
+    echo "$ret"
+  
+  fi
+ }
+
 # changelog_(){
 #     if (( $# != 1 )); then
 #         echo "Usage: ${FUNCNAME[0]} PACKAGE"

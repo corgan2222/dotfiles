@@ -157,6 +157,7 @@ fi
  
 if [ "$reload" = "yes" ]; then
   homeshick refresh
+  homeshick link
 fi
 
 #a command-line fuzzy finde
