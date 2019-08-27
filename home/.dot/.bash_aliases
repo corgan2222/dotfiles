@@ -1,5 +1,6 @@
 #!/bin/bash
 # https://github.com/voku/dotfiles
+
 # ------------------------------------------------------------------------------
 # | Defaults                                                                   |
 # ------------------------------------------------------------------------------
@@ -138,6 +139,19 @@ alias enable_service="systemctl enable "
 # ------------------------------------------------------------------------------
 
 alias ap='sudo apt-get install'
+alias apr='sudo apt-get remove'
+alias apAutoremove='sudo apt-get autoremove ' #with Deps
+alias apNoUpdate='sudo apt-get install --no-upgrade '
+alias apPurge='sudo apt-get purge '
+alias apRemovePurge='sudo apt-get remove --purge '
+alias apClean='sudo apt-get clean'
+alias apSource='sudo apt-get --download-only source '
+alias apSourceCompile='sudo apt-get --compile source '
+alias apDownload='sudo apt-get download '
+alias apChangelog='sudo apt-get changelog '
+alias apBuildDep='sudo apt-get build-dep '
+alias apCheck='sudo apt-get check '
+alias apAutoclean='sudo apt-get autoclean '
 alias apuu='sudo apt-get update && sudo apt-get -y upgrade'
 alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 alias aptGetVersion="dpkg -l | grep -i "
@@ -145,7 +159,7 @@ alias aptList="dpkg -l"
 alias aptReconf="dpkg-reconfigure "
 alias aptListAll_names="dpkg -l |awk '/^[hi]i/{print $2}' "
 alias aptListAll_Path="apt list --installed"
-
+#alias aptChangelog="xargs -I% -- zless /usr/share/doc/%/changelog.Debian.gz <<<"
 
 
 # ------------------------------------------------------------------------------

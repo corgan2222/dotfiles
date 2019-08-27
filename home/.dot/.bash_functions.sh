@@ -1669,6 +1669,87 @@ function mail_test_ssl_server_SMTP_star()
   echo "$stats";
 }
 
+#Funktion um Dateien aus dem Internet zu laden. Prüft ob curl vorhanden ist , wenn nicht wird wget versucht. Wenn gar nichts von beiden gefunden wird wird das Skript beendet.
+#https://hope-this-helps.de/serendipity/categories/Bash-68/P3.html
+function get_remote_file () {
+        # ------------------------- get_remote_file -------------------------------------------------------------------
+        # download an file to local storage
+        #
+        # need 2 parameters : get_remote_file [URL_TO_FILE] [LOCAL_PATH]
+        # -----------------------------------------------------------------------------------------------------------------
+ 
+        if [[ ! -z "${1}" || ! -z "${2}" ]]; then
+                bin_dl=""
+                # check Local Path
+                if [ ! -d "${2}" ]; then
+                        mkdir "${2}"
+                fi
+                # check bins
+                # using command instead of which to be posix comp.
+         
+        # ------ check curl
+                command -v curl >/dev/null 2>&1
+                if [ $? -eq 0 ]; then
+                        bin_dl="curl -s -O "
+                fi
+ 
+        # ------ check wget
+                command -v wget >/dev/null 2>&1
+                if [[ ${bin_dl} = "" && $? -eq 0 ]]; then
+                        bin_dl="wget -q "
+                fi
+ 
+        # ------ if emtpy curl and wget not found
+                if [ ${bin_dl} = "" ]; then
+                        echo "need curl or wget for work please install one of them"
+                        exit 98
+                fi
+ 
+                # download file
+                if [[ "${1}" =~ http:// || "${1}" =~ https:// || "${1}" =~ ftp:// ]]; then
+                        # ${1} is an remote file will be downloaded to ${2}
+                        cd "${2}" && { ${bin_dl} "${1}" ; cd -; }
+                else
+                        # ${1} is not an remote file EXIT !
+                        exit 98
+                fi
+        else
+                echo "check parameters for function #> get_remote_file"
+                exit 9
+        fi
+}
+
+# Problem : Man möchte über Bash nur den Inhalt einer Zip Datei vergleichen. Die Zip Datei wird aber automatisiert auf einem Server über cron erstellt, was zur Folge hatte das der Zeitstempel und somit auch die md5 Summen unterschiedlich sind.
+# Lösung : Die Lösung ist mit unzip in die Datei zu schauen und diesen Output mit diff zu verleichen.
+# https://hope-this-helps.de/serendipity/categories/Bash-68/P3.html
+function check_files_in_zip () {
+    # ------------------------ check_files_in_zip ---------------------------------------
+    # compare the content of two zipfiles if equal the function return 0 otherwise 1 
+    #
+    # need 2 parameters : check_files_in_zip [NAME_OF_OLD_ZIPFILE] [NAME_OF_NEW_ZIPFILE]
+    # -----------------------------------------------------------------------------------
+ 
+    if [[ ! -z "${1}" || ! -z "${2}"  ]]; then
+            diff <(unzip -v -l "${1}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') <(unzip -v -l "${2}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') 1>/dev/null 2>&1
+            if [ $? -eq 0 ]; then
+                    return 0
+            else
+                    return 1
+            fi
+    else
+        echo "check parameters for function #> check_files_in_zip"
+                exit 9
+        fi
+}
+
+# changelog_(){
+#     if (( $# != 1 )); then
+#         echo "Usage: ${FUNCNAME[0]} PACKAGE"
+#         return 1
+#     fi
+
+#     find -L "/usr/share/doc/$1" -type f -name 'changelog*.gz' -exec zless {} \; 2>/dev/null
+# }
 
 # lman
 # center
