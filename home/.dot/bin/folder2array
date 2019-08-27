@@ -1,0 +1,13 @@
+#!/bin/bash
+
+path=$1
+array=()
+while IFS= read -r -d $'\0'; do
+        array+=("$REPLY")
+done < <(find ${path} -maxdepth 1 -type d ! -name '.*' ! -wholename ${path} -print0 )
+cnt=1
+for item in "${array[@]}"
+do
+        echo "${cnt}) -> ${item}"
+        ((cnt++))
+done
