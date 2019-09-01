@@ -518,3 +518,5 @@ fi
   else
     alias difflight="less -XFIRd"
   fi
+
+  alias debianSynoStart="chroot \"/volume1/@appstore/debian-chroot/var/chroottarget\" \"/bin/bash\""
