@@ -152,6 +152,7 @@ alias apChangelog='sudo apt-get changelog '
 alias apBuildDep='sudo apt-get build-dep '
 alias apCheck='sudo apt-get check '
 alias apAutoclean='sudo apt-get autoclean '
+alias apSearch='sudo apt-cache search '
 alias apuu='sudo apt-get update && sudo apt-get -y upgrade'
 alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 alias aptGetVersion="dpkg -l | grep -i "

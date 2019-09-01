@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #prints all functions from file
-function scriptInfoPerl(){
+function scriptInfoPerl() {
   if [ -z "${1}" ]; then
     echo "Usage: scriptInfoPerl file"
     file="$HOME"/.dot/.bash_functions.sh
@@ -20,7 +20,7 @@ function scriptInfoPerl(){
           chomp($comments);
           print "\033[31m$name\033[0;37m()\n\033[32m$comments\n";
       }' "$file"
-}   
+}
 
 #return 0 on exist and 1 if not
 function_exists() {
@@ -29,8 +29,7 @@ function_exists() {
 }
 
 #usage findStringInFiles /etc foo exclud
-function findStringInFiles() 
-{
+function findStringInFiles() {
   if [ -z "${1}" ]; then
     echo "Usage:  findStringInFiles 'string' 'folder' ['exclude']"
     return 1
@@ -41,7 +40,7 @@ function findStringInFiles()
     return 1
   fi
 
-    if [ $# -eq 3 ]; then
+  if [ $# -eq 3 ]; then
     grep --exclude="$3" -rnw "$2" -e "$1"
   else
     grep -rnw "$2" -e "$1"
@@ -79,7 +78,7 @@ function checkHome() {
 }
 
 #save git infos
-function gitSaveCredential() {  
+function gitSaveCredential() {
   git config credential.helper store
   git pull
 }
@@ -236,8 +235,8 @@ function parse_git_dirty() {
   fi
 }
 
-function git-search () { 
-  git log --all -S"$@" --pretty=format:%H | map git show 
+function git-search() {
+  git log --all -S"$@" --pretty=format:%H | map git show
 }
 
 function nonzero_return() {
@@ -1260,21 +1259,20 @@ function ppp() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Search history.
-  #           ┌─ enable colors for pipe
-  #           │  ("--color=auto" enables colors only if
-  #           │  the output is in the terminal)
-  #grep --color=always "$*" "$HISTFILE" | less -RX
-  # display ANSI color escape sequences in raw form ─┘│
-  #       don't clear the screen after quitting less ─┘
+#           ┌─ enable colors for pipe
+#           │  ("--color=auto" enables colors only if
+#           │  the output is in the terminal)
+#grep --color=always "$*" "$HISTFILE" | less -RX
+# display ANSI color escape sequences in raw form ─┘│
+#       don't clear the screen after quitting less ─┘
 function qh() {
   grep --color=always "$*" "$HISTFILE" | less -RX
 }
 
-
 # Search for text within the current directory.
 #grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
-  #     │└─ search all files under each directory, recursively
-  #     └─ ignore case
+#     │└─ search all files under each directory, recursively
+#     └─ ignore case
 function qt() {
   grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
 }
@@ -1365,7 +1363,7 @@ function is_user_exits() {
 
 ##################################################################
 # Purpose: return last mod time of a given file
-# Arguments: $1 (file) 
+# Arguments: $1 (file)
 # Return:  18:30:14 06-08-2019
 # % stat -c '%y' foobar.txt
 # 2016-07-26 12:15:16.897284828 +0600
@@ -1374,7 +1372,7 @@ function is_user_exits() {
 # 1469513716
 
 # % stat -c '%y : %n' foobar.txt
-# 2016-07-26 12:15:16.897284828 +0600 : foobar.txt    
+# 2016-07-26 12:15:16.897284828 +0600 : foobar.txt
 
 # % stat -c '%Y : %n' foobar.txt
 # 1469513716 : foobar.txt
@@ -1384,7 +1382,7 @@ function is_user_exits() {
 # % date -d "@$(stat -c '%Y' a.out)" '+%a %b %d %T %Z %Y'
 # Tue Jul 26 12:15:21 BDT 2016
 
-# % date -d "@$(stat -c '%Y' a.out)" '+%c'               
+# % date -d "@$(stat -c '%Y' a.out)" '+%c'
 # Tue 26 Jul 2016 12:15:21 PM BDT
 
 # % date -d "@$(stat -c '%Y' a.out)"
@@ -1398,14 +1396,13 @@ function lastFileChange() {
   fi
 
   date -r $1 +'%H:%M:%S %d-%m-%Y'
-  #LAST=$(date -r $1 +'%H:%M:%S %d-%m-%Y ') 
+  #LAST=$(date -r $1 +'%H:%M:%S %d-%m-%Y ')
 }
 
 # lastmod(){
 #      #echo "Last modified" $(( $(date +%s) - $(stat -f%c "$1") )) "seconds ago"
 #      #t1=date -r "$1" +%s
 # }
-
 
 # prints colored text
 # print_style "This is a green text " "success";
@@ -1415,31 +1412,30 @@ function lastFileChange() {
 # print_style "This has no color";
 function ps() {
 
-    if [ "$2" == "info" ] ; then
-        COLOR="96m";
-    elif [ "$2" == "success" ] ; then
-        COLOR="92m";
-    elif [ "$2" == "warning" ] ; then
-        COLOR="93m";
-    elif [ "$2" == "danger" ] ; then
-        COLOR="91m";
-    else #default color
-        COLOR="0m";
-    fi
+  if [ "$2" == "info" ]; then
+    COLOR="96m"
+  elif [ "$2" == "success" ]; then
+    COLOR="92m"
+  elif [ "$2" == "warning" ]; then
+    COLOR="93m"
+  elif [ "$2" == "danger" ]; then
+    COLOR="91m"
+  else #default color
+    COLOR="0m"
+  fi
 
-    STARTCOLOR="\e[$COLOR";
-    ENDCOLOR="\e[0m";
+  STARTCOLOR="\e[$COLOR"
+  ENDCOLOR="\e[0m"
 
-    printf "$STARTCOLOR%b$ENDCOLOR" "$1";
+  printf "$STARTCOLOR%b$ENDCOLOR" "$1"
 }
 
 #what to do after telegraf update
-function telegrafAfterUpdate()
-{
+function telegrafAfterUpdate() {
   echo "lnav /var/log/telegraf/telegraf.log"
   echo "locate telegraf.service"
-  echo "joe /etc/systemd/system/multi-user.target.wants/telegraf.service"  
-  echo "joe /lib/systemd/system/telegraf.service"  
+  echo "joe /etc/systemd/system/multi-user.target.wants/telegraf.service"
+  echo "joe /lib/systemd/system/telegraf.service"
   echo "joe /usr/lib/telegraf/scripts/telegraf.service"
   echo "service telegraf restart"
   echo "systemctl daemon-reload2"
@@ -1450,28 +1446,28 @@ function telegrafAfterUpdate()
 
 #https://coderwall.com/p/xatm5a/bash-one-liner-to-read-yaml-files
 function yaml_r() {
-    hashdot=$(gem list hash_dot);
-    if ! [ "$hashdot" != "" ]; then sudo gem install "hash_dot" ; fi
-    if [ -f $1 ];then
-        cmd=" Hash.use_dot_syntax = true; hash = YAML.load(File.read('$1'));";
-        if [ "$2" != "" ] ;then 
-            cmd="$cmd puts hash.$2;"
-        else
-            cmd="$cmd puts hash;"
-        fi
-        ruby  -r yaml -r hash_dot <<< $cmd;
+  hashdot=$(gem list hash_dot)
+  if ! [ "$hashdot" != "" ]; then sudo gem install "hash_dot"; fi
+  if [ -f $1 ]; then
+    cmd=" Hash.use_dot_syntax = true; hash = YAML.load(File.read('$1'));"
+    if [ "$2" != "" ]; then
+      cmd="$cmd puts hash.$2;"
+    else
+      cmd="$cmd puts hash;"
     fi
+    ruby -r yaml -r hash_dot <<<$cmd
+  fi
 }
 
 #info about perl
-function perlver {
-    lib=${1//::/\/}
-    perl -e "use $1; printf(\"%s\n\tPath:   %s\n\tVersion: %s\n\", '$1', \$INC{'$lib.pm'}, \$$1::VERSION);" 2>/dev/null || echo "$1 is not installed"
+function perlver() {
+  lib=${1//::/\/}
+  perl -e "use $1; printf(\"%s\n\tPath:   %s\n\tVersion: %s\n\", '$1', \$INC{'$lib.pm'}, \$$1::VERSION);" 2>/dev/null || echo "$1 is not installed"
 }
 
 #all about the time
-function timeInfo(){
-cat << EOD
+function timeInfo() {
+  cat <<EOD
         Format/result           |       Command              |          Output
 --------------------------------+----------------------------+------------------------------
 YYYY-MM-DD_hh:mm:ss             | date +%F_%T                | $(date +%F_%T)
@@ -1484,7 +1480,7 @@ YYMMDD_hhmmss                   | date +%y%m%d_%H%M%S        | $(date +%y%m%d_%H
 
 Seconds since UNIX epoch:       | date +%s                   | $(date +%s)
 Nanoseconds only:               | date +%N                   | $(date +%N)
-Nanoseconds only:               | \`date +%s\`000000000        | `date +%s`000000000
+Nanoseconds only:               | \`date +%s\`000000000        | $(date +%s)000000000
 Nanoseconds since UNIX epoch:   | date +%s%N                 | $(date +%s%N)
 Milliseconds since UNIX epoch:  | date +%s%N                 | $(date +%s%N)/1000000))
 
@@ -1497,53 +1493,50 @@ EOD
 }
 
 #_cheat_autocomplete
-function _cheat_autocomplete {
-    sheets=$(cheat -l | cut -d' ' -f1)
-    COMPREPLY=()
-    if [ $COMP_CWORD = 1 ]; then
-        COMPREPLY=(`compgen -W "$sheets" -- $2`)
-    fi
+function _cheat_autocomplete() {
+  sheets=$(cheat -l | cut -d' ' -f1)
+  COMPREPLY=()
+  if [ $COMP_CWORD = 1 ]; then
+    COMPREPLY=($(compgen -W "$sheets" -- $2))
+  fi
 }
 complete -F _cheat_autocomplete cheat
 
 #search in aliases, functions and cheats for the string
-function h()
-{
+function h() {
   if [ -z "${1}" ]; then
     echo "Usage: h 'searchstring'"
     return 1
   fi
 
-alias | grep -i $1
-grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' "$HOME"/.dot/.bash_functions.sh | grep -i $1 
-cheat $1
+  alias | grep -i $1
+  grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' "$HOME"/.dot/.bash_functions.sh | grep -i $1
+  cheat $1
 
 }
 
 #wrapper for cheat.sh
 #cheatsh tar~list
-function cheatsh()
-{
+function cheatsh() {
 
-    topic=$1
+  topic=$1
 
   case $2 in
   "--color" | "-c")
-      curl cheat.sh/$topic | lolcat
-      ;;
+    curl cheat.sh/$topic | lolcat
+    ;;
   "--pager" | "-p")
-      curl cheat.sh/$topic | less
-      ;;
+    curl cheat.sh/$topic | less
+    ;;
   "--help" | "-h")
-      echo "-p for pager\n -c for colorized output"
-      ;;
+    echo "-p for pager\n -c for colorized output"
+    ;;
   *)
-      curl cheat.sh/$topic
-      ;;
+    curl cheat.sh/$topic
+    ;;
   esac
 
 }
-
 
 # ------------------------------------------------------------------------------
 # | auto-completion (for bash)                                                 |
@@ -1551,8 +1544,7 @@ function cheatsh()
 
 # Automatically add completion for all aliases to commands having completion functions
 # source: http://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
-alias_completion()
-{
+alias_completion() {
   local namespace="alias_completion"
 
   # parse function based completion definitions, where capture group 2 => function and 3 => trigger
@@ -1562,14 +1554,15 @@ alias_completion()
 
   # create array of function completion triggers, keeping multi-word triggers together
   eval "local completions=($(complete -p | sed -rne "/$compl_regex/s//'\3'/p"))"
-  (( ${#completions[@]} == 0 )) && return 0
+  ((${#completions[@]} == 0)) && return 0
 
   # create temporary file for wrapper functions and completions
   rm -f "/tmp/${namespace}-*.XXXXXXXXXX" # preliminary cleanup
   local tmp_file="$(mktemp "/tmp/${namespace}-${RANDOM}.XXXXXXXXXX")" || return 1
 
   # read in "<alias> '<aliased command>' '<command args>'" lines from defined aliases
-  local line; while read line; do
+  local line
+  while read line; do
     eval "local alias_tokens=($line)" 2>/dev/null || continue # some alias arg patterns cause an eval parse error
     local alias_name="${alias_tokens[0]}" alias_cmd="${alias_tokens[1]}" alias_args="${alias_tokens[2]# }"
 
@@ -1583,22 +1576,23 @@ alias_completion()
 
     # create a wrapper inserting the alias arguments if any
     if [[ -n $alias_args ]]; then
-     local compl_func="${new_completion/#* -F /}"; compl_func="${compl_func%% *}"
-     # avoid recursive call loops by ignoring our own functions
-     if [[ "${compl_func#_$namespace::}" == $compl_func ]]; then
-       local compl_wrapper="_${namespace}::${alias_name}"
-         echo "function $compl_wrapper {
+      local compl_func="${new_completion/#* -F /}"
+      compl_func="${compl_func%% *}"
+      # avoid recursive call loops by ignoring our own functions
+      if [[ "${compl_func#_$namespace::}" == $compl_func ]]; then
+        local compl_wrapper="_${namespace}::${alias_name}"
+        echo "function $compl_wrapper {
            (( COMP_CWORD += ${#alias_arg_words[@]} ))
            COMP_WORDS=($alias_cmd $alias_args \${COMP_WORDS[@]:1})
            $compl_func
-         }" >> "$tmp_file"
-         new_completion="${new_completion/ -F $compl_func / -F $compl_wrapper }"
-     fi
+         }" >>"$tmp_file"
+        new_completion="${new_completion/ -F $compl_func / -F $compl_wrapper }"
+      fi
     fi
 
     # replace completion trigger by alias
     new_completion="${new_completion% *} $alias_name"
-    echo "$new_completion" >> "$tmp_file"
+    echo "$new_completion" >>"$tmp_file"
   done < <(alias -p | sed -rne "s/$alias_regex/\1 '\2' '\3'/p")
   source "$tmp_file" && rm -f "$tmp_file"
 }
@@ -1607,12 +1601,11 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 unset -f alias_completion
 
- #Get your public IP address and host.
-function getlocation() 
-{
-   lynx -dump http://www.ip-adress.com/ip_tracer/?QRY=$1|grep address|egrep 'city|state|country'|awk '{print $3,$4,$5,$6,$7,$8}'|sed 's\ip address flag \\'|sed 's\My\\';
-   
-} 
+#Get your public IP address and host.
+function getlocation() {
+  lynx -dump http://www.ip-adress.com/ip_tracer/?QRY=$1 | grep address | egrep 'city|state|country' | awk '{print $3,$4,$5,$6,$7,$8}' | sed 's\ip address flag \\' | sed 's\My\\'
+
+}
 
 # -------------------------------------------------------------------
 # err: error message along with a status information
@@ -1624,137 +1617,133 @@ function getlocation()
 #   exit "${E_DID_NOTHING}"
 # fi
 #
-function err()
-{
+function err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
 }
 
-
-function yt2mp3()
-{
+function yt2mp3() {
 
   url=$1
 
   youtube-dl -f 140 $url -o out.m4a &&
-  ffmpeg -i out.m4a -acodec mp3 -ac 2 -ab 192k "$2"
+    ffmpeg -i out.m4a -acodec mp3 -ac 2 -ab 192k "$2"
   rm -v out.m4a
 
 }
 
-function mail_test_ssl_server_imap()
-{
+function mail_test_ssl_server_imap() {
   stats=$(openssl s_client -showcerts -connect $1:993)
 
-  return "$stats";
+  return "$stats"
 }
 
-function mail_test_ssl_server_pop3()
-{
+function mail_test_ssl_server_pop3() {
   stats=$(openssl s_client -showcerts -connect $1:995)
 
-  echo "$stats";
+  echo "$stats"
 }
 
-function mail_test_ssl_server_SMTP()
-{
+function mail_test_ssl_server_SMTP() {
   stats=$(openssl s_client -showcerts -connect $1:465)
 
-  echo "$stats";
+  echo "$stats"
 }
 
-function mail_test_ssl_server_SMTP_star()
-{
+function mail_test_ssl_server_SMTP_star() {
   stats=$(openssl s_client -starttls smtp -showcerts -connect $1:25)
 
-  echo "$stats";
+  echo "$stats"
 }
 
 #Funktion um Dateien aus dem Internet zu laden. Prüft ob curl vorhanden ist , wenn nicht wird wget versucht. Wenn gar nichts von beiden gefunden wird wird das Skript beendet.
 #https://hope-this-helps.de/serendipity/categories/Bash-68/P3.html
-function get_remote_file () {
-        # ------------------------- get_remote_file -------------------------------------------------------------------
-        # download an file to local storage
-        #
-        # need 2 parameters : get_remote_file [URL_TO_FILE] [LOCAL_PATH]
-        # -----------------------------------------------------------------------------------------------------------------
- 
-        if [[ ! -z "${1}" || ! -z "${2}" ]]; then
-                bin_dl=""
-                # check Local Path
-                if [ ! -d "${2}" ]; then
-                        mkdir "${2}"
-                fi
-                # check bins
-                # using command instead of which to be posix comp.
-         
-        # ------ check curl
-                command -v curl >/dev/null 2>&1
-                if [ $? -eq 0 ]; then
-                        bin_dl="curl -s -O "
-                fi
- 
-        # ------ check wget
-                command -v wget >/dev/null 2>&1
-                if [[ ${bin_dl} = "" && $? -eq 0 ]]; then
-                        bin_dl="wget -q "
-                fi
- 
-        # ------ if emtpy curl and wget not found
-                if [ ${bin_dl} = "" ]; then
-                        echo "need curl or wget for work please install one of them"
-                        exit 98
-                fi
- 
-                # download file
-                if [[ "${1}" =~ http:// || "${1}" =~ https:// || "${1}" =~ ftp:// ]]; then
-                        # ${1} is an remote file will be downloaded to ${2}
-                        cd "${2}" && { ${bin_dl} "${1}" ; cd -; }
-                else
-                        # ${1} is not an remote file EXIT !
-                        exit 98
-                fi
-        else
-                echo "check parameters for function #> get_remote_file"
-                exit 9
-        fi
+function get_remote_file() {
+  # ------------------------- get_remote_file -------------------------------------------------------------------
+  # download an file to local storage
+  #
+  # need 2 parameters : get_remote_file [URL_TO_FILE] [LOCAL_PATH]
+  # -----------------------------------------------------------------------------------------------------------------
+
+  if [[ ! -z "${1}" || ! -z "${2}" ]]; then
+    bin_dl=""
+    # check Local Path
+    if [ ! -d "${2}" ]; then
+      mkdir "${2}"
+    fi
+    # check bins
+    # using command instead of which to be posix comp.
+
+    # ------ check curl
+    command -v curl >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      bin_dl="curl -s -O "
+    fi
+
+    # ------ check wget
+    command -v wget >/dev/null 2>&1
+    if [[ ${bin_dl} == "" && $? -eq 0 ]]; then
+      bin_dl="wget -q "
+    fi
+
+    # ------ if emtpy curl and wget not found
+    if [ ${bin_dl} = "" ]; then
+      echo "need curl or wget for work please install one of them"
+      exit 98
+    fi
+
+    # download file
+    if [[ "${1}" =~ http:// || "${1}" =~ https:// || "${1}" =~ ftp:// ]]; then
+      # ${1} is an remote file will be downloaded to ${2}
+      cd "${2}" && {
+        ${bin_dl} "${1}"
+        cd -
+      }
+    else
+      # ${1} is not an remote file EXIT !
+      exit 98
+    fi
+  else
+    echo "check parameters for function #> get_remote_file"
+    exit 9
+  fi
 }
 
 # Problem : Man möchte über Bash nur den Inhalt einer Zip Datei vergleichen. Die Zip Datei wird aber automatisiert auf einem Server über cron erstellt, was zur Folge hatte das der Zeitstempel und somit auch die md5 Summen unterschiedlich sind.
 # Lösung : Die Lösung ist mit unzip in die Datei zu schauen und diesen Output mit diff zu verleichen.
 # https://hope-this-helps.de/serendipity/categories/Bash-68/P3.html
-function check_files_in_zip () {
-    # ------------------------ check_files_in_zip ---------------------------------------
-    # compare the content of two zipfiles if equal the function return 0 otherwise 1 
-    #
-    # need 2 parameters : check_files_in_zip [NAME_OF_OLD_ZIPFILE] [NAME_OF_NEW_ZIPFILE]
-    # -----------------------------------------------------------------------------------
- 
-    if [[ ! -z "${1}" || ! -z "${2}"  ]]; then
-            diff <(unzip -v -l "${1}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') <(unzip -v -l "${2}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') 1>/dev/null 2>&1
-            if [ $? -eq 0 ]; then
-                    return 0
-            else
-                    return 1
-            fi
+function check_files_in_zip() {
+  # ------------------------ check_files_in_zip ---------------------------------------
+  # compare the content of two zipfiles if equal the function return 0 otherwise 1
+  #
+  # need 2 parameters : check_files_in_zip [NAME_OF_OLD_ZIPFILE] [NAME_OF_NEW_ZIPFILE]
+  # -----------------------------------------------------------------------------------
+
+  if [[ ! -z "${1}" || ! -z "${2}" ]]; then
+    diff <(unzip -v -l "${1}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') <(unzip -v -l "${2}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') 1>/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      return 0
     else
-        echo "check parameters for function #> check_files_in_zip"
-                exit 9
-        fi
+      return 1
+    fi
+  else
+    echo "check parameters for function #> check_files_in_zip"
+    exit 9
+  fi
 }
 
 #geo-ip 144.178.0.0
-function geo-ip() { 
+function geo-ip() {
 
   if [ -z "${1}" ]; then
     echo "Usage: h 'searchstring'"
     return 1
-  else  
+  else
 
-    ret=$(curl --silent "http://api.db-ip.com/v2/free/$1")    
+    ret=$(curl --silent "http://api.db-ip.com/v2/free/$1")
     echo "$ret"
-  
+
   fi
- }
+}
 
 # changelog_(){
 #     if (( $# != 1 )); then
