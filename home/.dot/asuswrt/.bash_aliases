@@ -15,6 +15,7 @@ alias wlver='$WL ver; $WL cap; $WL revinfo; $WL status; $WL assoclist'
 
 alias asus_temp1=$(wl -i eth6 phy_tempsense | awk '{ print $1 * .5 + 20 }')
 alias asus_temp2=$(wl -i eth7 phy_tempsense | awk '{ print $1 * .5 + 20 }')
+alias ipLeases="cat /var/lib/misc/dnsmasq.leases"
 
 function help(){
 echo '        

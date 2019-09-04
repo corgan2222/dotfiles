@@ -520,3 +520,5 @@ fi
   fi
 
   alias debianSynoStart="chroot \"/volume1/@appstore/debian-chroot/var/chroottarget\" \"/bin/bash\""
+  alias grafanaListDashboards="cd $HOME/wizzy/grafana-entities && wizzy list dashboards"
+  alias grafanaImportDashbaord="$HOME/wizzy/grafana-entities && wizzy import dashboards"
