@@ -126,6 +126,8 @@ alias list_services_startup="systemctl list-units --type service"
 alias list_services_all="systemctl list-units --type service --all"
 alias list_services_tree="systemctl list-dependencies --type service"
 alias list_services_locate="locate "
+alias list_PortsLocalhostNmap"sudo nmap -T4 -v 127.0.0.1"
+alias list_PortsLocalhostLsof="sudo lsof -Pnl +M -i4"
 
 alias check_servic_isActive="systemctl is-active "
 alias check_servic_isActive_onBoot="systemctl is-enabled "
@@ -341,6 +343,7 @@ alias renameImagaExif="exiftool '-filename<DateTimeOriginal' -d %Y-%m-%d_%H-%M-%
 # becoming root + executing last command
 alias sulast="su -c !-1 root"
 alias mount='mount |column -t'
+alias mountMedien='mount.cifs -v -o username=admin //serva3/Medien /mnt/mountMedia/'
 
 # ------------------------------------------------------------------------------
 # | Other                                                                      |
@@ -522,3 +525,61 @@ fi
   alias debianSynoStart="chroot \"/volume1/@appstore/debian-chroot/var/chroottarget\" \"/bin/bash\""
   alias grafanaListDashboards="cd $HOME/wizzy/grafana-entities && wizzy list dashboards"
   alias grafanaImportDashbaord="$HOME/wizzy/grafana-entities && wizzy import dashboards"
+
+# ------------------------------------------------------------------------------
+# | #apache Ubuntu 16                                                          |
+# ------------------------------------------------------------------------------
+
+  alias convert_CR2_to_JPG='for i in *.CR2; do ufraw-batch $i --out-type=jpeg --output JPG/$i.jpg; done;'
+  
+   
+###################
+# Docker shortcuts
+###################
+ 
+# list all images
+alias docker_list_images='docker images'
+ 
+# list running containers (image instances)
+alias docker_process_list='docker ps -a'
+ 
+# kill all running container processes:
+alias docker_kill_all_contailer='(docker ps -q | xargs --no-run-if-empty docker kill) && docker container prune -f'
+ 
+# remove all containers
+alias docker_rm_all_container='docker ps -aq | xargs --no-run-if-empty docker rm -v'
+ 
+# remove all docker images
+alias docker_rm_all_images='docker images -aq | xargs --no-run-if-empty docker rmi -f'
+ 
+# list all volumes
+alias docker_list_volumes='docker volume ls'
+ 
+# list all orphaned volumes
+alias docker_list_orphaned_volumes='docker volume ls -f dangling=true'
+ 
+# remove all docker volumes 
+alias docker_rm_all_volumes='docker volume ls -q | xargs --no-run-if-empty docker volume rm'
+ 
+# remove all orphaned docker volumes 
+alias docker_rm_all_orphaned_volumes='docker volume ls -qf dangling=true | xargs --no-run-if-empty docker volume rm'
+ 
+    
+###########################
+# Docker Compose shortcuts
+###########################
+ 
+# docker compose (assumes current directory contains the docker-compose.yml)
+alias dc='docker-compose '
+ 
+# start socker stack defined by docker-compose.yml
+alias dc_up='docker-compose up -d'
+ 
+# stop docker stack defined by docker-compose.yml
+alias dc_down='docker-compose down'
+ 
+# rebuild docker stack
+alias dc_rebuild='docker-compose up -d --build'
+ 
+# watch logs in docker stack
+alias dc_logs='watch -n2 "docker-compose logs | tail -f"'

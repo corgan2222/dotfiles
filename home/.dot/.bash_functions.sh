@@ -47,6 +47,23 @@ function findStringInFiles() {
   fi
 }
 
+function replaceStringInFile()
+{
+  sed -i 's/"$1"/"$2"/g' $3
+ #sed -i 's/old-word/new-word/g' file
+}
+
+function GetFilelist_clean(){
+  find "$1" -type f -printf "%f\n"
+  #find ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n"
+}
+
+function GetFilelist_prefix(){
+  #GetFilelist_prefix folder prefix
+  find "$1" -type f -printf "$2%f\n"
+  #find ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n"
+}
+
 #init homeShick
 function initHome() {
   /bin/bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
@@ -598,6 +615,12 @@ netstat_connection_overview() {
 mount_info() {
   (echo "DEVICE PATH TYPE FLAGS" && mount | awk '$2="";1') |
     column -t
+}
+
+function mountFile(){
+ mkdir -p $1/$2
+# sudo mount -o loop ~/DVDCOPY.iso /media/mount/folder/for/iso
+
 }
 
 # -------------------------------------------------------------------
@@ -1744,6 +1767,80 @@ function geo-ip() {
 
   fi
 }
+
+function sftp_keyfile() {
+
+  if [ -z "${1}" ]; then
+    echo "Usage: sftp_keyfile 'keyfile' port user host"
+    echo "sftp_keyfile PATH/TO/PUBLICKEYFILE(id_rsa) 10022 user host"
+    #echo "sftp -v -o IdentityFile="/PATH/TO/PUBLICKEYFILE(id_rsa)" -o Port="10022" user@host"
+    return 1
+  else
+
+    sftp -v -o IdentityFile="$1" -o Port="$2" "$3@$4"
+    
+
+  fi
+}
+
+function Export_image_file_statistics_to_csv() 
+{
+  if [ -z "${1}" ]; then
+    echo "Usage: Export_image_file_statistics_to_csv 'output.csv' "
+    return 1
+  fi
+  
+    find . -regex ".*\.\(jpg\|gif\|png\|jpeg\)" -type f -printf "%p,%AY-%Am-%AdT%AT,%CY-%Cm-%CdT%CT,%TY-%Tm-%TdT%TT,%s\n" > $1
+}
+
+function Export_image_file_statistics_to_csv_tabs() 
+{
+  if [ -z "${1}" ]; then
+    echo "Usage: Export_image_file_statistics_to_csv 'output.csv' "
+    return 1
+  fi
+  
+  find . -regex ".*\.\(jpg\|gif\|png\|jpeg\)" -type f -printf "%p \t %AY-%Am-%AdT%AT \t %CY-%Cm-%CdT%CT \t %TY-%Tm-%TdT%TT \t %s\n" > filestat_data_20141201.csv
+}
+
+function convert_cr2_to_jpg(){
+
+  if command -v ufraw >/dev/null; then
+    echo "sudo ​apt-get install ufraw"
+  else
+    for i in *.CR2; do ufraw-batch $i --out-type=jpeg --output $i.jpg; done;
+  fi  
+
+}
+
+
+function ssh_copy_to_host(){
+  #Copy something from this system to some other system:
+  #echo scp /path/to/local/file username@hostname:/path/to/remote/file  
+  scp "$3 $1@$2:$4"
+}
+	
+function ssh_copy_from_host_to_host(){
+  #Copy something from some system to some other system:
+  #scp username1@hostname1:/path/to/file username2@hostname2:/path/to/other/file 
+ scp "$1@$2:$3 $4@$5:$6"
+  
+}
+	
+function ssh_copy_fron_host(){
+  #Copy something from another system to this system:
+  #scp username@hostname:/path/to/remote/file /path/to/local/file
+  scp "$1@$2:$3 $4"
+}
+	
+function convert_CR2_to_JPG_dcraw()
+{
+  #dcraw -c RAW-Dateiname | convert - Ausgabedatei.FORMAT
+  dcraw -c "$1" | convert - "$2.$3"
+}
+
+
+
 
 # changelog_(){
 #     if (( $# != 1 )); then
