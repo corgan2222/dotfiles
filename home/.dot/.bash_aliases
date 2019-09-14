@@ -342,8 +342,25 @@ alias renameImagaExif="exiftool '-filename<DateTimeOriginal' -d %Y-%m-%d_%H-%M-%
 
 # becoming root + executing last command
 alias sulast="su -c !-1 root"
-alias mount='mount |column -t'
+alias mountc='mount |column -t'
 alias mountMedien='mount.cifs -v -o username=admin //serva3/Medien /mnt/mountMedia/'
+alias devList="sudo blkid -o list -w /dev/null"
+alias helpMount=" 
+AT32
+sudo mount -t vfat -o utf8,uid=pi,gid=pi,noatime /dev/sda /media/usbstick
+
+NTFS
+sudo mount -t ntfs-3g -o utf8,uid=pi,gid=pi,noatime /dev/sda /media/usbstick
+
+HFS+
+sudo mount -t hfsplus -o utf8,uid=pi,gid=pi,noatime /dev/sda /media/usbstick
+
+exFAT
+sudo mount -t exfat -o utf8,uid=pi,gid=pi,noatime /dev/sda /media/usbstick
+
+ext4
+sudo mount -t ext4 -o defaults /dev/sda /media/usbstick
+"
 
 # ------------------------------------------------------------------------------
 # | Other                                                                      |
