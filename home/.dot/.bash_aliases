@@ -600,3 +600,8 @@ alias dc_rebuild='docker-compose up -d --build'
  
 # watch logs in docker stack
 alias dc_logs='watch -n2 "docker-compose logs | tail -f"'
+
+alias vncServerStop="vncserver -kill :1"
+alias vncServerStart="vncserver -geometry 1920x1080 -depth 16 -name raspi4 :1"
+alias vncServerStatus="sudo ps -ef | grep vnc"
+alias vncServerPW="vncpasswd"
