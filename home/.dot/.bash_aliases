@@ -126,7 +126,7 @@ alias list_services_startup="systemctl list-units --type service"
 alias list_services_all="systemctl list-units --type service --all"
 alias list_services_tree="systemctl list-dependencies --type service"
 alias list_services_locate="locate "
-alias list_PortsLocalhostNmap"sudo nmap -T4 -v 127.0.0.1"
+alias list_PortsLocalhostNmap="sudo nmap -T4 -v 127.0.0.1"
 alias list_PortsLocalhostLsof="sudo lsof -Pnl +M -i4"
 
 alias check_servic_isActive="systemctl is-active "
