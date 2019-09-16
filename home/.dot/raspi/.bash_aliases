@@ -21,7 +21,7 @@ alias dp="sudo blkid"
 #nmap: Scans your network and lists connected devices, port number, protocol, state (open or closed) operating system, MAC addresses, and other information.
 
 alias pi_info_boardversion='sudo cat /proc/cpuinfo | grep Hardware | tr -d " " | cut -d ":" -f 2' # get the Hardware Version                
-alias pi_info_boardserialnumber="sudo cat /proc/cpuinfo | grep Serial | tr -d " " | cut -d ":" -f 2" # get the Board unique Serial Number                
+alias pi_info_boardserialnumber='sudo cat /proc/cpuinfo | grep Serial | tr -d " " | cut -d ":" -f 2' # get the Board unique Serial Number                
 alias pi_info_cpuvoltage='sudo /opt/vc/bin/vcgencmd measure_volts | tr -d "volt=" | tr -d "V"'
 alias pi_info_cpuclock='sudo /opt/vc/bin/vcgencmd measure_clock arm | cut -d'='  -f 2-' # CPU Clock Speed in Hz                
 alias pi_info_cpumem='sudo vcgencmd get_mem arm | tr -d "arm=" | tr -d "M"' # CPU Memory in MByte                
