@@ -1839,6 +1839,14 @@ function convert_CR2_to_JPG_dcraw()
   dcraw -c "$1" | convert - "$2.$3"
 }
 
+function checkSSLfromDomain()
+{
+  #curl -i -k -X GET -u root:rootpw "https://knaak.org:8443/api/v2/domains" -H  "accept: application/json"
+  echo "++++++++++++++++ $1 ++++++++++++++++" ;
+  echo | openssl s_client -servername NAME -connect $1:443 2>/dev/null | openssl x509 -noout -dates ; echo --------------------------------------- ;
+
+}
+
 
 
 

@@ -39,3 +39,5 @@ echo -e "
 \e[0;32m eg \e[0m \e[0;34m#search eg cheats\e[0m
 "
     }
+
+alias pleskCertsList="la -la /usr/local/psa/var/modules/letsencrypt/etc/live/"    
