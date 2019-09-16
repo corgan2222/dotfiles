@@ -1,5 +1,10 @@
 # ~/.profile: executed by Bourne-compatible login shells.
 
+#host files
+if [ -f "$HOME/.dot/hosts/.$HOSTNAME" ]; then
+  source "$HOME/.dot/hosts/.$HOSTNAME" 
+fi
+
 if [ "$DIST" != "Synology" ] || [ "$DIST" != "kali" ] ; then
   if [ -f ~/.bashrc ]; then
     . ~/.bashrc

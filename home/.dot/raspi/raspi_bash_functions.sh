@@ -28,3 +28,8 @@ echo '
 '
     }
     
+function install_extFileSystems()
+{
+    sudo apt-get update
+    sudo apt-get install exfat-fuse ntfs-3g lsof
+}   
