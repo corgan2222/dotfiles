@@ -605,3 +605,5 @@ alias vncServerStop="vncserver -kill :1"
 alias vncServerStart="vncserver -geometry 1920x1080 -depth 16 -name raspi4 :1"
 alias vncServerStatus="sudo ps -ef | grep vnc"
 alias vncServerPW="vncpasswd"
+
+alias install_zerotiert="curl -s https://install.zerotier.com/ | sudo bash"
