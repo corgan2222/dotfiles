@@ -17,4 +17,5 @@ alias swapSTART="sudo systemctl start dphys-swapfile"
 alias swapDISABLE="sudo systemctl disable dphys-swapfile"
 alias swapINSTALL="sudo apt-get install dphys-swapfile"
 
+alias dp="sudo blkid"
 #nmap: Scans your network and lists connected devices, port number, protocol, state (open or closed) operating system, MAC addresses, and other information.

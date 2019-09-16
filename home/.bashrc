@@ -128,6 +128,7 @@ if [ "$DIST" = "kali" ]; then
 fi 
 
 
+
 tempfile_c="/var/log/apt/apt-updates_count.log"
 if [ -f "$tempfile_c" ]; then
   AptCount=$(cat $tempfile_c )  
