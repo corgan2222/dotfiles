@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Forward ports to the specified host using ssh tunneling.
+
+
+if [ $# -lt 2 ]; then
+    echo "  Usage: port-forward <host> <port|local-port:remote-port>..."
+    exit 1
+fi
+
+hostname="$1"
+shift 1
+ports="$*"
+
+opts=""
+for port in $ports; do
+    localport="${port/:*}"
+    remoteport="${port/*:}"
+    opts+="-L $localport:localhost:$remoteport "
+done
+
+# shellcheck disable=SC2029,SC2086
+ssh -N $opts "$hostname"
