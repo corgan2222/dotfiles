@@ -15,6 +15,7 @@ try:
     else:
         with open('$HOME/.kutt-cli/apikey.txt') as f:
             API = f.read()
+            #print (API)
             f.close()
 except:
     print ("Get an API key from kutt.it and run `kutt config-api`")
@@ -89,6 +90,14 @@ def submit(url, customurl, password, reuse):
     if reuse:
         payload['reuse'] = True
 
+    # with open('$HOME/.kutt-cli/apikey.txt') as g:
+    #     API = g.read()
+    #     print (API)
+    #     g.close()
+    api_file = open('/etc/kutt.conf','r')
+    API = api_file.read()    
+
+    headers = {"X-API-Key": API}    
     r = requests.post(base_url+'/api/url/submit', data=payload, headers=headers)
     if not r.status_code == 200:
         err = r.json()
