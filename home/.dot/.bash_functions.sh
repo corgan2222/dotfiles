@@ -1973,3 +1973,13 @@ ss() {
         . "$sourcedir/$file"
     done
 }
+
+function gitHelpNew()
+{
+  git init
+  git add *
+  git commit -m 'initial project version'
+  echo "create new repo on github without readme"
+  echo "git remote add origin https://github.com/corgan2222/xxxxxxxxx.git"
+  git push -u origin master
+}
