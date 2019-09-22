@@ -1976,10 +1976,22 @@ ss() {
 
 function gitHelpNew()
 {
+  echo "git init"
   git init
+  
+  echo " git add *"
   git add *
-  git commit -m 'initial project version'
-  echo "create new repo on github without readme"
-  echo "git remote add origin https://github.com/corgan2222/xxxxxxxxx.git"
+  
+  echo "git commit -m 'initial project version'"
+    
+  echo "create new repo on github without readme like https://github.com/corgan2222/webCamFullScreen.git"
+  echo -n "Enter github repo url [ENTER]: "
+  read url
+  
+  echo "git remote add origin $url"
+  git remote add origin $url
+  
+  echo "git push -u origin master"
   git push -u origin master
+  
 }
