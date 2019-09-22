@@ -1983,6 +1983,7 @@ function gitHelpNew()
   git add *
   
   echo "git commit -m 'initial project version'"
+  git commit -m 'initial project version'
     
   echo "create new repo on github without readme like https://github.com/corgan2222/webCamFullScreen.git"
   echo -n "Enter github repo url [ENTER]: "
