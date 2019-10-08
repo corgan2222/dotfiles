@@ -1491,27 +1491,43 @@ function perlver() {
 #all about the time
 function timeInfo() {
   cat <<EOD
-        Format/result           |       Command              |          Output
---------------------------------+----------------------------+------------------------------
-YYYY-MM-DD_hh:mm:ss             | date +%F_%T                | $(date +%F_%T)
-YYYYMMDD_hhmmss                 | date +%Y%m%d_%H%M%S        | $(date +%Y%m%d_%H%M%S)
-YYYYMMDD_hhmmss (UTC version)   | date --utc +%Y%m%d_%H%M%SZ | $(date --utc +%Y%m%d_%H%M%SZ)
-YYYYMMDD_hhmmss (with local TZ) | date +%Y%m%d_%H%M%S%Z      | $(date +%Y%m%d_%H%M%S%Z)
-YYYYMMSShhmmss                  | date +%Y%m%d%H%M%S         | $(date +%Y%m%d%H%M%S)
-YYYYMMSShhmmssnnnnnnnnn         | date +%Y%m%d%H%M%S%N       | $(date +%Y%m%d%H%M%S%N)
-YYMMDD_hhmmss                   | date +%y%m%d_%H%M%S        | $(date +%y%m%d_%H%M%S)
+        Format/result           |       Command             		|          Output
+--------------------------------+-----------------------------------+------------------------------
+YYYY-MM-DD_hh:mm:ss             | date +%F_%T               		| $(date +%F_%T)
+YYYYMMDD_hhmmss                 | date +%Y%m%d_%H%M%S       		| $(date +%Y%m%d_%H%M%S)
+YYYYMMDD_hhmmss (UTC version)   | date --utc +%Y%m%d_%H%M%SZ		| $(date --utc +%Y%m%d_%H%M%SZ)
+YYYYMMDD_hhmmss (with local TZ) | date +%Y%m%d_%H%M%S%Z     		| $(date +%Y%m%d_%H%M%S%Z)
+YYYYMMSShhmmss                  | date +%Y%m%d%H%M%S        		| $(date +%Y%m%d%H%M%S)
+YYYYMMSShhmmssnnnnnnnnn         | date +%Y%m%d%H%M%S%N      		| $(date +%Y%m%d%H%M%S%N)
+YYMMDD_hhmmss                   | date +%y%m%d_%H%M%S       		| $(date +%y%m%d_%H%M%S)
+		
+Seconds since UNIX epoch:       | date +%s                  		| $(date +%s)
+Nanoseconds only:               | date +%N                  		| $(date +%N)
+Nanoseconds only:               | \`date +%s\`000000000     		| $(date +%s)000000000
+Nanoseconds since UNIX epoch:   | date +%s%N                		| $(date +%s%N)
+Milliseconds since UNIX epoch:  | date +%s%N                		| $(date +%s%N)/1000000))
+		
+ISO8601 UTC timestamp           | date --utc +%FT%TZ        		| $(date --utc +%FT%TZ)
+ISO8601 UTC timestamp + ms      | date --utc +%FT%T.%3NZ    		| $(date --utc +%FT%T.%3NZ)
+ISO8601 Local TZ timestamp      | date +%FT%T%Z             		| $(date +%FT%T%Z)
+YYYY-MM-DD (Short day)          | date +%F\(%a\)            		| $(date +%F\(%a\))
+YYYY-MM-DD (Long day)           | date +%F\(%A\)            		| $(date +%F\(%A\))
 
-Seconds since UNIX epoch:       | date +%s                   | $(date +%s)
-Nanoseconds only:               | date +%N                   | $(date +%N)
-Nanoseconds only:               | \`date +%s\`000000000        | $(date +%s)000000000
-Nanoseconds since UNIX epoch:   | date +%s%N                 | $(date +%s%N)
-Milliseconds since UNIX epoch:  | date +%s%N                 | $(date +%s%N)/1000000))
+YYYY_MM_DD                      | date +%Y_%m_%d                    | $(date +%Y_%m_%d)
+YYYY_MM_DD -7 Days              | date +%Y_%m_%d  --date '-7 day'   | $(date +%Y_%m_%d  --date '-7 day')
 
-ISO8601 UTC timestamp           | date --utc +%FT%TZ         | $(date --utc +%FT%TZ)
-ISO8601 UTC timestamp + ms      | date --utc +%FT%T.%3NZ     | $(date --utc +%FT%T.%3NZ)
-ISO8601 Local TZ timestamp      | date +%FT%T%Z              | $(date +%FT%T%Z)
-YYYY-MM-DD (Short day)          | date +%F\(%a\)             | $(date +%F\(%a\))
-YYYY-MM-DD (Long day)           | date +%F\(%A\)             | $(date +%F\(%A\))
+Weekday                        | date +%Y_%m_%d                    | $(date +%Y_%m_%d)
+date -d "1974-01-04" +"%A"     | date -d "1974-01-04" +"%A"        | $(date -d "1974-01-04" +"%A")
+
+------
+2019-10-06 18:48:04.908930495 +0200 | stat -c "%y" file  | 
+Friday                              | date -d "2019-10-06 18:48:04.908930495 +0200" +"%A" 
+
+filecreate date stat file %w
+stat -c "%w %n" * | sort
+ 
+
+
 EOD
 }
 
