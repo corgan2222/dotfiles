@@ -1864,6 +1864,47 @@ function checkSSLfromDomain()
 }
 
 
+# bash generate random alphanumeric string
+# bash generate random 32 character alphanumeric string (upper and lowercase) and 
+function random_32chars_al()
+{
+  NEW_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+  echo $NEW_UUID
+}  
+
+# bash generate random 32 character alphanumeric string (lowercase only)
+function random_32chars_lc()
+{
+  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1
+}
+
+# Random numbers in a range, more randomly distributed than $RANDOM which is not
+# very random in terms of distribution of numbers.
+# bash generate random number between 0 and 9
+function random_number09()
+{
+  cat /dev/urandom | tr -dc '0-9' | fold -w 256 | head -n 1 | head --bytes 1
+}
+
+# bash generate random number between 0 and 99
+function random_number099()
+{
+  NUMBER=$(cat /dev/urandom | tr -dc '0-9' | fold -w 256 | head -n 1 | sed -e 's/^0*//' | head --bytes 2)
+  if [ "$NUMBER" == "" ]; then
+    NUMBER=0
+  fi
+  echo $NUMBER
+}
+
+# bash generate random number between 0 and 999
+function random_number999()
+{
+  NUMBER=$(cat /dev/urandom | tr -dc '0-9' | fold -w 256 | head -n 1 | sed -e 's/^0*//' | head --bytes 3)
+  if [ "$NUMBER" == "" ]; then
+    NUMBER=0
+  fi
+   echo $NUMBER
+}
 
 
 # changelog_(){
