@@ -172,3 +172,5 @@ if [ -d ~/.dot/bin ] ; then
 fi
 
 printf "\n" 
+# Virtual Environment Wrapper
+alias workoncv-3.4.4="source /root/opencv/OpenCV-3.4.4-py3/bin/activate"
