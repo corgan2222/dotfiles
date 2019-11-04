@@ -10,6 +10,8 @@ alias peclPhp73Install="/opt/plesk/php/7.3/bin/pecl install "
 alias pleskRestart="service sw-engine restart && service sw-cp-server restart"
 
 alias py3='python3'
+alias py36='python3.6'
+alias pip36='python3.6 -m pip '
 alias py='py3'
 alias p3='py3'
 alias p='py3'
