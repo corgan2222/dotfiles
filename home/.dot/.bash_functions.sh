@@ -1906,6 +1906,19 @@ function random_number999()
    echo $NUMBER
 }
 
+function syncFileToS3()
+{
+  if [ -z "${1}" ]; then
+    echo "Usage: syncFileToS3 'file' "
+    return 1
+  fi
+
+  DATE_TODAY=$(date +%Y_%m_%d) 
+  SOURCE="$1"
+  DEST="$CONST_USER_AT_SERVER::Medien/tmp/sync_tmp/$DATE_TODAY/"
+  rsync -av -e "ssh -p 223" "$SOURCE" "$DEST";  
+}
+
 
 # changelog_(){
 #     if (( $# != 1 )); then
