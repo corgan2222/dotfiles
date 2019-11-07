@@ -2066,3 +2066,29 @@ function gitHelpNew()
   git push -u origin master
   
 }
+
+dtags () {
+    local image="${1}"
+
+    wget -q https://registry.hub.docker.com/v1/repositories/"${image}"/tags -O - \
+        | tr -d '[]" ' | tr '}' '\n' | awk -F: '{print $3}'
+}
+
+vdiff () 
+{
+    if [ "${#}" -ne 2 ] ; then
+        echo "vdiff requires two arguments"
+        echo "  comparing dirs:  vdiff dir_a dir_b"
+        echo "  comparing files: vdiff file_a file_b"
+        return 1
+    fi
+
+    local left="${1}"
+    local right="${2}"
+
+    if [ -d "${left}" ] && [ -d "${right}" ]; then
+        vim +"DirDiff ${left} ${right}"
+    else
+        vim -d "${left}" "${right}"
+    fi
+}
