@@ -2092,3 +2092,58 @@ vdiff ()
         vim -d "${left}" "${right}"
     fi
 }
+
+raw2jpg_embedded(){
+
+    if [ -z "${1}" ]; then
+      echo "Usage: raw2jpg_embedded 'file' "
+      return 1
+    fi
+
+    ufraw-batch --out-type=jpeg --embedded-image "$1"
+}
+
+raw2jpg_convert(){
+
+    if [ -z "${1}" ]; then
+      echo "Usage: raw2jpg_convert 'ARW|CR2' "
+      return 1
+    fi
+
+    for file in *."${1}"; do convert "$file" "${file%"${1}"}JPG"; done
+}
+
+raw2jpg_parallel(){
+
+    if [ -z "${1}" ]; then
+      echo "Usage: raw2jpg_parallel 'ARW|CR2' "
+      return 1
+    fi
+
+    parallel convert {} {.}.jpg ::: *."$1"
+}
+
+raw2jpg_ext()
+{
+
+  if [ -z "${1}" ]; then
+    echo "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
+    return 1
+  fi
+  
+    if [ ! -d ./"${1}" ]; then mkdir ./"${1}"; fi;
+
+    # processes raw files
+    for f in *."${1}";
+    do
+      echo "Processing $f"
+      ufraw-batch \
+        --wb=camera \
+        --exposure=auto \
+        --out-type=jpeg \
+        --compression=96 \
+        --out-path=./"${2}" \
+        "$f"
+    done
+
+}

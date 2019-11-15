@@ -176,3 +176,5 @@ printf "\n"
 alias workoncv-3.4.4="source /root/opencv/OpenCV-3.4.4-py3/bin/activate"
 
 complete -C /root/mcc mcc
+
+complete -C /usr/bin/mcc mcc
