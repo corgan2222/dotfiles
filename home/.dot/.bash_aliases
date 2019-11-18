@@ -607,3 +607,4 @@ alias vncServerStatus="sudo ps -ef | grep vnc"
 alias vncServerPW="vncpasswd"
 
 alias install_zerotiert="curl -s https://install.zerotier.com/ | sudo bash"
+alias ListShellandEnvironmentVariables="printenv "
