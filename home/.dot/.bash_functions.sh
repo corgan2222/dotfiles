@@ -2120,7 +2120,7 @@ raw2jpg_parallel(){
       return 1
     fi
 
-    parallel convert {} {.}.jpg ::: *."$1"
+    parallel convert {} {.}."${1}" ::: *."$1"
 }
 
 raw2jpg_ext()
@@ -2131,7 +2131,7 @@ raw2jpg_ext()
     return 1
   fi
   
-    if [ ! -d ./"${1}" ]; then mkdir ./"${1}"; fi;
+    if [ ! -d ./"${2}" ]; then mkdir ./"${2}"; fi;
 
     # processes raw files
     for f in *."${1}";
@@ -2146,4 +2146,9 @@ raw2jpg_ext()
         "$f"
     done
 
+}
+
+apt-getUpgradable ()
+{
+  { apt-get --just-print upgrade 2>&1 | perl -ne 'if (/Inst\s([\w,\-,\d,\.,~,:,\+]+)\s\[([\w,\-,\d,\.,~,:,\+]+)\]\s\(([\w,\-,\d,\.,~,:,\+]+)\)? /i) {print "$1 (\e[1;34m$2\e[0m -> \e[1;32m$3\e[0m)\n"}';} | while read -r line; do echo -en "$line\n"; done;
 }

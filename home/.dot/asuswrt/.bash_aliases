@@ -5,7 +5,10 @@
 
 alias ap='opkg install '
 alias apuu="opkg list-upgradable | awk '\{ print $1; \}' | xargs opkg upgrade"
-alias aptList="$HOME/.dot/asuswrt/.EntwareApps.sh.sh"
+unalis aptList
+alias aptList="/bin/bash /root/.dot/asuswrt/EntwareApps.sh"
+unalis aptgetUpgradable
+alias aptgetUpgradable="opkg list-upgradable"
 #https://bin.entware.net/mipselsf-k3.4/Packages.html
 
 alias wifi_sta_info='( [ -z "$WL" ] && WL="wl"; set -- `$WL assoclist` ; while [ _$1 = _assoclist ] ; do wl sta_info $2 ; shift 2 ; done )'
