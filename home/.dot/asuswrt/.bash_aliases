@@ -20,6 +20,8 @@ alias asus_temp1=$(wl -i eth6 phy_tempsense | awk '{ print $1 * .5 + 20 }')
 alias asus_temp2=$(wl -i eth7 phy_tempsense | awk '{ print $1 * .5 + 20 }')
 alias ipLeases="cat /var/lib/misc/dnsmasq.leases"
 
+alias tcp_dump_port_53="tcpdump -i eth0 -p port 853 or 53 -n"
+
 function help(){
 echo '        
 Folders:
