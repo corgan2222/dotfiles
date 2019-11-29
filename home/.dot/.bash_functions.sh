@@ -2175,3 +2175,20 @@ checkURLs ()
 function package_exists() {
     return dpkg -l "$1" &> /dev/null
 }
+
+function imgResize() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: imgResize '75' '91' "
+    echo "Usage: imgResize [sizeReduct][quality] "
+    return 1
+  fi
+
+ if [ -z "${2}" ]; then
+    echo "Usage: imgResize '75' '91' "
+    echo "Usage: imgResize [sizeReduct][quality] "
+    return 1
+  fi
+
+  imgp -x "${1}" -w -p --pr -q "${2}"
+}
