@@ -65,6 +65,7 @@ resetHome()
 
 #OS Check
 shootProfile
+shopt -s histappend 
 
 #load basisc
 #printf "\t%s \t%s \n" fresh "Base" 
@@ -171,10 +172,3 @@ if [ -d ~/.dot/bin ] ; then
   export PATH=~/.dot/bin:$PATH
 fi
 
-printf "\n" 
-# Virtual Environment Wrapper
-alias workoncv-3.4.4="source /root/opencv/OpenCV-3.4.4-py3/bin/activate"
-
-complete -C /root/mcc mcc
-
-complete -C /usr/bin/mcc mcc

@@ -163,6 +163,7 @@ alias aptReconf="dpkg-reconfigure "
 alias aptListAll_names="dpkg -l |awk '/^[hi]i/{print $2}' "
 alias aptListAll_Path="apt list --installed"
 #alias aptChangelog="xargs -I% -- zless /usr/share/doc/%/changelog.Debian.gz <<<"
+alias aptListSources="apt-cache policy | grep http | awk '{print $2 $3}' | sort -u "
 
 
 # ------------------------------------------------------------------------------
@@ -608,3 +609,6 @@ alias vncServerPW="vncpasswd"
 
 alias install_zerotiert="curl -s https://install.zerotier.com/ | sudo bash"
 alias ListShellandEnvironmentVariables="printenv "
+
+alias fx="fx ." #npm install -g fx print json
+alias how='function hdi(){ howdoi $* -c -n 5; }; hdi' #pip install howdoi

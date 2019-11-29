@@ -2155,3 +2155,23 @@ apt-getUpgradable ()
 {
   { apt-get --just-print upgrade 2>&1 | perl -ne 'if (/Inst\s([\w,\-,\d,\.,~,:,\+]+)\s\[([\w,\-,\d,\.,~,:,\+]+)\]\s\(([\w,\-,\d,\.,~,:,\+]+)\)? /i) {print "$1 (\e[1;34m$2\e[0m -> \e[1;32m$3\e[0m)\n"}';} | while read -r line; do echo -en "$line\n"; done;
 }
+
+checkURLs ()
+{
+  BASE="http://www.example.com"
+  FILES="index.html
+  about.html"
+
+  for ITEM in ${FILES}; do
+    URL="${BASE}/${ITEM}"
+    # --head may work in some environments
+    curl -s -D - "${URL}" -o /dev/null | head -1 | grep 'HTTP/1.[01] 200' > /dev/null
+    if [ $? == 1 ]; then
+      echo "${ITEM} not found"
+    fi
+  done
+}
+
+function package_exists() {
+    return dpkg -l "$1" &> /dev/null
+}
