@@ -16,10 +16,21 @@ alias keyboardDE="setxkbmap -layout de"
 
 # reload the shell (i.e. invoke as a login shell)
 alias reload='exec "$SHELL" -l'
+#alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 alias load='source "$HOME"/.bashrc && source $HOME/.dot/.bash_aliases && source $HOME/.dot/.bash_functions.sh && homeshick link'
 
 alias logs_multi_all="multitail --mergeall /var/log/*log --no-mergeall"
 alias logs_lnav_all="lnav /var/log"
+alias logsTelegraf="lnav /var/log/telegraf/telegraf.log "
+alias logsGrafana="lnav /var/log/grafana/grafana.log"
+alias logsInflux="lnav /var/log/influxdb/influxdb.log"
+alias logsApache="lnav /var/log/apache2/"
+alias logsMysql="lnav /var/log/mysql/"
+alias logsMongodb="lnav /var/log/mongodb/"
+alias logsNeo4j="lnav /var/log/neo4j/"
+alias logsNginx="lnav /var/log/nginx/"
+alias logsPlesk-php73-fpm="lnav /var/log/plesk-php73-fpm/"
+alias logsWWW="lnav /var/www/vhosts/knaak.org/logs/"
 
 alias zabbix_server_reload="zabbix_server -R config_cache_reload"
 # ------------------------------------------------------------------------------
@@ -83,12 +94,14 @@ alias la='ls -A'
 alias dir='ls -la'
 alias d='ls -l'
 alias da='ls -la'
+alias dd='ls -d */'
 
 # ls replacement with exa
 if command -v exa >/dev/null; then
   alias d='exa --long --header --git -g'
   alias da='exa --long --header --git -g -all'
-  alias dd='exa --long --header --git -T -g'
+  alias dt='exa --long --header --git -T -g'
+  alias dd='exa --long --header --git -d */'
 fi
 
 alias userls='cat /etc/passwd'
@@ -156,7 +169,6 @@ alias apCheck='sudo apt-get check '
 alias apAutoclean='sudo apt-get autoclean '
 alias apSearch='sudo apt-cache search '
 alias apuu='sudo apt-get update && sudo apt-get -y upgrade'
-alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 alias aptGetVersion="dpkg -l | grep -i "
 alias aptList="dpkg -l"
 alias aptReconf="dpkg-reconfigure "
@@ -165,6 +177,9 @@ alias aptListAll_Path="apt list --installed"
 #alias aptChangelog="xargs -I% -- zless /usr/share/doc/%/changelog.Debian.gz <<<"
 alias aptListSources="apt-cache policy | grep http | awk '{print $2 $3}' | sort -u "
 alias aptChangelog="aptitude changelog "
+alias aptListSourcesList="cat /etc/apt/sources.list"
+alias aptEditSourcesList="sudo joe /etc/apt/sources.list"
+alias aptListSourcesD="ls -la /etc/apt/sources.list.d/"
 
 
 # ------------------------------------------------------------------------------

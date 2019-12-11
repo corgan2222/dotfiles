@@ -2192,3 +2192,9 @@ function imgResize() {
 
   imgp -x "${1}" -w -p --pr -q "${2}"
 }
+
+function getSSL() {
+  ssl_certificate_file=$(grep ssl_certificate /var/www/vhosts/system/knaak.org/conf/nginx.conf)
+  ssl_client_certificate_file=$(grep ssl_client_certificate /var/www/vhosts/system/knaak.org/conf/nginx.conf)
+
+}
