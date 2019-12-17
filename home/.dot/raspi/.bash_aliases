@@ -33,4 +33,4 @@ alias pi_info_sdcardusedpercent='sudo df -P | grep /dev/root | tr -s " " " " | c
 alias pi_info_sdcardfree='sudo df -P | grep /dev/root | tr -s " " " " | cut -d " " -f 4' # free Diskspace in KByte                
 alias pi_info_temperature='sudo cat /sys/class/thermal/thermal_zone*/temp' # Temperature in 1/1000 centigrade
                 
-                
+alias dockerZabbix="docker run --name zabbix -e ZBX_HOSTNAME='homematic' -e ZBX_SERVER_HOST='192.168.196.25' -e ZBX_ACTIVE_ALLOW='true' --privileged  -d pschmitt/zabbix-agent-alpine-armhf:4.2.8"                
