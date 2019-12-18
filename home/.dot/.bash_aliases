@@ -51,6 +51,8 @@ alias rmd='rm -r'
 alias rd="rmdir"
 # create a dir with date from today
 alias mkdd='mkdir $(date +%Y%m%d)'
+alias linuxversion="lsb_release -a"
+
 
 # ------------------------------------------------------------------------------
 # | Global Quick Commands                                                      |
@@ -135,6 +137,7 @@ alias findLastFile="find . -type f -printf \"%T@ %p\n\" | sort -n | cut -d' ' -f
 # ------------------------------------------------------------------------------
 
 
+alias list_services="service --status-all "
 alias list_services_startup="systemctl list-units --type service"
 alias list_services_all="systemctl list-units --type service --all"
 alias list_services_tree="systemctl list-dependencies --type service"

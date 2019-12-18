@@ -2033,7 +2033,7 @@ is_interactive() {
 }
 
 # Source a system file.  If no filename is given, list the available names.
-ss() {
+sf() {
     local sourcedir="$SYSTEM_DIR/source"
     if [ $# -eq 0 ]; then
         ls -1 "$sourcedir"
