@@ -28,6 +28,58 @@ echo '
 '
     }
     
+function installer-help(){
+echo " 
+    #base
+    sudo raspi-config
+    sudo joe /boot/config.txt
+    nano /etc/default/keyboard
+    sudo nano /etc/default/keyboard
+    sudo reboot now
+    sudo apt-get install git
+
+    #start
+    bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+    sudo -i
+    sudo ap joe
+
+    #for debmatic
+    sudo ap apparmor-utils apt-transport-https avahi-daemon ca-certificates curl dbus jq socat software-properties-common
+
+    #docker
+    sudo ap docker-ce
+    sudo apt install --no-install-recommends docker-ce
+    sudo curl -sL get.docker.com | sed 's/9)/10)/' | sh
+    sudo usermod -aG docker pi
+    sudo usermod -aG docker root
+    
+    #swap
+    sudo joe /etc/dphys-swapfile
+    
+    #zerotier
+    curl -s https://install.zerotier.com/ | sudo bash
+    sudo zerotier-cli join 565799d8f6aa97e5
+    
+    #zabbix
+    sudo ap zabbix-agent
+    sudo joe /etc/zabbix/zabbix_agentd.conf
+    sudo adduser zabbix sudo
+    sudo visudo
+    joe /etc/sudoers.d/010_pi-nopasswd
+
+    #samba
+    sudo apt-get install samba samba-common smbclient
+    sudo mv /etc/samba/smb.conf /etc/samba/smb.conf_alt
+    sudo nano /etc/samba/smb.conf
+    testparm
+    sudo smbpasswd -a pi
+    sudo nano /etc/samba/smb.conf
+    sudo service smbd restart
+    sudo service nmbd restart
+
+"    
+}
+
 function install_extFileSystems()
 {
     sudo apt-get update
