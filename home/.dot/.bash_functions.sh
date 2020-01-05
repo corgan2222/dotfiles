@@ -2198,3 +2198,201 @@ function getSSL() {
   ssl_client_certificate_file=$(grep ssl_client_certificate /var/www/vhosts/system/knaak.org/conf/nginx.conf)
 
 }
+
+function iptable_block_bad_countrys() {
+
+  if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
+    echo "/usr/share/xt_geoip/BE not found. Install GeoIP-database"
+    return 1
+  fi;
+
+
+    iptables -m geoip --src-cc BR,IN,RU,KR,CH,BD --dst-cc BR,IN,RU,KR,CH,BD
+    iptables -I INPUT -m geoip --src-cc BR,IN,RU,KR,CH,BD -j DROP
+
+    iptables -m geoip --src-cc PL,NL,TH,CN,FR,AD,LT,MX --dst-cc PL,NL,TH,CN,FR,AD,LT,MX
+    iptables -I INPUT -m geoip --src-cc PL,NL,TH,CN,FR,AD,LT,MX -j DROP
+
+    iptables -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY --dst-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY
+    iptables -I INPUT -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY -j DROP   
+
+    /sbin/iptables -L INPUT -v | grep CH
+}
+
+function iptable_drop_country() {
+
+  if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
+    echo "/usr/share/xt_geoip/BE not found. Install GeoIP-database"
+    return 1
+  fi;
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_drop_country CH "   
+    return 1
+  fi
+    /sbin/iptables -m geoip --src-cc "${1}" --dst-cc "${1}"
+    /sbin/iptables -I INPUT -m geoip --src-cc "${1}" -j DROP   
+    /sbin/iptables -L INPUT -v | grep "${1}"
+}
+
+function iptable_drop_ip() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_drop_ip ip "   
+    return 1
+  fi
+    
+    /sbin/iptables -I INPUT -s "${1}" -j DROP
+}
+
+function iptable_undrop_ip() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_undrop_ip ip "   
+    return 1
+  fi
+    
+    /sbin/iptables -D INPUT -s "${1}" -j DROP
+    iptable_check_ip "${1}"
+}
+
+function iptable_check_ip() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_check_ip IP  "   
+    return 1
+  fi
+    
+    /sbin/iptables -L | grep  ${1}
+
+}
+
+function iptable_block_subnet() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_block_subnet 10.0.0.0/8 "   
+    return 1
+  fi
+    
+    /sbin/iptables -i eth1 -A INPUT -s "${1}" -j DROP
+
+}
+
+function iptable_view_blocked() {
+
+ /sbin/iptables -L -v
+
+}
+
+
+function installer-help(){
+echo " 
+
+
+    #start
+    bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+    sudo -i
+    sudo ap joe
+
+    #docker
+    sudo ap docker-ce
+    sudo apt install --no-install-recommends docker-ce
+    sudo curl -sL get.docker.com | sed 's/9)/10)/' | sh
+    sudo usermod -aG docker pi
+    sudo usermod -aG docker root
+    
+    #swap
+    # https://www.elektronik-kompendium.de/sites/raspberry-pi/2002131.htm
+    sudo joe /etc/dphys-swapfile
+    
+    #zerotier
+    curl -s https://install.zerotier.com/ | sudo bash
+    sudo zerotier-cli join 565799d8f6aa97e5
+    
+    #zabbix
+    sudo ap zabbix-agent
+    sudo joe /etc/zabbix/zabbix_agentd.conf
+    sudo adduser zabbix sudo
+    sudo visudo
+    joe /etc/sudoers.d/010_pi-nopasswd
+
+    #samba
+    #https://www.elektronik-kompendium.de/sites/raspberry-pi/2007071.htm
+
+    sudo apt-get install samba samba-common smbclient
+    sudo mv /etc/samba/smb.conf /etc/samba/smb.conf_alt
+    sudo nano /etc/samba/smb.conf
+    testparm
+    sudo smbpasswd -a pi
+    sudo nano /etc/samba/smb.conf
+    sudo service smbd restart
+    sudo service nmbd restart
+
+    #etckeeper
+    sudo -i
+    cd /root/.ssh
+    ssh-keygen
+    cat id_rsa.pub -> copy into gitlab user settings -Y ssh keys
+    ap etckeeper git
+    joe /etc/etckeeper/etckeeper.conf
+    VCS=\"git\"
+    AVOID_SPECIAL_FILE_WARNING=1
+    PUSH_REMOTE=\"origin\"
+    git config --global user.name "xxx"
+    git config --global user.email "xxx"
+    git config --global core.editor "joe"
+    git config --global push.default simple
+    cd /etc
+    git init
+    git remote add origin ssh://git@xxx:30001/xxx/xxx.git
+    etckeeper commit "initial commit"
+    git push --set-upstream origin master
+    systemctl enable etckeeper.timer
+    systemctl start etckeeper.timer
+
+    #block countrys
+      https://linoxide.com/linux-how-to/block-ips-countries-geoip-addons/
+      
+      sudo -i
+      mkcdir /tmp
+      apt-get update && apt-get upgrade
+      apt-get install iptables-dev xtables-addons-common libtext-csv-xs-perl pkg-config
+      wget http://downloads.sourceforge.net/project/xtables-addons/Xtables-addons/xtables-addons-3.7.tar.xz
+      tar xf xtables-addons-3.7.tar.xz
+      cd xtables-addons-3.7
+      ./configure
+      make
+      make install
+
+      cd geoip
+      #get https://legacy-geoip-csv.ufficyo.com/
+      wget -q https://legacy-geoip-csv.ufficyo.com/Legacy-MaxMind-GeoIP-database.tar.gz -O - | tar -xvzf - -C /usr/share/xt_geoip
+      
+      cd /usr/share/xt_geoip/BE
+      cp * ../
+      iptables -m geoip --src-cc BR,IN,RU,KR,CH,BD --dst-cc BR,IN,RU,KR,CH,BD
+      iptables -I INPUT -m geoip --src-cc BR,IN,RU,KR,CH,BD -j DROP
+
+      iptables -m geoip --src-cc PL,NL,TH,CN,FR,AD,LT,MX --dst-cc PL,NL,TH,CN,FR,AD,LT,MX
+      iptables -I INPUT -m geoip --src-cc PL,NL,TH,CN,FR,AD,LT,MX -j DROP
+
+      iptables -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY --dst-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY
+      iptables -I INPUT -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY-j DROP         
+
+      iptables -m geoip --src-cc BD --dst-cc BD
+      iptables -I INPUT -m geoip --src-cc NL -j ACCEPT
+
+
+      #check mit 
+      /sbin/iptables -L INPUT -v
+      /sbin/iptables -L INPUT -v | grep CH
+      #test with nordvpn
+
+   
+
+
+    
+
+
+"    
+}
