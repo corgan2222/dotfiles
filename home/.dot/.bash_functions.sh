@@ -2206,12 +2206,11 @@ function iptable_block_bad_countrys() {
     return 1
   fi;
 
-
     iptables -m geoip --src-cc BR,IN,RU,KR,CH,BD --dst-cc BR,IN,RU,KR,CH,BD
     iptables -I INPUT -m geoip --src-cc BR,IN,RU,KR,CH,BD -j DROP
 
-    iptables -m geoip --src-cc PL,NL,TH,CN,FR,AD,LT,MX --dst-cc PL,NL,TH,CN,FR,AD,LT,MX
-    iptables -I INPUT -m geoip --src-cc PL,NL,TH,CN,FR,AD,LT,MX -j DROP
+    iptables -m geoip --src-cc PL,TH,CN,FR,AD,LT,MX --dst-cc PL,NL,TH,CN,FR,AD,LT,MX
+    iptables -I INPUT -m geoip --src-cc PL,TH,CN,FR,AD,LT,MX -j DROP
 
     iptables -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY --dst-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY
     iptables -I INPUT -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY -j DROP   
@@ -2219,7 +2218,7 @@ function iptable_block_bad_countrys() {
     /sbin/iptables -L INPUT -v | grep CH
 }
 
-function iptable_drop_country() {
+function iptable_ban_country() {
 
   if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
     echo "/usr/share/xt_geoip/BE not found. Install GeoIP-database"
@@ -2227,7 +2226,7 @@ function iptable_drop_country() {
   fi;
 
  if [ -z "${1}" ]; then
-    echo "Usage: iptable_drop_country CH "   
+    echo "Usage: iptable_ban_country CH "   
     return 1
   fi
     /sbin/iptables -m geoip --src-cc "${1}" --dst-cc "${1}"
@@ -2235,20 +2234,35 @@ function iptable_drop_country() {
     /sbin/iptables -L INPUT -v | grep "${1}"
 }
 
-function iptable_drop_ip() {
+function iptable_unban_country() {
+
+  if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
+    echo "/usr/share/xt_geoip/BE not found. Install GeoIP-database"
+    return 1
+  fi;
 
  if [ -z "${1}" ]; then
-    echo "Usage: iptable_drop_ip ip "   
+    echo "Usage: iptable_unban_country CH "   
+    return 1
+  fi    
+    /sbin/iptables -D INPUT -m geoip --src-cc "${1}" -j DROP   
+    /sbin/iptables -L INPUT -v | grep "${1}"
+}
+
+function iptable_ban_ip() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_ban_ip ip "   
     return 1
   fi
     
     /sbin/iptables -I INPUT -s "${1}" -j DROP
 }
 
-function iptable_undrop_ip() {
+function iptable_unban_ip() {
 
  if [ -z "${1}" ]; then
-    echo "Usage: iptable_undrop_ip ip "   
+    echo "Usage: iptable_unban_ip ip "   
     return 1
   fi
     

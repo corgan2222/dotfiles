@@ -195,6 +195,10 @@ echo "
             ./get-homebridge.sh
 
             #tasmota mqtt
+
+            #conky
+            sudo apt install conky
+            
     
 "    
 }
