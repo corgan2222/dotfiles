@@ -1918,11 +1918,11 @@ function Export_image_file_statistics_to_csv()
     find . -regex ".*\.\(jpg\|gif\|png\|jpeg\)" -type f -printf "%p,%AY-%Am-%AdT%AT,%CY-%Cm-%CdT%CT,%TY-%Tm-%TdT%TT,%s\n" > $1
 }
 
-"Usage:Tabs Export_image_file_statistics_to_csv 'output.csv' "
+#"Usage:Tabs Export_image_file_statistics_to_csv_tabs 'output.csv' "
 function Export_image_file_statistics_to_csv_tabs() 
 {
   if [ -z "${1}" ]; then
-    echo "Usage: Export_image_file_statistics_to_csv 'output.csv' "
+    echo "Usage: Export_image_file_statistics_to_csv_tabs 'output.csv' "
     return 1
   fi
   
