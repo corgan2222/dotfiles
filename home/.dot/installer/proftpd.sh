@@ -14,8 +14,8 @@ proftpd.sh(){
     echo "check sudo joe /etc/proftpd/proftpd.conf"
     #sudo joe /etc/proftpd/conf.d/proftp-custom.conf
    
-
-    echo" 
+    sudo touch /etc/proftpd/conf.d/proftp-custom.conf
+    sudo echo" 
         # Ftp user doesn't need a valid shell
     <Global>
         RequireValidShell off
@@ -25,9 +25,9 @@ proftpd.sh(){
     DefaultRoot ~ ftpuser
     
     # Limit login to the ftpuser group
-    <Limit LOGIN>
-        DenyGroup !ftpuser
-    </Limit>" >> /etc/proftpd/conf.d/proftp-custom.conf
+    #<Limit LOGIN>
+    #    DenyGroup !ftpuser
+    #</Limit>" >> /etc/proftpd/conf.d/proftp-custom.conf
 
     echo "check sudo joe /etc/proftpd/conf.d/proftp-custom.conf"
     
