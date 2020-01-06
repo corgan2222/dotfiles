@@ -105,8 +105,7 @@ function findStringInFiles() {
 }
 
 #create ssh files for new user
-functiom createUserSSH()
-{
+function createUserSSH() {
 
   if [ ! -d "~/.ssh" ]; then
     cd ~
