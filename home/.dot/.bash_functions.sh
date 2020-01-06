@@ -124,14 +124,14 @@ function createUserSSH() {
 
     if get_yes_keypress "Create id_rsa.ppk putty version? Will install putty-tools. Do you like this [y/n]? "
     then 
-        echo "Let's do something risky"
+        echo "install putty-tools"
         sudo apt-get install putty-tools
         puttygen id_rsa -o id_rsa.ppk
     fi
 
     if get_yes_keypress "Convert PPK Files to Private and Public Keys with puttygen ? [y/n]? "
     then 
-        echo "Let's do something risky"
+        echo "puttygen id_rsa.ppk"
         puttygen id_rsa.ppk -O private-openssh -o my_key.private
         puttygen id_rsa.ppk -O public-openssh -o my_key.public
     fi
