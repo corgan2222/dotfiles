@@ -93,7 +93,7 @@ header="$header$borderBar$(color $headerRaspberryColor "              '~'       
 me=$(whoami)
 
 # Greetings
-greetings="$borderBar$(color $greetingsColor "$(center "Welcome back, $me! on ")")$borderBar\n"
+greetings="$borderBar$(color $greetingsColor "$(center "Welcome back, $me! on $(hostname)")")$borderBar\n"
 greetings="$greetings$borderBar$(color $statsLabelColor "$(center "$MODELL_SYSTEM")")$borderBar"
 
 # System information
@@ -135,10 +135,10 @@ label4="$borderBar  $(color $statsLabelColor "Home space....:") $label4$borderBa
 label5="$(extend "$(/opt/vc/bin/vcgencmd measure_temp | cut -c "6-9")ºC")"
 label5="$borderBar  $(color $statsLabelColor "Temperature...:") $label5$borderBar"
 
-#label6="$(extend "$IP_LAN")"
-#label6="$borderBar  $(color $statsLabelColor "LAN IP...:") $label6$borderBar"
+label6="$(extend "$(hostname -I)")"
+label6="$borderBar  $(color $statsLabelColor "LAN IP........:") $label6$borderBar"
 
-stats="$label1\n$label2\n$label3\n$label4\n$label5"
+stats="$label1\n$label2\n$label3\n$label4\n$label5\n$label6"
 
 # Print motd
 echo -e "$header\n$borderEmptyLine\n$greetings\n$borderEmptyLine\n$stats\n$borderEmptyLine\n$borderBottomLine"   
