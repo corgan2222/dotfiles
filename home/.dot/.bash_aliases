@@ -183,6 +183,7 @@ alias aptChangelog="aptitude changelog "
 alias aptListSourcesList="cat /etc/apt/sources.list"
 alias aptEditSourcesList="sudo joe /etc/apt/sources.list"
 alias aptListSourcesD="ls -la /etc/apt/sources.list.d/"
+alias aptSourcesSize="aptitude -O installsize -F'%p %I' search '~i'"
 
 
 # ------------------------------------------------------------------------------
