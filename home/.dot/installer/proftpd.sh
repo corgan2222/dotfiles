@@ -29,7 +29,8 @@ proftpd.sh(){
         DenyGroup !ftpuser
     </Limit>" >> /etc/proftpd/conf.d/proftp-custom.conf
 
-    echo "check sudo joe /etc/proftpd/conf.d/proftp-custom.conf
+    echo "check sudo joe /etc/proftpd/conf.d/proftp-custom.conf"
+    
     sudo adduser ftpuser --shell /bin/false --home /var/www/upload
     sudo service proftpd restart
 }
