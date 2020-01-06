@@ -2328,11 +2328,19 @@ function iptable_block_subnet() {
 
 #see all blocked IPs
 function iptable_view_blocked() {
-
  /sbin/iptables -L -v
-
 }
 
+#diff compare local file with repo file
+function diff_git_file()
+{
+  if [ -z "${1}" ]; then
+      echo "Usage: iptable_diff_git_file raspi/raspi_info.sh"   
+      return 1
+  fi  
+  git fetch origin master
+  git diff origin/master -- "$1"
+}
 
 function installer-help(){
 echo " 

@@ -4,92 +4,62 @@
 # Contact rafaelcgstz@gmail.com
 #
 
-# Import Spotify
-. desktop/spotify.sh
-
-# Import SublimeText
-. desktop/sublimetext.sh
-
-# Import Brackets
-. desktop/brackets.sh
-
-# Import Brave
-. desktop/brave.sh
-
-# Import Atom
-. desktop/atom.sh
-
 # Import Google Drive
-. desktop/googledrive.sh
+. googledrive.sh
 
 # Import PhpStorm
-. desktop/phpstorm.sh
-
-# Import PhpStorm
-. desktop/phpstorm-9.sh
-
-# Import PhpStorm
-. desktop/phpstorm-10.sh
+. phpstorm-10.sh
 
 # Import Chrome
-. desktop/chrome.sh
+. chrome.sh
 
 # Import Chromium
-. desktop/chromium.sh
+. chromium.sh
 
 # Import Gimp
-. desktop/gimp.sh
+. gimp.sh
 
 # Import Firefox Developer Edition
-. desktop/firefoxdev.sh
+. firefoxdev.sh
 
 # Import digiKam Image editor
-. desktop/digikam.sh
-
-# Import Musique
-. desktop/musique.sh
+. digikam.sh
 
 # Import Node.js
-. desktop/nodejs.sh
+. nodejs.sh
 
 # Import PyCharm Community
-. desktop/pycharm.sh
+. pycharm.sh
 
 # Import PyCharm Professional
-. desktop/pycharm-pro.sh
+. pycharm-pro.sh
 
 # Import Rubymine 
-. desktop/rubymine.sh
+. rubymine.sh
 
 # Import Composer
-. desktop/composer.sh
+. composer.sh
 
 # Import Dropbox
-. desktop/dropbox.sh
+. dropbox.sh
 
 #Import Terminator
-. desktop/termiantor.sh
+. termiantor.sh
 
 # Import VS Code
-. desktop/vscode.sh
+. vscode.sh
 
 # Import Docker
-. desktop/docker.sh
+. docker.sh
 
 # Import Yarn
-. desktop/yarn.sh
+. yarn.sh
 
 # Import git
-. desktop/git.sh
+. git.sh
 
 # Import curl
-. desktop/curl.sh
-
-# Import Node Version Manager
-. desktop/nvm.sh
-
-# Import Flatpak
-. desktop/flatpak.sh
+. curl.sh
 
 # Import Go Programming Language
-. desktop/go.sh
+. go.sh
