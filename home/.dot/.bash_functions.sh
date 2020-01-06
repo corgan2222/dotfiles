@@ -132,8 +132,8 @@ function createUserSSH() {
     if get_yes_keypress "Convert PPK Files to Private and Public Keys with puttygen ? [y/n]? "
     then 
         echo "Let's do something risky"
-        puttygen my_key.ppk -O private-openssh -o my_key.private
-        puttygen my_key.ppk -O public-openssh -o my_key.public
+        puttygen id_rsa.ppk -O private-openssh -o my_key.private
+        puttygen id_rsa.ppk -O public-openssh -o my_key.public
     fi
 
     
@@ -1922,7 +1922,7 @@ function Export_image_file_statistics_to_csv()
 function Export_image_file_statistics_to_csv_tabs() 
 {
   if [ -z "${1}" ]; then
-    echo "Usage: Export_image_file_statistics_to_csv_tabs 'output.csv' "
+    echo "Usage: Export_image_file_statistics_to_csv 'output.csv' "
     return 1
   fi
   
