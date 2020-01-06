@@ -2404,7 +2404,8 @@ echo "
 
    
 
-
+      #ExtFat
+      sudo apt-get install exfat-fuse exfat-utils
     
 
 
