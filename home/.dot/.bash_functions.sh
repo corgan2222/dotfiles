@@ -29,6 +29,7 @@ function_exists() {
 }
 
 #usage findStringInFiles /etc foo exclud
+#"Usage:  findStringInFiles 'string' 'folder' ['exclude']"
 function findStringInFiles() {
   if [ -z "${1}" ]; then
     echo "Usage:  findStringInFiles 'string' 'folder' ['exclude']"
@@ -47,18 +48,38 @@ function findStringInFiles() {
   fi
 }
 
+#replaceStringInFile 'string' 'replace' file"
 function replaceStringInFile()
 {
+  if [ -z "${1}" ]; then
+    echo "Usage:  replaceStringInFile 'string' 'replace' file"
+    return 1
+  fi
+
+  if [ -z "${2}" ]; then
+    echo "Usage:  replaceStringInFile 'string' 'replace' file"
+    return 1
+  fi
+
+   if [ -f "${3}" ]; then
+    echo "file $3 not found"
+    return 1
+  fi
+
   sed -i 's/"$1"/"$2"/g' $3
  #sed -i 's/old-word/new-word/g' file
 }
 
-function GetFilelist_clean(){
+#GetFilelist_clean /home/user
+function GetFilelist_clean()
+{
   find "$1" -type f -printf "%f\n"
   #find ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n"
 }
 
-function GetFilelist_prefix(){
+#GetFilelist_prefix ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n
+function GetFilelist_prefix()
+{
   #GetFilelist_prefix folder prefix
   find "$1" -type f -printf "$2%f\n"
   #find ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n"
@@ -70,7 +91,8 @@ function initHome() {
 }
 
 #save changes in dotfiles
-function saveHome() {
+function saveHome() 
+{
   if [ $# -eq 0 ]; then
     echo "add commit message"
     return 1
@@ -180,6 +202,8 @@ function mkdatedir() {
   mkdir "$(date +%Y-%m-%d_${1})"
 }
 
+#create gif 
+#Usage: gifify <file_path>' 
 function gifify() {
   [ -z "$1" ] && echo 'Usage: gifify <file_path>' && return 1
   [ ! -f "$1" ] && echo "File $1 does not exist" && return 1
@@ -261,7 +285,6 @@ function nonzero_return() {
   [ $RETVAL -ne 0 ] && echo "$RETVAL"
 }
 
-# -------------------------------------------------------------------
 # lc: Convert the parameters or STDIN to lowercase.
 function lc() {
   if [ $# -eq 0 ]; then
@@ -273,7 +296,6 @@ function lc() {
   fi
 }
 
-# -------------------------------------------------------------------
 # uc: Convert the parameters or STDIN to uppercase.
 function uc() {
   if [ $# -eq 0 ]; then
@@ -655,8 +677,6 @@ function httpdump() {
 # iptablesBlockIP: block a IP via "iptables"
 #
 # usage: iptablesBlockIP 8.8.8.8
-# -
-
 function iptablesBlockIP() {
   if [ $# -eq 0 ]; then
     echo "Usage: iptablesBlockIP 123.123.123.123"
@@ -1215,9 +1235,7 @@ function shorturl() {
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 # Process phone photo.
-
 function ppp() {
 
   # Check if ImageMagick's convert command-line tool is installed.
@@ -1279,7 +1297,6 @@ function ppp() {
 
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Search history.
 #           ┌─ enable colors for pipe
@@ -1337,39 +1354,34 @@ function xxgetmac() {
   echo 'Usage: xxgetmac INTERFACE'
 }
 
-# set variables
-#declare -r TRUE=0
-#declare -r FALSE=1
-#declare -r PASSWD_FILE=/etc/passwd
 
 ##################################################################
 # Purpose: Converts a string to lower case
 # Arguments:
 #   $1 -> String to convert to lower case
-##################################################################
 function to_lower() {
   local str="$@"
   local output
   output=$(tr '[A-Z]' '[a-z]' <<<"${str}")
   echo $output
 }
+
 ##################################################################
 # Purpose: Display an error message and die
 # Arguments:
 #   $1 -> Message
 #   $2 -> Exit status (optional)
-##################################################################
 function die() {
   local m="$1"   # message
   local e=${2-1} # default exit status 1
   echo "$m"
   exit $e
 }
+
 ##################################################################
 # Purpose: Return true if script is executed by the root user
 # Arguments: none
 # Return: True or False
-##################################################################
 function is_root() {
   [ $(id -u) -eq 0 ] && return $TRUE || return $FALSE
 }
@@ -1378,7 +1390,6 @@ function is_root() {
 # Purpose: Return true $user exits in /etc/passwd
 # Arguments: $1 (username) -> Username to check in /etc/passwd
 # Return: True or False
-##################################################################
 function is_user_exits() {
   local u="$1"
   grep -q "^${u}" $PASSWD_FILE && return $TRUE || return $FALSE
@@ -1526,8 +1537,6 @@ Friday                              | date -d "2019-10-06 18:48:04.908930495 +02
 filecreate date stat file %w
 stat -c "%w %n" * | sort
  
-
-
 EOD
 }
 
@@ -1660,6 +1669,7 @@ function err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
 }
 
+#youtube-dl
 function yt2mp3() 
 {
 
@@ -1673,24 +1683,28 @@ function yt2mp3()
   fi
 }
 
+#mail tester imap
 function mail_test_ssl_server_imap() {
   stats=$(openssl s_client -showcerts -connect $1:993)
 
   return "$stats"
 }
 
+#mail tester pop3
 function mail_test_ssl_server_pop3() {
   stats=$(openssl s_client -showcerts -connect $1:995)
 
   echo "$stats"
 }
 
+#mail tester ssl
 function mail_test_ssl_server_SMTP() {
   stats=$(openssl s_client -showcerts -connect $1:465)
 
   echo "$stats"
 }
 
+#mail tester imap
 function mail_test_ssl_server_SMTP_star() {
   stats=$(openssl s_client -starttls smtp -showcerts -connect $1:25)
 
@@ -1699,12 +1713,9 @@ function mail_test_ssl_server_SMTP_star() {
 
 #Funktion um Dateien aus dem Internet zu laden. Prüft ob curl vorhanden ist , wenn nicht wird wget versucht. Wenn gar nichts von beiden gefunden wird wird das Skript beendet.
 #https://hope-this-helps.de/serendipity/categories/Bash-68/P3.html
+# download an file to local storage
+# need 2 parameters : get_remote_file [URL_TO_FILE] [LOCAL_PATH]
 function get_remote_file() {
-  # ------------------------- get_remote_file -------------------------------------------------------------------
-  # download an file to local storage
-  #
-  # need 2 parameters : get_remote_file [URL_TO_FILE] [LOCAL_PATH]
-  # -----------------------------------------------------------------------------------------------------------------
 
   if [[ ! -z "${1}" || ! -z "${2}" ]]; then
     bin_dl=""
@@ -1753,13 +1764,9 @@ function get_remote_file() {
 # Problem : Man möchte über Bash nur den Inhalt einer Zip Datei vergleichen. Die Zip Datei wird aber automatisiert auf einem Server über cron erstellt, was zur Folge hatte das der Zeitstempel und somit auch die md5 Summen unterschiedlich sind.
 # Lösung : Die Lösung ist mit unzip in die Datei zu schauen und diesen Output mit diff zu verleichen.
 # https://hope-this-helps.de/serendipity/categories/Bash-68/P3.html
-function check_files_in_zip() {
-  # ------------------------ check_files_in_zip ---------------------------------------
   # compare the content of two zipfiles if equal the function return 0 otherwise 1
-  #
   # need 2 parameters : check_files_in_zip [NAME_OF_OLD_ZIPFILE] [NAME_OF_NEW_ZIPFILE]
-  # -----------------------------------------------------------------------------------
-
+function check_files_in_zip() {
   if [[ ! -z "${1}" || ! -z "${2}" ]]; then
     diff <(unzip -v -l "${1}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') <(unzip -v -l "${2}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') 1>/dev/null 2>&1
     if [ $? -eq 0 ]; then
@@ -1787,6 +1794,8 @@ function geo-ip() {
   fi
 }
 
+# "Usage: sftp_keyfile 'keyfile' port user host"
+# "sftp_keyfile PATH/TO/PUBLICKEYFILE(id_rsa) 10022 user host"
 function sftp_keyfile() {
 
   if [ -z "${1}" ]; then
@@ -1802,6 +1811,7 @@ function sftp_keyfile() {
   fi
 }
 
+#"Usage: Export_image_file_statistics_to_csv 'output.csv' "
 function Export_image_file_statistics_to_csv() 
 {
   if [ -z "${1}" ]; then
@@ -1812,6 +1822,7 @@ function Export_image_file_statistics_to_csv()
     find . -regex ".*\.\(jpg\|gif\|png\|jpeg\)" -type f -printf "%p,%AY-%Am-%AdT%AT,%CY-%Cm-%CdT%CT,%TY-%Tm-%TdT%TT,%s\n" > $1
 }
 
+"Usage:Tabs Export_image_file_statistics_to_csv 'output.csv' "
 function Export_image_file_statistics_to_csv_tabs() 
 {
   if [ -z "${1}" ]; then
@@ -1822,6 +1833,7 @@ function Export_image_file_statistics_to_csv_tabs()
   find . -regex ".*\.\(jpg\|gif\|png\|jpeg\)" -type f -printf "%p \t %AY-%Am-%AdT%AT \t %CY-%Cm-%CdT%CT \t %TY-%Tm-%TdT%TT \t %s\n" > filestat_data_20141201.csv
 }
 
+#convert raw to jpg
 function convert_cr2_to_jpg(){
 
   if command -v ufraw >/dev/null; then
@@ -1832,35 +1844,35 @@ function convert_cr2_to_jpg(){
 
 }
 
-
-function ssh_copy_to_host(){
   #Copy something from this system to some other system:
   #echo scp /path/to/local/file username@hostname:/path/to/remote/file  
+function ssh_copy_to_host()
+{
   scp "$3 $1@$2:$4"
 }
-	
-function ssh_copy_from_host_to_host(){
+
   #Copy something from some system to some other system:
-  #scp username1@hostname1:/path/to/file username2@hostname2:/path/to/other/file 
+  #scp username1@hostname1:/path/to/file username2@hostname2:/path/to/other/file 	
+function ssh_copy_from_host_to_host(){
  scp "$1@$2:$3 $4@$5:$6"
   
 }
 	
-function ssh_copy_fron_host(){
   #Copy something from another system to this system:
-  #scp username@hostname:/path/to/remote/file /path/to/local/file
+  #scp username@hostname:/path/to/remote/file /path/to/local/file  
+function ssh_copy_fron_host(){
   scp "$1@$2:$3 $4"
 }
 	
+#dcraw -c RAW-Dateiname | convert - Ausgabedatei.FORMAT  
 function convert_CR2_to_JPG_dcraw()
 {
-  #dcraw -c RAW-Dateiname | convert - Ausgabedatei.FORMAT
   dcraw -c "$1" | convert - "$2.$3"
 }
 
+#curl -i -k -X GET -u root:rootpw "https://knaak.org:8443/api/v2/domains" -H  "accept: application/json"
 function checkSSLfromDomain()
-{
-  #curl -i -k -X GET -u root:rootpw "https://knaak.org:8443/api/v2/domains" -H  "accept: application/json"
+{  
   echo "++++++++++++++++ $1 ++++++++++++++++" ;
   echo | openssl s_client -servername NAME -connect $1:443 2>/dev/null | openssl x509 -noout -dates ; echo --------------------------------------- ;
 
@@ -1909,6 +1921,7 @@ function random_number999()
    echo $NUMBER
 }
 
+#"Usage: syncFileToS3 'file' "
 function syncFileToS3()
 {
   if [ -z "${1}" ]; then
@@ -2047,6 +2060,7 @@ sf() {
     done
 }
 
+#git help
 function gitHelpNew()
 {
   echo "git init"
@@ -2077,6 +2091,9 @@ dtags () {
         | tr -d '[]" ' | tr '}' '\n' | awk -F: '{print $3}'
 }
 
+#file diff
+# "  comparing dirs:  vdiff dir_a dir_b"
+# "  comparing files: vdiff file_a file_b"
 vdiff () 
 {
     if [ "${#}" -ne 2 ] ; then
@@ -2096,6 +2113,7 @@ vdiff ()
     fi
 }
 
+#extract embedded jpg from raw with ufraw
 raw2jpg_embedded(){
 
     if [ -z "${1}" ]; then
@@ -2106,6 +2124,7 @@ raw2jpg_embedded(){
     ufraw-batch --out-type=jpeg --embedded-image "$1"
 }
 
+# "Usage: raw2jpg_convert 'ARW|CR2' "
 raw2jpg_convert(){
 
     if [ -z "${1}" ]; then
@@ -2116,6 +2135,7 @@ raw2jpg_convert(){
     for file in *."${1}"; do convert "$file" "${file%"${1}"}JPG"; done
 }
 
+#convert raw parallel
 raw2jpg_parallel(){
 
     if [ -z "${1}" ]; then
@@ -2126,6 +2146,7 @@ raw2jpg_parallel(){
     parallel convert {} {.}."${1}" ::: *."$1"
 }
 
+# "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
 raw2jpg_ext()
 {
 
@@ -2151,11 +2172,13 @@ raw2jpg_ext()
 
 }
 
+#Get upgradable apts
 apt-getUpgradable ()
 {
   { apt-get --just-print upgrade 2>&1 | perl -ne 'if (/Inst\s([\w,\-,\d,\.,~,:,\+]+)\s\[([\w,\-,\d,\.,~,:,\+]+)\]\s\(([\w,\-,\d,\.,~,:,\+]+)\)? /i) {print "$1 (\e[1;34m$2\e[0m -> \e[1;32m$3\e[0m)\n"}';} | while read -r line; do echo -en "$line\n"; done;
 }
 
+#checkt ob angegebene files auf server vorhanden sind
 checkURLs ()
 {
   BASE="http://www.example.com"
@@ -2172,10 +2195,14 @@ checkURLs ()
   done
 }
 
+#epackage_exists
 function package_exists() {
     return dpkg -l "$1" &> /dev/null
 }
 
+
+#"Usage: imgResize '75' '91' "
+#"Usage: imgResize [sizeReduct][quality] "
 function imgResize() {
 
  if [ -z "${1}" ]; then
@@ -2199,6 +2226,7 @@ function getSSL() {
 
 }
 
+#block all ip from country on all ports
 function iptable_block_bad_countrys() {
 
   if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
@@ -2218,6 +2246,7 @@ function iptable_block_bad_countrys() {
     /sbin/iptables -L INPUT -v | grep CH
 }
 
+#block all ip from country on all ports
 function iptable_ban_country() {
 
   if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
@@ -2234,6 +2263,7 @@ function iptable_ban_country() {
     /sbin/iptables -L INPUT -v | grep "${1}"
 }
 
+#unblock all ip from country on all ports
 function iptable_unban_country() {
 
   if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
@@ -2249,6 +2279,7 @@ function iptable_unban_country() {
     /sbin/iptables -L INPUT -v | grep "${1}"
 }
 
+#block  ip on all ports
 function iptable_ban_ip() {
 
  if [ -z "${1}" ]; then
@@ -2259,6 +2290,7 @@ function iptable_ban_ip() {
     /sbin/iptables -I INPUT -s "${1}" -j DROP
 }
 
+#unblock  ip on all ports
 function iptable_unban_ip() {
 
  if [ -z "${1}" ]; then
@@ -2270,6 +2302,7 @@ function iptable_unban_ip() {
     iptable_check_ip "${1}"
 }
 
+#is ip blocked
 function iptable_check_ip() {
 
  if [ -z "${1}" ]; then
@@ -2281,6 +2314,7 @@ function iptable_check_ip() {
 
 }
 
+#is subnet blocked
 function iptable_block_subnet() {
 
  if [ -z "${1}" ]; then
@@ -2292,6 +2326,7 @@ function iptable_block_subnet() {
 
 }
 
+#see all blocked IPs
 function iptable_view_blocked() {
 
  /sbin/iptables -L -v
