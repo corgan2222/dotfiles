@@ -34,7 +34,7 @@ alias logsWWW="lnav /var/www/vhosts/knaak.org/logs/"
 
 alias zabbix_server_reload="zabbix_server -R config_cache_reload"
 # ------------------------------------------------------------------------------
-# | Defaults                                                                   |
+# | sudo                                                                       |
 # ------------------------------------------------------------------------------
 
 # Enable simple aliases to be sudo'ed. ("sudone"?)
