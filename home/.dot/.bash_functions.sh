@@ -77,6 +77,37 @@ function scriptInfoPerl() {
           print "\033[31m$name\033[0;37m()\n\033[32m$comments\n";
       }' "$file"
 }
+#prints all functions from file
+function scriptInfoPerl_forGithub() {
+  if [ -z "${1}" ]; then
+    echo "Usage: scriptInfoPerl file"
+    file="$HOME"/.dot/.bash_functions.sh
+    #return 1
+  else
+    file="${1}"  
+  fi
+
+  perl -0777 -ne '
+      while (/^((?:[ \t]*\#.*\n)*)               # preceding comments
+              [ \t]*(?:(\w+)[ \t]*\(\)|         # foo ()
+                        function[ \t]+(\w+).*)   # function foo
+              ((?:\n[ \t]+\#.*)*)               # following comments
+            /mgx) {
+          $name = "# $2$3";
+          $comments = "$1$4";
+          $comments =~ s/^[ \t]*//mg;
+          chomp($comments);
+          $comments =~ s/#/>*/ig;
+          print "\033[31m$name\033[0;37m()\n\033[32m$comments\n";
+      }' "$file"
+}
+
+function create_github_docs(){
+  scriptInfoPerl_forGithub "$HOME"/.dot/.bash_functions.sh > "$HOME"/.dot/docs/bash_functions.md
+  scriptInfoPerl_forGithub "$HOME"/.dot/asuswrt/asus_bash_functions.sh > "$HOME"/.dot/docs/asus_bash_functions.md
+  scriptInfoPerl_forGithub "$HOME"/.dot/raspi/raspi_bash_functions.sh > "$HOME"/.dot/docs/raspi_bash_functions.md
+}
+
 
 #return 0 on exist and 1 if not
 function_exists() {

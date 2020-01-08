@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+#get generell raspbian help
 function help(){
 echo '        
     cat /proc/meminfo: Shows details about your memory.
@@ -28,6 +29,7 @@ echo '
 '
     }
     
+#get app installer help    
 function installer-help-raspi(){
 echo " 
     #base
@@ -50,13 +52,14 @@ echo "
 "    
 }
 
+#install extFat Filesystem 
 function install_extFileSystems()
 {
     sudo apt-get update
     sudo apt-get install exfat-fuse exfat-utils ntfs-3g lsofcd
 }   
 
-
+#install tensorflow
 function installer-tensorflow(){
     echo "install tensorflow: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Raspberry_Pi_Guide.md"
     sudo apt-get update
