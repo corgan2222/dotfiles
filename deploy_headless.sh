@@ -27,5 +27,12 @@ fi
 source $HOME/.homesick/repos/homeshick/homeshick.sh
 
 for castle in "${castles[@]}"; do
-  homeshick clone "$castle"
+  homeshick clone "$castle" --force
 done
+
+source $HOME/.bashrc 
+source $HOME/.dot/.bash_aliases 
+source $HOME/.dot/.bash_functions.sh 
+homeshick link --force
+
+exec "$SHELL" -l
