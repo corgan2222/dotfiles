@@ -89,6 +89,14 @@ add File or Folder:
 homeshick track dotfiles [file, folder]
 ```
 
+troubleshoot
+```sh
+homeshick cd dotfiles
+git status
+#rm file
+git pull
+```
+
 ## Usage example
 
 _For alias and functions check the [Wiki][https://github.com/corgan2222/dotfiles/wiki]._
