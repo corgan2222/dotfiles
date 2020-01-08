@@ -202,9 +202,9 @@ function saveHome()
 
 #load newest dotfiles
 function loadHome() {
-  homeshick pull dotfiles
-  reload
+  homeshick pull dotfiles  
   homeshick link
+  reload
 }
 
 #check dotfiles

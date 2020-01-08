@@ -88,6 +88,7 @@ alias cd..='cd ..'
 alias cd...='cd ../..'
 alias cd....='cd ../../..'
 alias cd.....='cd ../../../..'
+alias cdHomeshick="homeshick cd dotfiles"
 
 alias ll='ls -alF'
 alias la='ls -A'
