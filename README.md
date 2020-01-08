@@ -74,6 +74,7 @@ Load:
 
 ```sh
  homeshick pull dotfiles
+ homeshick link #for new files
   reload
 ```
 
