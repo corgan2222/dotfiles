@@ -13,7 +13,7 @@ all the Linux Stuff i used over the last 10 years
 - seperate Functions and Alias for each OS
 - easy installer
 - Custom MOTD (Message of the Day) for each OS
-- Backup/Sync via GitHub
+- Backup/Sync via homeshick on GitHub
 - 300 different Alias 
 - 200 Functions
 - 40 Tools
