@@ -12,3 +12,4 @@ vscode.sh() {
 	sudo apt-get update;
 	sudo apt-get install code;
 }
+vscode.sh

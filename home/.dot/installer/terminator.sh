@@ -9,3 +9,4 @@ terminator.sh() {
 	sudo apt-get update;
 	sudo apt-get install terminator -y;
 }
+terminator.sh

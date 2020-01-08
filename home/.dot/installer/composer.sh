@@ -36,3 +36,5 @@ composer.sh()
 
     exit $RESULT
 }
+
+composer.sh

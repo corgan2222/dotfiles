@@ -18,3 +18,5 @@ wpcli.sh(){
 	#sudo chmod -Rv 644 /etc/apache2/apache2.conf;
 	#sudo service apache2 restart;;
 }
+
+wpcli.sh

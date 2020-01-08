@@ -25,3 +25,4 @@ phpstorm-10.sh(){
     sudo chmod +x phpstorm.sh;
     ./phpstorm.sh;
 }
+phpstorm-10.sh

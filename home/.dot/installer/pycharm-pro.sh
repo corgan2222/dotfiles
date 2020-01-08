@@ -25,3 +25,4 @@ pycharm-pro.sh(){
     sudo chmod +x pycharm.sh;
     ./pycharm.sh;
 }
+pycharm-pro.sh

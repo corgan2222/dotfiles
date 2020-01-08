@@ -11,3 +11,4 @@ docker_raspi.sh()
     sudo apt-get update
     sudo apt-get install docker-ce
 }    
+docker_raspi.sh

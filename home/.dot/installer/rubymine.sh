@@ -25,3 +25,4 @@ rubymine.sh(){
     sudo chmod +x rubymine.sh;
     ./rubymine.sh;
 }
+rubymine.sh

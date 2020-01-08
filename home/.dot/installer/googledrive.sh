@@ -12,3 +12,4 @@ googledrive.sh(){
 	sudo apt-get install grive &&
 	sudo apt-get install -y grive-tools
 }
+googledrive.sh

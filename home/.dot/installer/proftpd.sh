@@ -35,3 +35,4 @@ proftpd.sh(){
     sudo service proftpd restart
 }
 
+proftpd.sh

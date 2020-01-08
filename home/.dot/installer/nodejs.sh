@@ -54,3 +54,5 @@ node12(){
     sudo apt-get install -y nodejs;
     clear;
 }
+
+nodejs.sh

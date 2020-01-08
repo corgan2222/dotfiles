@@ -12,3 +12,4 @@ gimp.sh(){
     clear;
 	gimp;
 }
+gimp.sh

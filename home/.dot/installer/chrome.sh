@@ -46,3 +46,5 @@ chrome.sh(){
         sudo dpkg -i google-chrome*.deb;
         google-chrome;
     }
+
+    chrome.sh

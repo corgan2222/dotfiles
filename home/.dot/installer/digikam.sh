@@ -6,3 +6,4 @@ digikam.sh(){
 	clear;
 	digikam;
 }
+digikam.sh

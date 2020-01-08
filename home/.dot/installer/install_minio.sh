@@ -8,3 +8,5 @@ minio1.docker()
     -v /data/tl:/data \
     minio/minio server /data 
 }    
+
+minio1.docker
