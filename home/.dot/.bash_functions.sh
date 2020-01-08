@@ -98,7 +98,7 @@ function scriptInfoPerl_forGithub() {
           $comments =~ s/^[ \t]*//mg;
           chomp($comments);
           $comments =~ s/#/>*/ig;
-          print "\033[31m$name\033[0;37m()\n\033[32m$comments\n";
+          print "$name()\n$comments\n";
       }' "$file"
 }
 
