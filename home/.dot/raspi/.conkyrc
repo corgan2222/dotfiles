@@ -29,7 +29,7 @@ override_utf8_locale no
 use_spacer right
 
 TEXT
-${font Arial:size=20}${color Tan1}RPI${color Ivory}LINUX
+${font Arial:size=20}${color Tan1}KNAAK${color Ivory}raspiDEV
 
 ${voffset -90}
 ${color DimGray}
@@ -64,7 +64,7 @@ $font${top_mem name 3}${alignr}${top mem 3} %
 $font${top_mem name 4}${alignr}${top mem 4} %
 $font${top_mem name 5}${alignr}${top mem 5} %
 
-${font Arial:bold:size=10}${color Tan2}NETWORK ${color DarkSlateGray}${hr 2}
+${font Arial:bold:size=10}${color Tan2}NETWORK Wifi${color DarkSlateGray}${hr 2}
 $font${color DimGray}IP on wlan0 $alignr ${addr wlan0}
 
 Down $alignr ${downspeed wlan0} kb/s
@@ -72,3 +72,23 @@ Up $alignr ${upspeed wlan0} kb/s
 
 Downloaded: $alignr  ${totaldown wlan0}
 Uploaded: $alignr  ${totalup wlan0}
+
+${font Arial:bold:size=10}${color Tan2}NETWORK eth0${color DarkSlateGray}${hr 2}
+$font${color DimGray}IP on eth0 $alignr ${addr eth0}
+
+Down $alignr ${downspeed eth0} kb/s
+Up $alignr ${upspeed eth0} kb/s
+
+Downloaded: $alignr  ${totaldown eth0}
+Uploaded: $alignr  ${totalup eth0}
+
+
+${font Arial:bold:size=10}${color Tan2}NETWORK ZeroTier${color DarkSlateGray}${hr 2}
+$font${color DimGray}IP on ztr2qtgtyt $alignr ${addr ztr2qtgtyt}
+
+Down $alignr ${downspeed ztr2qtgtyt} kb/s
+Up $alignr ${upspeed ztr2qtgtyt} kb/s
+
+Downloaded: $alignr  ${totaldown ztr2qtgtyt}
+Uploaded: $alignr  ${totalup ztr2qtgtyt}
+
