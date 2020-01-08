@@ -144,6 +144,65 @@ function createUserSSH() {
 
 }
 
+function user_add_with_pass_and_folder()
+{
+  if [ $(id -u) -eq 0 ]; then
+    read -p "Enter username : " username
+    read -s -p "Enter password : " password
+    egrep "^$username" /etc/passwd >/dev/null
+    if [ $? -eq 0 ]; then
+      echo "$username exists!"
+      exit 1
+    else
+      pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
+      useradd -m -p $pass $username
+      [ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
+
+        read -r -p "Add home folder /home/$username [Y/n]" response
+        response=${response,,} # tolower
+        if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+            
+      
+          mkdir /home/$username
+          #git clone https://github.com/corgan2222/dotfiles.git /home/$username
+          chown $username:root /home/$username
+
+          [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
+      fi
+    fi
+  else
+    echo "Only root may add a user to the system"
+    exit 2
+  fi
+
+}
+
+function user_remove()
+{
+
+  if [ $(id -u) -eq 0 ]; then
+    read -p "Enter username : " username
+    egrep "^$username" /etc/passwd >/dev/null
+    if [ $? -eq 0 ]; then
+      read -r -p "shure to remove and the homefolder /home/$username [Y/n]" response
+      response=${response,,} # tolower
+      if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+
+        userdel $username                
+        sudo rm -R /home/$username -f                             
+
+        [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
+      fi
+    else
+      echo "$username dont exists!"
+      exit 1
+    fi
+  else
+    echo "Only root may delete a user"
+    exit 2
+  fi
+}
+
 #replaceStringInFile 'string' 'replace' file"
 function replaceStringInFile()
 {
@@ -2447,62 +2506,6 @@ echo "
     sudo -i
     sudo ap joe
 
-    #docker
-    sudo ap docker-ce
-    sudo apt install --no-install-recommends docker-ce
-    sudo curl -sL get.docker.com | sed 's/9)/10)/' | sh
-    sudo usermod -aG docker pi
-    sudo usermod -aG docker root
-    
-    #swap
-    # https://www.elektronik-kompendium.de/sites/raspberry-pi/2002131.htm
-    sudo joe /etc/dphys-swapfile
-    
-    #zerotier
-    curl -s https://install.zerotier.com/ | sudo bash
-    sudo zerotier-cli join 565799d8f6aa97e5
-    
-    #zabbix
-    sudo ap zabbix-agent
-    sudo joe /etc/zabbix/zabbix_agentd.conf
-    sudo adduser zabbix sudo
-    sudo visudo
-    joe /etc/sudoers.d/010_pi-nopasswd
-
-    #samba
-    #https://www.elektronik-kompendium.de/sites/raspberry-pi/2007071.htm
-
-    sudo apt-get install samba samba-common smbclient
-    sudo mv /etc/samba/smb.conf /etc/samba/smb.conf_alt
-    sudo nano /etc/samba/smb.conf
-    testparm
-    sudo smbpasswd -a pi
-    sudo nano /etc/samba/smb.conf
-    sudo service smbd restart
-    sudo service nmbd restart
-
-    #etckeeper
-    sudo -i
-    cd /root/.ssh
-    ssh-keygen
-    cat id_rsa.pub -> copy into gitlab user settings -Y ssh keys
-    ap etckeeper git
-    joe /etc/etckeeper/etckeeper.conf
-    VCS=\"git\"
-    AVOID_SPECIAL_FILE_WARNING=1
-    PUSH_REMOTE=\"origin\"
-    git config --global user.name "xxx"
-    git config --global user.email "xxx"
-    git config --global core.editor "joe"
-    git config --global push.default simple
-    cd /etc
-    git init
-    git remote add origin ssh://git@xxx:30001/xxx/xxx.git
-    etckeeper commit "initial commit"
-    git push --set-upstream origin master
-    systemctl enable etckeeper.timer
-    systemctl start etckeeper.timer
-
     #block countrys
       https://linoxide.com/linux-how-to/block-ips-countries-geoip-addons/
       
@@ -2541,11 +2544,7 @@ echo "
       /sbin/iptables -L INPUT -v | grep CH
       #test with nordvpn
 
-   
-
-      #ExtFat
-      sudo apt-get install exfat-fuse exfat-utils
-    
+  
 
 
 "    
