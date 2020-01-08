@@ -17,7 +17,7 @@ all the Linux Stuff i used over the last 10 years
 - 300 different Alias 
 - 200 Functions
 - 40 Tools
-- 45 installer for any type of Software
+- 45 installer for any type of Software with Bash GUI Installer
 - Cheat/Hint/Help System
 - create Documentation automaticly for Github
 
