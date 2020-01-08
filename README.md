@@ -7,6 +7,30 @@ all the Linux Stuff i used over the last 10 years
 
 ![](https://corgan2222.github.io/dotfiles/checkout.jpg)
 
+## Features
+
+- same Alias and Commands on different OS
+- seperate Functions and Alias for each OS
+- easy installer
+- Custom MOTD (Message of the Day) for each OS
+- Backup/Sync via GitHub
+- xxx Alias 
+- XXX Functions
+- xxx Tools
+- XXX installer for any type of Software
+- Cheat/Hint/Help System
+- create Documentation automaticly for Github
+
+## Support for OS:
+
+- Ubuntu
+- Debian
+- AsusWRT
+- Rasbian 3
+- Rasbian 4
+- Kali Linux
+- Synology 
+
 ## Table of Contents
 
 - [Dotfiles - Alias and basic Functions](#dotfiles---alias-and-basic-functions)
