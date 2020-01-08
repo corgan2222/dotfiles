@@ -24,6 +24,9 @@
 # scriptInfoPerl_forGithub()
 >*prints all functions from file
 
+# AliasInfoPerl_forGithub()
+>*prints all functions from file
+
 # create_github_docs()
 
 # function_exists()

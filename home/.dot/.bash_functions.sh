@@ -101,11 +101,52 @@ function scriptInfoPerl_forGithub() {
           print "$name()\n$comments\n";
       }' "$file"
 }
+#prints all functions from file
+function AliasInfoPerl_forGithub() {
+  if [ -z "${1}" ]; then
+    echo "Usage: AliasInfoPerl_forGithub file"
+    file="$HOME"/.dot/.bash_aliases
+    #return 1
+  else
+    file="${1}"  
+  fi
+
+  perl -0777 -ne '
+      while (/^((?:[ \t]*\#.*\n)*)               # preceding comments
+              [ \t]*(?:(\w+)[ \t]*\(\)|         # foo ()
+                        alias [ \t]+(\w+).*)   # function foo
+              ((?:\n[ \t]+\#.*)*)               # following comments
+            /mgx) {
+          $name = "# $2$3";
+          $comments = "$1$4";
+          $comments =~ s/^[ \t]*//mg;
+          chomp($comments);
+          $comments =~ s/#/>*/ig;
+          print "$name\n$comments\n";
+      }' "$file"
+}
 
 function create_github_docs(){
   scriptInfoPerl_forGithub "$HOME"/.dot/.bash_functions.sh > "$HOME"/.dot/docs/bash_functions.md
   scriptInfoPerl_forGithub "$HOME"/.dot/asuswrt/asus_bash_functions.sh > "$HOME"/.dot/docs/asus_bash_functions.md
   scriptInfoPerl_forGithub "$HOME"/.dot/raspi/raspi_bash_functions.sh > "$HOME"/.dot/docs/raspi_bash_functions.md
+
+  scriptInfoPerl_forGithub "$HOME"/.dot/.bash_functions.sh > "$HOME"/git/corgan2222/dotfiles.wiki/functions.md
+  scriptInfoPerl_forGithub "$HOME"/.dot/asuswrt/asus_bash_functions.sh > "$HOME"/git/corgan2222/dotfiles.wiki/asus_bash_functions.md
+  scriptInfoPerl_forGithub "$HOME"/.dot/raspi/raspi_bash_functions.sh > "$HOME"/git/corgan2222/dotfiles.wiki/raspi_bash_functions.md
+
+  AliasInfoPerl_forGithub "$HOME"/.dot/.bash_aliases > "$HOME"/.dot/docs/bash_aliases.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/asuswrt/.bash_aliases > "$HOME"/.dot/docs/bash_aliases_asus.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/raspi/.bash_aliases > "$HOME"/.dot/docs/bash_aliases_raspi.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/synology/.bash_aliases > "$HOME"/.dot/docs/bash_aliases_synology.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/ubuntu16/.bash_aliases > "$HOME"/.dot/docs/bash_aliases_ubuntu16.md
+
+  AliasInfoPerl_forGithub "$HOME"/.dot/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/asuswrt/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases_asus.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/raspi/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases_raspi.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/synology/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases_synology.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/ubuntu16/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases_ubuntu16.md
+
 }
 
 
