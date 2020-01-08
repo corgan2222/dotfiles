@@ -1,11 +1,13 @@
 sudo apt-get install conky -y
 cp ~/.dot/raspi/.conkyrc /home/pi/.conkyrc
-echo "#!/bin/sh
+
+sudo echo "#!/bin/sh
 (sleep 4s && conky) &
 exit 0" > /usr/bin/conky.sh
+
 sudo nano /usr/bin/conky.sh
 
-echo"
+sudo echo"
 [Desktop Entry]
 Name=conky
 Type=Application

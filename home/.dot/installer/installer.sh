@@ -1,5 +1,7 @@
 # #! /bin/bash
 
+sudo apt-get install dialog
+
 cecho(){
     RED="\033[0;31m"
     GREEN="\033[0;32m"
