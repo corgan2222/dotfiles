@@ -14,8 +14,8 @@ all the Linux Stuff i used over the last 10 years
 - easy installer
 - Custom MOTD (Message of the Day) for each OS
 - Backup/Sync via GitHub
-- >300 different Alias 
-- >200 Functions
+- 300 different Alias 
+- 200 Functions
 - 40 Tools
 - 45 installer for any type of Software
 - Cheat/Hint/Help System
