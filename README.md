@@ -29,7 +29,15 @@ all the Linux Stuff i used over the last 10 years
 Linux:
 
 ```sh
+#with repo choose
 bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+
+#just this repo
+bash <(curl https://corgan2222.github.io/dotfiles/deploy_headless.sh)
+
+or
+bash <(curl https://sh.knaak.org)
+
 gitSaveCredential
 ```
 
