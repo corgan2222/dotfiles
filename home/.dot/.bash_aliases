@@ -108,6 +108,8 @@ if command -v exa >/dev/null; then
 fi
 
 alias userls='cat /etc/passwd'
+alias groups-ls="getent group"
+alias user-groups-ls="for user in $(awk -F: '{print $1}' /etc/passwd); do groups $user; done"
 
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'

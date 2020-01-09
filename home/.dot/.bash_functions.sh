@@ -1671,7 +1671,7 @@ function lastFileChange() {
 # print_style "This is a light blue with a \t tab " "info";
 # print_style "This is a red text with a \n new line " "danger";
 # print_style "This has no color";
-function ps() {
+function ct() {
 
   if [ "$2" == "info" ]; then
     COLOR="96m"
@@ -1786,7 +1786,8 @@ function h() {
 
   alias | grep -i $1
   grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' "$HOME"/.dot/.bash_functions.sh | grep -i $1
-  cheat $1
+  cheat "$1"
+  curl cli.help/suche | grep "$1"
 
 }
 
@@ -2567,6 +2568,63 @@ function diff_git_file()
   fi  
   git fetch origin master
   git diff origin/master -- "$1"
+}
+
+#add user to group
+function user_add_to_group()
+{
+  if [ -z "${1}" ]; then
+      echo "Usage: user_add_to_group user group"   
+      return 1
+  fi
+  
+  if [ -z "${2}" ]; then
+      echo "Usage: user_add_to_group user group"   
+      return 1
+  fi
+  
+  sudo usermod -aG $2 $1
+
+}
+
+#list user groups
+function user_list_groups()
+{
+  if [ -z "${1}" ]; then
+      echo "Usage: user_list_groups user"   
+      return 1
+  fi
+ 
+  sudo groups $1 
+}
+
+#List users and their groups:
+function user_in_groups_list(){
+  for user in $(awk -F: '{print $1}' /etc/passwd); 
+    do groups $user; 
+  done
+
+}
+
+#List groups and their users:
+function groups_with_users_list(){
+
+  cat /etc/group | awk -F: '{print $1, $3, $4}' | while read group gid members; 
+  do
+      members=$members,$(awk -F: "\$4 == $gid {print \",\" \$1}" /etc/passwd);
+      echo "$group: $members" | sed 's/,,*/ /g';
+  done
+
+}
+
+#list only manually added users
+function groups_with_manual_users_list(){
+
+  for user in $(getent passwd {1000..60000} |awk -F: '{print $1}');
+  do 
+      groups $user; 
+  done
+
 }
 
 function installer-help(){
