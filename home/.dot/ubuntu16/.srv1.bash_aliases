@@ -8,4 +8,4 @@ alias cdwsl='cd /root/scripts/wsl/2019/'
 
 
 
-figlet -k -f slant "$(hostname)"  | toilet -f term | lolcat
+figlet -k -f slant "$(hostname)"  | lolcat
