@@ -46,8 +46,17 @@ if [ "$color_prompt" = yes ]; then
             fi
     }
     
-    function getmyIP {
-          ifconfig | grep ^eth -A2 | grep 'inet' | head -1 | awk '{ print $2 }'
+    function getmyIP 
+    {
+       ip=$(ifconfig | grep ^eth -A2 | grep 'inet' | head -1 | awk '{ print $2 }')
+       
+       if [[ "$ip" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+	  echo $ip
+	else
+	  ip=$(ifconfig | grep ^wlan -A2 | grep 'inet' | head -1 | awk '{ print $2 }')
+	  echo $ip
+	fi
+       
     }    
 
     # get current status of git repo
