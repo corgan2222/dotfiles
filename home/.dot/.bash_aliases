@@ -634,3 +634,10 @@ alias ListShellandEnvironmentVariables="printenv "
 
 alias fx="fx ." #npm install -g fx print json
 alias how="function hdi(){ howdoi $* -c -n 5; }; hdi" #pip install howdoi
+
+#wifi
+alias wifi_ls_controller="lspci"
+alias wifi_show_infos="iwconfig wlan0"
+alias wifi_show_quality="iwconfig wlan0 | grep -i --color quality"
+alias wifi_show_quality2="cat /proc/net/wireless"
+alias wifi_show_quality_continuosly="watch -n 1 cat /proc/net/wireless"
