@@ -185,17 +185,17 @@ runOption(){
 
 
 # shootProfile
-#echo "$CPU_CORES x $CPU_TYPE"
-# echo "OS: $OS"
-# echo "DIST: $DIST"
-# echo "PSUEDONAME: $PSUEDONAME"
-# echo "REV: $REV"
-# echo "DistroBasedOn: $DistroBasedOn"
-# echo "KERNEL: $KERNEL"
-# echo "MACH: $MACH"
-# echo "model: $MODELL"
-# echo "type: $MODELL_TYPE"
-# echo "system: $MODELL_SYSTEM"
+echo "$CPU_CORES x $CPU_TYPE"
+echo "OS: $OS"
+echo "DIST: $DIST"
+echo "PSUEDONAME: $PSUEDONAME"
+echo "REV: $REV"
+echo "DistroBasedOn: $DistroBasedOn"
+echo "KERNEL: $KERNEL"
+echo "MACH: $MACH"
+echo "model: $MODELL"
+echo "type: $MODELL_TYPE"
+echo "system: $MODELL_SYSTEM"
 #echo "========"
 # printMenu
 
