@@ -1,0 +1,12 @@
+[Unit]
+Description=PWM Fan Control
+After=systemd-boot-check-no-failures.service
+
+[Service]
+Type=simple
+User=root
+ExecStart= /usr/bin/python3 /usr/bin/fan_ctrl.py
+Restart=always
+
+[Install]
+WantedBy=default.target
