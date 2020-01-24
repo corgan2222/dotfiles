@@ -2371,7 +2371,7 @@ raw2jpg_parallel(){
       return 1
     fi
 
-    parallel convert {} {.}."${1}" ::: *."$1"
+    parallel convert {} {.}."${1}" ::: "$1"
 }
 
 # "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
@@ -2394,6 +2394,28 @@ raw2jpg_ext()
         --exposure=auto \
         --out-type=jpeg \
         --compression=96 \
+        --out-path=./"${2}" \
+        "$f"
+    done
+
+}
+# "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
+raw2jpg_embedded_batch()
+{
+
+  if [ -z "${1}" ]; then
+    echo "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
+    return 1
+  fi
+  
+    if [ ! -d ./"${2}" ]; then mkdir ./"${2}"; fi;
+
+    # processes raw files
+    for f in *."${1}";
+    do
+      echo "Processing $f"
+      ufraw-batch \
+        --embedded-image
         --out-path=./"${2}" \
         "$f"
     done
