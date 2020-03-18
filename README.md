@@ -62,6 +62,9 @@ bash <(curl https://corgan2222.github.io/dotfiles/deploy_headless.sh)
 or
 bash <(curl https://sh.knaak.org)
 
+or
+curl sh.knaak.org | bash
+
 gitSaveCredential
 ```
 
