@@ -2360,7 +2360,10 @@ raw2jpg_convert(){
       return 1
     fi
 
-    for file in *."${1}"; do convert "$file" "${file%"${1}"}JPG"; done
+    for file in *."${1}"; 
+      do 
+        convert "$file" "${file%"${1}"}JPG"; 
+      done
 }
 
 #convert raw parallel
@@ -2399,12 +2402,13 @@ raw2jpg_ext()
     done
 
 }
-# "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
+# "Usage: raw2jpg_embedded_batch ARW jpg/ "
 raw2jpg_embedded_batch()
 {
 
   if [ -z "${1}" ]; then
-    echo "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
+    echo "Usage: raw2jpg_embedded_batch 'ARW|CR2' 'outout Folder' "
+    echo "Usage: Usage: raw2jpg_embedded_batch ARW jpg/ "
     return 1
   fi
   
@@ -2415,7 +2419,7 @@ raw2jpg_embedded_batch()
     do
       echo "Processing $f"
       ufraw-batch \
-        --embedded-image
+        --embedded-image \
         --out-path=./"${2}" \
         "$f"
     done
