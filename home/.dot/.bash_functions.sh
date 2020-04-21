@@ -2585,6 +2585,19 @@ function iptable_view_blocked() {
  /sbin/iptables -L -v
 }
 
+#see all blocked IPs
+function iptable_view_blocked_geo() {
+ /sbin/iptables -L -v | grep geo
+}
+
+#diff compare local file with repo file
+function iptable_remove_lines()
+{
+  iptables -L INPUT --line-numbers | grep geo
+  box "type iptables -D INPUT Linenumber"
+
+} 
+
 #diff compare local file with repo file
 function diff_git_file()
 {
@@ -2595,6 +2608,7 @@ function diff_git_file()
   git fetch origin master
   git diff origin/master -- "$1"
 }
+
 
 #add user to group
 function user_add_to_group()
@@ -2705,3 +2719,28 @@ echo "
 
 "    
 }
+
+
+# -t Tabelle	Diese Filterregel gilt für die Tabelle "Tabelle".
+# -I Chain [Position]	Regel wird an Position "Position" der Kette "Chain" eingefügt. Bei Nichtangabe der Position wird die Regel am Anfang der Kette eingefügt.
+# -A Chain	Regel wird an die Kette "Chain" angehängt.
+# -D Chain	Regel wird aus der Kette "Chain" gelöscht.
+# -F Chain	Alle Regeln der Kette "Chain" löschen.
+# -L Chain	Liste alle Regeln der Kette "Chain" auf.
+# -p Protokoll	Das Paket wird nur geprüft, wenn es gemäß "IP-Protokoll" ist (z.B. TCP, UDP, ICMP).
+# -s IP-Adresse	Das Paket wird nur geprüft, wenn es von der definierten IP-Adresse stammt.
+# -d IP-Adresse	Das Paket wird nur geprüft, wenn es an die definierte IP-Adresse gesendet wird.
+# -i Netzwerkschnittstelle	Das Paket wird nur geprüft, wenn es über die definierte Netzwerkschnittstelle eingegangen ist.
+# -o Netzwerkschnittstelle	Das Paket wird nur geprüft, wenn es über die definierte Netzwerkschnittstelle versendet wird.
+# --sport Port-Nr oder --source-port Port-Nr	Das Paket wird nur geprüft, wenn es von der definierten Port-Nummer stammt. Muss zwingend in Verbindung mit -p benutzt werden!
+# --dport Port-Nr oder -destination-port Port-Nr	Das Paket wird nur geprüft, wenn es an die definierte Port-Nummer gesendet wird. Muss zwingend in Verbindung mit -p benutzt werden!
+# -j Aktion	Legt fest, welche Aktion auf das Paket angewendet werden soll, wenn alle Prüfkriterien erfüllt wurden. Weitere Details siehe hier.
+# -P Chain Aktion	Legt eine Policy für eine Chain fest, falls keine Filterregel zutrifft. Weitere Details siehe hier.
+
+# Trifft ein Filterregel auf ein Paket zu, muss noch festgelegt werden, wie mit dem Paket verfahren werden soll (Option -j Aktion, siehe oben). Bei "normaler" Filterung sind die häufigsten Aktionen:
+# verschiedene Aktionen, die auf ein Paket angewendet werden
+# Aktion	Beschreibung
+# ACCEPT	Das Paket wird akzeptiert und angenommen.
+# DROP	Das Paket wird nicht angenommen, der Sender erhält keine Nachricht.
+# REJECT	Das Paket wird nicht angenommen, der Sender wird benachrichtigt.
+# LOG	Die Paketdaten werden im System-Log festgehalten, anschließend wird die nächste Regel der Chain geprüft und ggf. angewendet.
