@@ -2667,6 +2667,26 @@ function groups_with_manual_users_list(){
 
 }
 
+function zabbix_create_psk(){
+  openssl rand -hex 48 -out /etc/zabbix/key.psk
+  chown zabbix:zabbix /etc/zabbix/key.psk
+  chmod 0400 /etc/zabbix/key.psk  
+
+  cat /etc/zabbix/key.psk  
+
+  if [ -e "/etc/zabbix/zabbix_agentd.conf" ]; then 
+    cp /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.save
+
+    echo -e "\nTLSConnect=psk\n" >> /etc/zabbix/zabbix_agentd.conf
+    echo -e "TLSAccept=psk\n" >> /etc/zabbix/zabbix_agentd.conf
+    echo -e "TLSPSKIdentity=Key1\n" >> /etc/zabbix/zabbix_agentd.conf
+    echo -e "TLSPSKFile=/etc/zabbix/key.psk\n" >> /etc/zabbix/zabbix_agentd.conf
+    
+  fi;
+
+
+}
+
 function installer-help(){
 echo " 
 
@@ -2744,3 +2764,34 @@ echo "
 # DROP	Das Paket wird nicht angenommen, der Sender erhält keine Nachricht.
 # REJECT	Das Paket wird nicht angenommen, der Sender wird benachrichtigt.
 # LOG	Die Paketdaten werden im System-Log festgehalten, anschließend wird die nächste Regel der Chain geprüft und ggf. angewendet.
+
+# Note that [[ is actually a command/program that returns either 0 (true) or 1 (false). Any program that obeys the same logic (like all base utils, such as grep(1) or ping(1)) can be used as condition, see examples.
+# [[ -z STRING ]] 	Empty string
+# [[ -n STRING ]] 	Not empty string
+# [[ STRING == STRING ]] 	Equal
+# [[ STRING != STRING ]] 	Not Equal
+# [[ NUM -eq NUM ]] 	Equal
+# [[ NUM -ne NUM ]] 	Not equal
+# [[ NUM -lt NUM ]] 	Less than
+# [[ NUM -le NUM ]] 	Less than or equal
+# [[ NUM -gt NUM ]] 	Greater than
+# [[ NUM -ge NUM ]] 	Greater than or equal
+# [[ STRING =~ STRING ]] 	Regexp
+# (( NUM < NUM )) 	Numeric conditions
+# [[ -o noclobber ]] 	If OPTIONNAME is enabled
+# [[ ! EXPR ]] 	Not
+# [[ X ]] && [[ Y ]] 	And
+# [[ X ]] || [[ Y ]] 	Or
+
+# File conditions
+# [[ -e FILE ]] 	Exists
+# [[ -r FILE ]] 	Readable
+# [[ -h FILE ]] 	Symlink
+# [[ -d FILE ]] 	Directory
+# [[ -w FILE ]] 	Writable
+# [[ -s FILE ]] 	Size is > 0 bytes
+# [[ -f FILE ]] 	File
+# [[ -x FILE ]] 	Executable
+# [[ FILE1 -nt FILE2 ]] 	1 is more recent than 2
+# [[ FILE1 -ot FILE2 ]] 	2 is more recent than 1
+# [[ FILE1 -ef FILE2 ]] 	Same files
