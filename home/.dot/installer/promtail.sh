@@ -61,17 +61,23 @@ WantedBy=multi-user.target
 
 EOF
 
-echo "wrote loki service cat $SERVICE_FILE"
-echo "run"
-echo "sudo service promtail start"
-echo "sudo service promtail status"
-
-
 echo "close firewall"
 echo "
 iptables -A INPUT -p tcp -s localhost --dport 9080 -j ACCEPT
 iptables -A INPUT -p tcp --dport 9080 -j DROP
 iptables -L
+
+#activate journal 
+joe /etc/systemd/journald.conf
+mkdir /var/log/journal
+systemctl force-reload systemd-journald
+systemctl restart systemd-journald
+
+echo "wrote loki service cat $SERVICE_FILE"
+echo "run"
+echo "sudo service promtail start"
+echo "sudo service promtail status"
+
 "
 
 
