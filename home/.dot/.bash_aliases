@@ -642,3 +642,10 @@ alias wifi_show_quality="iwconfig wlan0 | grep -i --color quality"
 alias wifi_show_quality2="cat /proc/net/wireless"
 alias wifi_show_quality_continuosly="watch -n 1 cat /proc/net/wireless"
 alias wifi_show_quality_continuosly_wavemon="wavemon"
+
+#journalctl 
+
+alias journal_show_errors="journalctl -p err -b "
+alias journal_show_thisunit="journalctl -u  "
+alias journal_show_live_from="journalctl -f -u "
+alias journal_show_live="journalctl -f"
