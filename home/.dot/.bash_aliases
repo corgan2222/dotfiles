@@ -197,14 +197,6 @@ alias listLoadedPhpInis73="php73 --ini"
 alias phplint='find . -name "*.php" -exec php -l {} \; | grep "Parse error"'
 
 # ------------------------------------------------------------------------------
-# | Docker                                                                     |
-# ------------------------------------------------------------------------------
-
-alias dl='docker ps'
-alias dr='docker restart'
-alias dockerContainerSize='docker stats --no-stream $(docker ps --format "{{.Names}}") | sed "s/\.[0-9]*\([kGM]i*B \)/\1/" | sort -h -k 4'
-
-# ------------------------------------------------------------------------------
 # | git                                                                        |
 # ------------------------------------------------------------------------------
 alias gitp='git push origin master'
@@ -576,6 +568,21 @@ fi
 ###################
 # Docker shortcuts
 ###################
+
+# list running containers
+alias dl='docker ps'
+
+# restart docker
+alias dr='docker restart'
+
+# list ContainerSize
+alias dockerContainerSize='docker stats --no-stream $(docker ps --format "{{.Names}}") | sed "s/\.[0-9]*\([kGM]i*B \)/\1/" | sort -h -k 4'
+
+# prunes docker
+alias docker_prune_system="docker system prune"
+
+# prunes docker with volumes
+alias docker_prune_system_withVolumes="docker system prune -a --volumes"
  
 # list all images
 alias docker_list_images='docker images'
@@ -612,7 +619,7 @@ alias docker_rm_all_orphaned_volumes='docker volume ls -qf dangling=true | xargs
 # docker compose (assumes current directory contains the docker-compose.yml)
 alias dc='docker-compose '
  
-# start socker stack defined by docker-compose.yml
+# start docker stack defined by docker-compose.yml
 alias dc_up='docker-compose up -d'
  
 # stop docker stack defined by docker-compose.yml
@@ -644,8 +651,12 @@ alias wifi_show_quality_continuosly="watch -n 1 cat /proc/net/wireless"
 alias wifi_show_quality_continuosly_wavemon="wavemon"
 
 #journalctl 
-
 alias journal_show_errors="journalctl -p err -b "
 alias journal_show_thisunit="journalctl -u  "
 alias journal_show_live_from="journalctl -f -u "
 alias journal_show_live="journalctl -f"
+
+#logrotate
+alias logrotateTest="echo 'logrotate -d /etc/logrotate.d/remote-hosts'"
+alias logrotateTestThis="logrotate -d "
+alias logrotateDoThis="logrotate -f "
