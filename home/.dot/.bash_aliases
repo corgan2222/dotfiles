@@ -186,6 +186,7 @@ alias aptListSourcesList="cat /etc/apt/sources.list"
 alias aptEditSourcesList="sudo joe /etc/apt/sources.list"
 alias aptListSourcesD="ls -la /etc/apt/sources.list.d/"
 alias aptSourcesSize="aptitude -O installsize -F'%p %I' search '~i'"
+alias aptgetAppInfos_fromthis="apt-cache policy "
 
 
 # ------------------------------------------------------------------------------
@@ -660,3 +661,16 @@ alias journal_show_live="journalctl -f"
 alias logrotateTest="echo 'logrotate -d /etc/logrotate.d/remote-hosts'"
 alias logrotateTestThis="logrotate -d "
 alias logrotateDoThis="logrotate -f "
+
+#fail2ban
+alias fail2ban-client-status_all="fail2ban-client status | sed -n 's/,//g;s/.*Jail list://p' | xargs -n1 fail2ban-client status"
+alias fail2ban-client-status_this="fail2ban-client status"
+alias fail2ban-test_ssh="fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d/sshd.conf && echo 'from#fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d/sshd.conf'"
+alias fail2ban-test_postfix="fail2ban-regex --print-all-missed /var/log/mail.log /etc/fail2ban/filter.d/sendmail.conf /etc/fail2ban/filter.d/sendmail.conf | less && echo 'from#fail2ban-regex --print-all-missed /var/log/mail.log /etc/fail2ban/filter.d/sendmail.conf /etc/fail2ban/filter.d/sendmail.conf | less'"
+
+#mail
+alias graylistCheckDomains="for i in `mysql -uadmin -p\`cat /etc/psa/.psa.shadow\` psa -Ns -e \"select name from domains\"`; do /usr/local/psa/bin/grey_listing --info-domain $i; done"
+alias graylistCheck='	sqlite3 /var/lib/plesk/mail/greylist/settings.db "select * from remote_domains"'
+alias graylistServerinfo="/usr/local/psa/bin/grey_listing --info-server"
+
+alias checkIP="iptables --list -n"
