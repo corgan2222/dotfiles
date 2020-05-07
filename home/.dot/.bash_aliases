@@ -663,6 +663,9 @@ alias logrotateTestThis="logrotate -d "
 alias logrotateDoThis="logrotate -f "
 
 #fail2ban
+
+alias fail2ban-client-status="fail2ban-client status"
+alias fail2ban-client-getBlockedIP_all='iptables -L -n | awk '\''$1=="REJECT" && $4!="0.0.0.0/0" {print $4}'\'''
 alias fail2ban-client-status_all="fail2ban-client status | sed -n 's/,//g;s/.*Jail list://p' | xargs -n1 fail2ban-client status"
 alias fail2ban-client-status_this="fail2ban-client status"
 alias fail2ban-test_ssh="fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d/sshd.conf && echo 'from#fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d/sshd.conf'"
