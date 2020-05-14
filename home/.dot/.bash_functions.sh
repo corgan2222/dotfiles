@@ -2687,6 +2687,64 @@ function zabbix_create_psk(){
 
 }
 
+function freeLinuxSpace() {
+echo "https://askubuntu.com/questions/2793/how-do-i-remove-old-kernel-versions-to-clean-up-the-boot-menu"
+du -sh /var/tmp/
+du -sh /var/cache/apt
+echo " apt-get autoclean"
+du -sh /var/cache/apt
+echo "  apt-get clean"
+du -sh /var/cache/apt
+journalctl --disk-usage
+echo " journalctl --vacuum-time=3d"
+echo " journalctl --disk-usage"
+du -h /var/lib/snapd/snaps
+du -sh ~/.cache/
+
+echo "kernel:"
+uname -r
+
+echo "dpkg --list 'linux-image-*'"
+echo "apt-get purge linux-image-x.x.x-xx-generic"
+}
+
+
+function help_journal()
+{
+
+echo "
+Since yesterday:
+
+$ journalctl --since=yesterday
+
+Give a specific time period:
+
+$ journalctl --since=2012-10-15 --until='2011-10-16 23:59:59'
+
+Pick a specific service & time period:
+
+$ journalctl -u httpd --since=00:00 --until=9:30
+
+Point journalctl at specific devices, services, binaries
+Look at a specific device:
+
+$ journalctl /dev/sdc
+
+Check on a binary:
+
+$ journalctl /usr/sbin/vpnc
+
+Check on the interlieved output from two specifics:
+
+$ journalctl /usr/sbin/vpnc /usr/sbin/dhclient
+
+Show all systemd units that have been started in your journal:
+
+$ journalctl -F _SYSTEMD_UNIT
+"
+
+}
+
 function installer-help(){
 echo " 
 
@@ -2734,10 +2792,30 @@ echo "
       /sbin/iptables -L INPUT -v | grep CH
       #test with nordvpn
 
-  
-
-
 "    
+}
+
+
+function help_mysql(){
+
+echo "
+
+  #server2server copy
+    sudo apt-get install mysql-utilities
+     mysqldbcopy --source=user:pw@server.com --destination=user:pw@server.com db_name_source:db_name_new (new db is created automaticly)
+
+
+  #mysqldump  server2server
+    mysqldump -h host.com -u user --password=pw SOURCE_dbname | mysql -h dest_host.com -u root --password=pw  DB_new_name #db must created first
+
+  #import from file using login-path
+    mysql_config_editor set --login-path=choose_path --host=host --user=user --password
+    mysql -login-path=path DB_NAme < DB_name_dump_.sql
+
+
+
+"
+
 }
 
 
