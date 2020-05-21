@@ -4,11 +4,9 @@
 
 
 alias ap='opkg install '
-alias apuu="opkg list-upgradable | awk '\{ print $1; \}' | xargs opkg upgrade"
-unalis aptList
-alias aptList="/bin/bash /root/.dot/asuswrt/EntwareApps.sh"
-unalis aptgetUpgradable
-alias aptgetUpgradable="opkg list-upgradable"
+alias apuu="opkg update && okpg upgrade"
+alias apt_List="/bin/bash /root/.dot/asuswrt/EntwareApps.sh"
+alias apt_getUpgradable="opkg list-upgradable"
 #https://bin.entware.net/mipselsf-k3.4/Packages.html
 
 alias wifi_sta_info='( [ -z "$WL" ] && WL="wl"; set -- `$WL assoclist` ; while [ _$1 = _assoclist ] ; do wl sta_info $2 ; shift 2 ; done )'
@@ -23,6 +21,7 @@ alias ipLeases="cat /var/lib/misc/dnsmasq.leases"
 alias vpn4_stop="service stop_vpnclient4"
 alias vpn4_start="service start_vpnclient4"
 alias tcp_dump_port_53="tcpdump -i eth0 -p port 853 or 53 -n"
+alias lnav="tail /jffs/syslog.log -f"
 
 function help(){
 echo '        

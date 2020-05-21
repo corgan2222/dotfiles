@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+#get generell raspbian help
 function help(){
 echo '        
     cat /proc/meminfo: Shows details about your memory.
@@ -28,7 +29,8 @@ echo '
 '
     }
     
-function installer-help(){
+#get app installer help    
+function installer-help-raspi(){
 echo " 
     #base
     sudo raspi-config
@@ -38,50 +40,41 @@ echo "
     sudo reboot now
     sudo apt-get install git
 
-    #start
-    bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
-    sudo -i
-    sudo ap joe
-
-    #for debmatic
-    sudo ap apparmor-utils apt-transport-https avahi-daemon ca-certificates curl dbus jq socat software-properties-common
-
-    #docker
-    sudo ap docker-ce
-    sudo apt install --no-install-recommends docker-ce
-    sudo curl -sL get.docker.com | sed 's/9)/10)/' | sh
-    sudo usermod -aG docker pi
-    sudo usermod -aG docker root
-    
-    #swap
+    #64bit
+    sudo /boot/config.txt
+    arm_64bit=1
+  
+    #change swap
+    # https://www.elektronik-kompendium.de/sites/raspberry-pi/2002131.htm
     sudo joe /etc/dphys-swapfile
+            
     
-    #zerotier
-    curl -s https://install.zerotier.com/ | sudo bash
-    sudo zerotier-cli join 565799d8f6aa97e5
-    
-    #zabbix
-    sudo ap zabbix-agent
-    sudo joe /etc/zabbix/zabbix_agentd.conf
-    sudo adduser zabbix sudo
-    sudo visudo
-    joe /etc/sudoers.d/010_pi-nopasswd
-
-    #samba
-    sudo apt-get install samba samba-common smbclient
-    sudo mv /etc/samba/smb.conf /etc/samba/smb.conf_alt
-    sudo nano /etc/samba/smb.conf
-    testparm
-    sudo smbpasswd -a pi
-    sudo nano /etc/samba/smb.conf
-    sudo service smbd restart
-    sudo service nmbd restart
-
 "    
 }
 
+#install extFat Filesystem 
 function install_extFileSystems()
 {
     sudo apt-get update
     sudo apt-get install exfat-fuse exfat-utils ntfs-3g lsofcd
 }   
+
+#install tensorflow
+function installer-tensorflow(){
+    echo "install tensorflow: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Raspberry_Pi_Guide.md"
+    sudo apt-get update
+    sudo apt-get dist-upgrade
+    mkdir git
+    cd git
+    git clone https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi.git
+    mv TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi tflite1
+    cd tflite1
+    sudo pip3 install virtualenv
+    python3 -m venv tflite1-env
+    source tflite1-env/bin/activate
+    bash get_pi_requirements.sh
+    wget https://storage.googleapis.com/download.tensorflow.org/models/tflite/coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip
+    unzip coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.zip -d Sample_TFLite_model
+
+    echo "login on raspi and run #python3 TFLite_detection_webcam.py --modeldir=Sample_TFLite_model"
+}    

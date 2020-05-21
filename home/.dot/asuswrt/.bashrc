@@ -23,6 +23,9 @@ shopt -s checkwinsize
             fi
     }
 
+    function getmyIP {
+          ifconfig | grep ^eth -A2 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1 }'  
+    }
 
     # get current status of git repo
     function parse_git_dirty {
@@ -64,7 +67,7 @@ shopt -s checkwinsize
             [ $RETVAL -ne 0 ] && echo "$RETVAL"
     }
 
-    export PS1="\`nonzero_return\`_\`parse_git_branch\`_\t~\[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[36m\]\h\[\e[m\] [\H] \[\e[33m\]\w\[\e[m\]  \[\e[35m\]#\[\e[m\] "
+    export PS1="\`nonzero_return\`_\`parse_git_branch\`_\t~\[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[36m\]\`getmyIP\`\[\e[m\] [\H] \[\e[33m\]\w\[\e[m\]  \[\e[35m\]#\[\e[m\] "
 
 
 

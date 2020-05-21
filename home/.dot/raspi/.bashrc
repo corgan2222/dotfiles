@@ -45,6 +45,19 @@ if [ "$color_prompt" = yes ]; then
                     echo ""
             fi
     }
+    
+    function getmyIP 
+    {
+       ip=$(ifconfig | grep ^eth -A2 | grep 'inet' | head -1 | awk '{ print $2 }')
+       
+       if [[ "$ip" =~ ^(([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))\.){3}([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))$ ]]; then
+	  echo $ip
+	else
+	  ip=$(ifconfig | grep ^wlan -A2 | grep 'inet' | head -1 | awk '{ print $2 }')
+	  echo $ip
+	fi
+       
+    }    
 
     # get current status of git repo
     function parse_git_dirty {
@@ -86,7 +99,7 @@ if [ "$color_prompt" = yes ]; then
             [ $RETVAL -ne 0 ] && echo "$RETVAL"
     }
 
-    export PS1="\`nonzero_return\`_\`parse_git_branch\`_\t~\[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[36m\]\h\[\e[m\] [\H] \[\e[33m\]\w\[\e[m\]  \[\e[35m\]#\[\e[m\] "
+    export PS1="\`nonzero_return\`_\`parse_git_branch\`_\t~\[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[36m\]\`getmyIP\`\[\e[m\] [\H] \[\e[33m\]\w\[\e[m\]  \[\e[35m\]#\[\e[m\] "
 
 
 else

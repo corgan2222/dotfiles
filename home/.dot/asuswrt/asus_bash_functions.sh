@@ -1,5 +1,6 @@
 norefresh=1
 
+#get wifi infos
 function wifiClients()
 {
     #! /bin/ash

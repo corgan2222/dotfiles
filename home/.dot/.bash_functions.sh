@@ -1,5 +1,61 @@
 #!/bin/bash
 
+function prompt_yn () 
+{
+    while true; do
+        read -p "$1 " yn
+        case $yn in
+            [Yy]* ) return 0;;
+            [Nn]* ) return 1;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+}
+
+# Read a single char from /dev/tty, prompting with "$*"
+# Note: pressing enter will return a null string. Perhaps a version terminated with X and then remove it in caller?
+# See https://unix.stackexchange.com/a/367880/143394 for dealing with multi-byte, etc.
+function get_keypress {
+  local REPLY IFS=
+  >/dev/tty printf '%s' "$*"
+  [[ $ZSH_VERSION ]] && read -rk1  # Use -u0 to read from STDIN
+  # See https://unix.stackexchange.com/q/383197/143394 regarding '\n' -> ''
+  [[ $BASH_VERSION ]] && </dev/tty read -rn1
+  printf '%s' "$REPLY"
+}
+
+# Get a y/n from the user, return yes=0, no=1 enter=$2
+# Prompt using $1.
+# If set, return $2 on pressing enter, useful for cancel or defualting
+function get_yes_keypress {
+  local prompt="${1:-Are you sure [y/n]? }"
+  local enter_return=$2
+  local REPLY
+  # [[ ! $prompt ]] && prompt="[y/n]? "
+  while REPLY=$(get_keypress "$prompt"); do
+    [[ $REPLY ]] && printf '\n' # $REPLY blank if user presses enter
+    case "$REPLY" in
+      Y|y)  return 0;;
+      N|n)  return 1;;
+      '')   [[ $enter_return ]] && return "$enter_return"
+    esac
+  done
+}
+
+# Credit: http://unix.stackexchange.com/a/14444/143394
+# Prompt to confirm, defaulting to NO on <enter>
+# Usage: confirm "Dangerous. Are you sure?" && rm *
+function confirm {
+  local prompt="${*:-Are you sure} [y/N]? "
+  get_yes_keypress "$prompt" 1
+}    
+
+# Prompt to confirm, defaulting to YES on <enter>
+function confirm_yes {
+  local prompt="${*:-Are you sure} [Y/n]? "
+  get_yes_keypress "$prompt" 0
+}
+
 #prints all functions from file
 function scriptInfoPerl() {
   if [ -z "${1}" ]; then
@@ -21,6 +77,78 @@ function scriptInfoPerl() {
           print "\033[31m$name\033[0;37m()\n\033[32m$comments\n";
       }' "$file"
 }
+#prints all functions from file
+function scriptInfoPerl_forGithub() {
+  if [ -z "${1}" ]; then
+    echo "Usage: scriptInfoPerl file"
+    file="$HOME"/.dot/.bash_functions.sh
+    #return 1
+  else
+    file="${1}"  
+  fi
+
+  perl -0777 -ne '
+      while (/^((?:[ \t]*\#.*\n)*)               # preceding comments
+              [ \t]*(?:(\w+)[ \t]*\(\)|         # foo ()
+                        function[ \t]+(\w+).*)   # function foo
+              ((?:\n[ \t]+\#.*)*)               # following comments
+            /mgx) {
+          $name = "# $2$3";
+          $comments = "$1$4";
+          $comments =~ s/^[ \t]*//mg;
+          chomp($comments);
+          $comments =~ s/#/>*/ig;
+          print "$name()\n$comments\n";
+      }' "$file"
+}
+#prints all functions from file
+function AliasInfoPerl_forGithub() {
+  if [ -z "${1}" ]; then
+    echo "Usage: AliasInfoPerl_forGithub file"
+    file="$HOME"/.dot/.bash_aliases
+    #return 1
+  else
+    file="${1}"  
+  fi
+
+  perl -0777 -ne '
+      while (/^((?:[ \t]*\#.*\n)*)               # preceding comments
+              [ \t]*(?:(\w+)[ \t]*\(\)|         # foo ()
+                        alias [ \t]+(\w+).*)   # function foo
+              ((?:\n[ \t]+\#.*)*)               # following comments
+            /mgx) {
+          $name = "# $2$3";
+          $comments = "$1$4";
+          $comments =~ s/^[ \t]*//mg;
+          chomp($comments);
+          $comments =~ s/#/>*/ig;
+          print "$name\n$comments\n";
+      }' "$file"
+}
+
+function create_github_docs(){
+  scriptInfoPerl_forGithub "$HOME"/.dot/.bash_functions.sh > "$HOME"/.dot/docs/bash_functions.md
+  scriptInfoPerl_forGithub "$HOME"/.dot/asuswrt/asus_bash_functions.sh > "$HOME"/.dot/docs/asus_bash_functions.md
+  scriptInfoPerl_forGithub "$HOME"/.dot/raspi/raspi_bash_functions.sh > "$HOME"/.dot/docs/raspi_bash_functions.md
+
+  scriptInfoPerl_forGithub "$HOME"/.dot/.bash_functions.sh > "$HOME"/git/corgan2222/dotfiles.wiki/functions.md
+  scriptInfoPerl_forGithub "$HOME"/.dot/asuswrt/asus_bash_functions.sh > "$HOME"/git/corgan2222/dotfiles.wiki/asus_bash_functions.md
+  scriptInfoPerl_forGithub "$HOME"/.dot/raspi/raspi_bash_functions.sh > "$HOME"/git/corgan2222/dotfiles.wiki/raspi_bash_functions.md
+
+  AliasInfoPerl_forGithub "$HOME"/.dot/.bash_aliases > "$HOME"/.dot/docs/bash_aliases.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/asuswrt/.bash_aliases > "$HOME"/.dot/docs/bash_aliases_asus.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/raspi/.bash_aliases > "$HOME"/.dot/docs/bash_aliases_raspi.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/synology/.bash_aliases > "$HOME"/.dot/docs/bash_aliases_synology.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/ubuntu16/.bash_aliases > "$HOME"/.dot/docs/bash_aliases_ubuntu16.md
+
+  AliasInfoPerl_forGithub "$HOME"/.dot/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/asuswrt/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases_asus.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/raspi/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases_raspi.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/synology/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases_synology.md
+  AliasInfoPerl_forGithub "$HOME"/.dot/ubuntu16/.bash_aliases > "$HOME"/git/corgan2222/dotfiles.wiki/bash_aliases_ubuntu16.md
+
+}
+
 
 #return 0 on exist and 1 if not
 function_exists() {
@@ -29,6 +157,7 @@ function_exists() {
 }
 
 #usage findStringInFiles /etc foo exclud
+#"Usage:  findStringInFiles 'string' 'folder' ['exclude']"
 function findStringInFiles() {
   if [ -z "${1}" ]; then
     echo "Usage:  findStringInFiles 'string' 'folder' ['exclude']"
@@ -47,18 +176,137 @@ function findStringInFiles() {
   fi
 }
 
+#create ssh files for new user
+function createUserSSH() {
+
+  if [ ! -d "~/.ssh" ]; then
+    cd ~
+    mkdir .ssh
+    chmod 700 ~/.ssh
+  else
+    echo "Folder ~/.ssh exists"  
+  fi
+
+  if [ ! -f "~/.ssh/authorized_keys" ]; then    
+    cd ~/.ssh
+    touch authorized_keys
+    chmod 600 ~/.ssh/authorized_keys
+    ssh-keygen
+    cat id_rsa.pub >> authorized_keys
+
+    if get_yes_keypress "Create id_rsa.ppk putty version? Will install putty-tools. Do you like this [y/n]? "
+    then 
+        echo "install putty-tools"
+        sudo apt-get install putty-tools
+        puttygen id_rsa -o id_rsa.ppk
+    fi
+
+    if get_yes_keypress "Convert PPK Files to Private and Public Keys with puttygen ? [y/n]? "
+    then 
+        echo "puttygen id_rsa.ppk"
+        puttygen id_rsa.ppk -O private-openssh -o my_key.private
+        puttygen id_rsa.ppk -O public-openssh -o my_key.public
+    fi
+
+    
+  else
+    echo "file ~/.ssh/authorized_keys exists"  
+  fi  
+  
+
+}
+
+function user_add_with_pass_and_folder()
+{
+  if [ $(id -u) -eq 0 ]; then
+    read -p "Enter username : " username
+    read -s -p "Enter password : " password
+    egrep "^$username" /etc/passwd >/dev/null
+    if [ $? -eq 0 ]; then
+      echo "$username exists!"
+      exit 1
+    else
+      pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
+      useradd -m -p $pass $username
+      [ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
+
+        read -r -p "Add home folder /home/$username [Y/n]" response
+        response=${response,,} # tolower
+        if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+            
+      
+          mkdir /home/$username
+          #git clone https://github.com/corgan2222/dotfiles.git /home/$username
+          chown $username:root /home/$username
+
+          [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
+      fi
+    fi
+  else
+    echo "Only root may add a user to the system"
+    exit 2
+  fi
+
+}
+
+function user_remove()
+{
+
+  if [ $(id -u) -eq 0 ]; then
+    read -p "Enter username : " username
+    egrep "^$username" /etc/passwd >/dev/null
+    if [ $? -eq 0 ]; then
+      read -r -p "shure to remove and the homefolder /home/$username [Y/n]" response
+      response=${response,,} # tolower
+      if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+
+        userdel $username                
+        sudo rm -R /home/$username -f                             
+
+        [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
+      fi
+    else
+      echo "$username dont exists!"
+      exit 1
+    fi
+  else
+    echo "Only root may delete a user"
+    exit 2
+  fi
+}
+
+#replaceStringInFile 'string' 'replace' file"
 function replaceStringInFile()
 {
+  if [ -z "${1}" ]; then
+    echo "Usage:  replaceStringInFile 'string' 'replace' file"
+    return 1
+  fi
+
+  if [ -z "${2}" ]; then
+    echo "Usage:  replaceStringInFile 'string' 'replace' file"
+    return 1
+  fi
+
+   if [ -f "${3}" ]; then
+    echo "file $3 not found"
+    return 1
+  fi
+
   sed -i 's/"$1"/"$2"/g' $3
  #sed -i 's/old-word/new-word/g' file
 }
 
-function GetFilelist_clean(){
+#GetFilelist_clean /home/user
+function GetFilelist_clean()
+{
   find "$1" -type f -printf "%f\n"
   #find ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n"
 }
 
-function GetFilelist_prefix(){
+#GetFilelist_prefix ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n
+function GetFilelist_prefix()
+{
   #GetFilelist_prefix folder prefix
   find "$1" -type f -printf "$2%f\n"
   #find ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n"
@@ -70,7 +318,8 @@ function initHome() {
 }
 
 #save changes in dotfiles
-function saveHome() {
+function saveHome() 
+{
   if [ $# -eq 0 ]; then
     echo "add commit message"
     return 1
@@ -84,9 +333,9 @@ function saveHome() {
 
 #load newest dotfiles
 function loadHome() {
-  homeshick pull dotfiles
-  reload
+  homeshick pull dotfiles  
   homeshick link
+  reload
 }
 
 #check dotfiles
@@ -180,6 +429,8 @@ function mkdatedir() {
   mkdir "$(date +%Y-%m-%d_${1})"
 }
 
+#create gif 
+#Usage: gifify <file_path>' 
 function gifify() {
   [ -z "$1" ] && echo 'Usage: gifify <file_path>' && return 1
   [ ! -f "$1" ] && echo "File $1 does not exist" && return 1
@@ -261,7 +512,6 @@ function nonzero_return() {
   [ $RETVAL -ne 0 ] && echo "$RETVAL"
 }
 
-# -------------------------------------------------------------------
 # lc: Convert the parameters or STDIN to lowercase.
 function lc() {
   if [ $# -eq 0 ]; then
@@ -273,7 +523,6 @@ function lc() {
   fi
 }
 
-# -------------------------------------------------------------------
 # uc: Convert the parameters or STDIN to uppercase.
 function uc() {
   if [ $# -eq 0 ]; then
@@ -655,8 +904,6 @@ function httpdump() {
 # iptablesBlockIP: block a IP via "iptables"
 #
 # usage: iptablesBlockIP 8.8.8.8
-# -
-
 function iptablesBlockIP() {
   if [ $# -eq 0 ]; then
     echo "Usage: iptablesBlockIP 123.123.123.123"
@@ -1215,9 +1462,7 @@ function shorturl() {
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 # Process phone photo.
-
 function ppp() {
 
   # Check if ImageMagick's convert command-line tool is installed.
@@ -1279,7 +1524,6 @@ function ppp() {
 
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Search history.
 #           ┌─ enable colors for pipe
@@ -1337,39 +1581,34 @@ function xxgetmac() {
   echo 'Usage: xxgetmac INTERFACE'
 }
 
-# set variables
-#declare -r TRUE=0
-#declare -r FALSE=1
-#declare -r PASSWD_FILE=/etc/passwd
 
 ##################################################################
 # Purpose: Converts a string to lower case
 # Arguments:
 #   $1 -> String to convert to lower case
-##################################################################
 function to_lower() {
   local str="$@"
   local output
   output=$(tr '[A-Z]' '[a-z]' <<<"${str}")
   echo $output
 }
+
 ##################################################################
 # Purpose: Display an error message and die
 # Arguments:
 #   $1 -> Message
 #   $2 -> Exit status (optional)
-##################################################################
 function die() {
   local m="$1"   # message
   local e=${2-1} # default exit status 1
   echo "$m"
   exit $e
 }
+
 ##################################################################
 # Purpose: Return true if script is executed by the root user
 # Arguments: none
 # Return: True or False
-##################################################################
 function is_root() {
   [ $(id -u) -eq 0 ] && return $TRUE || return $FALSE
 }
@@ -1378,7 +1617,6 @@ function is_root() {
 # Purpose: Return true $user exits in /etc/passwd
 # Arguments: $1 (username) -> Username to check in /etc/passwd
 # Return: True or False
-##################################################################
 function is_user_exits() {
   local u="$1"
   grep -q "^${u}" $PASSWD_FILE && return $TRUE || return $FALSE
@@ -1433,7 +1671,7 @@ function lastFileChange() {
 # print_style "This is a light blue with a \t tab " "info";
 # print_style "This is a red text with a \n new line " "danger";
 # print_style "This has no color";
-function ps() {
+function ct() {
 
   if [ "$2" == "info" ]; then
     COLOR="96m"
@@ -1526,8 +1764,6 @@ Friday                              | date -d "2019-10-06 18:48:04.908930495 +02
 filecreate date stat file %w
 stat -c "%w %n" * | sort
  
-
-
 EOD
 }
 
@@ -1550,7 +1786,8 @@ function h() {
 
   alias | grep -i $1
   grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' "$HOME"/.dot/.bash_functions.sh | grep -i $1
-  cheat $1
+  cheat "$1"
+  curl cli.help/suche | grep "$1"
 
 }
 
@@ -1660,6 +1897,7 @@ function err() {
   echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
 }
 
+#youtube-dl
 function yt2mp3() 
 {
 
@@ -1673,24 +1911,28 @@ function yt2mp3()
   fi
 }
 
+#mail tester imap
 function mail_test_ssl_server_imap() {
   stats=$(openssl s_client -showcerts -connect $1:993)
 
   return "$stats"
 }
 
+#mail tester pop3
 function mail_test_ssl_server_pop3() {
   stats=$(openssl s_client -showcerts -connect $1:995)
 
   echo "$stats"
 }
 
+#mail tester ssl
 function mail_test_ssl_server_SMTP() {
   stats=$(openssl s_client -showcerts -connect $1:465)
 
   echo "$stats"
 }
 
+#mail tester imap
 function mail_test_ssl_server_SMTP_star() {
   stats=$(openssl s_client -starttls smtp -showcerts -connect $1:25)
 
@@ -1699,12 +1941,9 @@ function mail_test_ssl_server_SMTP_star() {
 
 #Funktion um Dateien aus dem Internet zu laden. Prüft ob curl vorhanden ist , wenn nicht wird wget versucht. Wenn gar nichts von beiden gefunden wird wird das Skript beendet.
 #https://hope-this-helps.de/serendipity/categories/Bash-68/P3.html
+# download an file to local storage
+# need 2 parameters : get_remote_file [URL_TO_FILE] [LOCAL_PATH]
 function get_remote_file() {
-  # ------------------------- get_remote_file -------------------------------------------------------------------
-  # download an file to local storage
-  #
-  # need 2 parameters : get_remote_file [URL_TO_FILE] [LOCAL_PATH]
-  # -----------------------------------------------------------------------------------------------------------------
 
   if [[ ! -z "${1}" || ! -z "${2}" ]]; then
     bin_dl=""
@@ -1753,13 +1992,9 @@ function get_remote_file() {
 # Problem : Man möchte über Bash nur den Inhalt einer Zip Datei vergleichen. Die Zip Datei wird aber automatisiert auf einem Server über cron erstellt, was zur Folge hatte das der Zeitstempel und somit auch die md5 Summen unterschiedlich sind.
 # Lösung : Die Lösung ist mit unzip in die Datei zu schauen und diesen Output mit diff zu verleichen.
 # https://hope-this-helps.de/serendipity/categories/Bash-68/P3.html
-function check_files_in_zip() {
-  # ------------------------ check_files_in_zip ---------------------------------------
   # compare the content of two zipfiles if equal the function return 0 otherwise 1
-  #
   # need 2 parameters : check_files_in_zip [NAME_OF_OLD_ZIPFILE] [NAME_OF_NEW_ZIPFILE]
-  # -----------------------------------------------------------------------------------
-
+function check_files_in_zip() {
   if [[ ! -z "${1}" || ! -z "${2}" ]]; then
     diff <(unzip -v -l "${1}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') <(unzip -v -l "${2}" | awk '! /Archiv/ && /[0-9]/ { print $1,$5,$6,$7,$8 }' | sed '$d') 1>/dev/null 2>&1
     if [ $? -eq 0 ]; then
@@ -1787,6 +2022,8 @@ function geo-ip() {
   fi
 }
 
+# "Usage: sftp_keyfile 'keyfile' port user host"
+# "sftp_keyfile PATH/TO/PUBLICKEYFILE(id_rsa) 10022 user host"
 function sftp_keyfile() {
 
   if [ -z "${1}" ]; then
@@ -1802,6 +2039,7 @@ function sftp_keyfile() {
   fi
 }
 
+#"Usage: Export_image_file_statistics_to_csv 'output.csv' "
 function Export_image_file_statistics_to_csv() 
 {
   if [ -z "${1}" ]; then
@@ -1812,6 +2050,7 @@ function Export_image_file_statistics_to_csv()
     find . -regex ".*\.\(jpg\|gif\|png\|jpeg\)" -type f -printf "%p,%AY-%Am-%AdT%AT,%CY-%Cm-%CdT%CT,%TY-%Tm-%TdT%TT,%s\n" > $1
 }
 
+#"Usage:Tabs Export_image_file_statistics_to_csv_tabs 'output.csv' "
 function Export_image_file_statistics_to_csv_tabs() 
 {
   if [ -z "${1}" ]; then
@@ -1822,6 +2061,7 @@ function Export_image_file_statistics_to_csv_tabs()
   find . -regex ".*\.\(jpg\|gif\|png\|jpeg\)" -type f -printf "%p \t %AY-%Am-%AdT%AT \t %CY-%Cm-%CdT%CT \t %TY-%Tm-%TdT%TT \t %s\n" > filestat_data_20141201.csv
 }
 
+#convert raw to jpg
 function convert_cr2_to_jpg(){
 
   if command -v ufraw >/dev/null; then
@@ -1832,35 +2072,35 @@ function convert_cr2_to_jpg(){
 
 }
 
-
-function ssh_copy_to_host(){
   #Copy something from this system to some other system:
   #echo scp /path/to/local/file username@hostname:/path/to/remote/file  
+function ssh_copy_to_host()
+{
   scp "$3 $1@$2:$4"
 }
-	
-function ssh_copy_from_host_to_host(){
+
   #Copy something from some system to some other system:
-  #scp username1@hostname1:/path/to/file username2@hostname2:/path/to/other/file 
+  #scp username1@hostname1:/path/to/file username2@hostname2:/path/to/other/file 	
+function ssh_copy_from_host_to_host(){
  scp "$1@$2:$3 $4@$5:$6"
   
 }
 	
-function ssh_copy_fron_host(){
   #Copy something from another system to this system:
-  #scp username@hostname:/path/to/remote/file /path/to/local/file
+  #scp username@hostname:/path/to/remote/file /path/to/local/file  
+function ssh_copy_fron_host(){
   scp "$1@$2:$3 $4"
 }
 	
+#dcraw -c RAW-Dateiname | convert - Ausgabedatei.FORMAT  
 function convert_CR2_to_JPG_dcraw()
 {
-  #dcraw -c RAW-Dateiname | convert - Ausgabedatei.FORMAT
   dcraw -c "$1" | convert - "$2.$3"
 }
 
+#curl -i -k -X GET -u root:rootpw "https://knaak.org:8443/api/v2/domains" -H  "accept: application/json"
 function checkSSLfromDomain()
-{
-  #curl -i -k -X GET -u root:rootpw "https://knaak.org:8443/api/v2/domains" -H  "accept: application/json"
+{  
   echo "++++++++++++++++ $1 ++++++++++++++++" ;
   echo | openssl s_client -servername NAME -connect $1:443 2>/dev/null | openssl x509 -noout -dates ; echo --------------------------------------- ;
 
@@ -1909,6 +2149,7 @@ function random_number999()
    echo $NUMBER
 }
 
+#"Usage: syncFileToS3 'file' "
 function syncFileToS3()
 {
   if [ -z "${1}" ]; then
@@ -2047,6 +2288,7 @@ sf() {
     done
 }
 
+#git help
 function gitHelpNew()
 {
   echo "git init"
@@ -2077,6 +2319,9 @@ dtags () {
         | tr -d '[]" ' | tr '}' '\n' | awk -F: '{print $3}'
 }
 
+#file diff
+# "  comparing dirs:  vdiff dir_a dir_b"
+# "  comparing files: vdiff file_a file_b"
 vdiff () 
 {
     if [ "${#}" -ne 2 ] ; then
@@ -2096,6 +2341,7 @@ vdiff ()
     fi
 }
 
+#extract embedded jpg from raw with ufraw
 raw2jpg_embedded(){
 
     if [ -z "${1}" ]; then
@@ -2106,6 +2352,7 @@ raw2jpg_embedded(){
     ufraw-batch --out-type=jpeg --embedded-image "$1"
 }
 
+# "Usage: raw2jpg_convert 'ARW|CR2' "
 raw2jpg_convert(){
 
     if [ -z "${1}" ]; then
@@ -2113,9 +2360,13 @@ raw2jpg_convert(){
       return 1
     fi
 
-    for file in *."${1}"; do convert "$file" "${file%"${1}"}JPG"; done
+    for file in *."${1}"; 
+      do 
+        convert "$file" "${file%"${1}"}JPG"; 
+      done
 }
 
+#convert raw parallel
 raw2jpg_parallel(){
 
     if [ -z "${1}" ]; then
@@ -2123,9 +2374,10 @@ raw2jpg_parallel(){
       return 1
     fi
 
-    parallel convert {} {.}."${1}" ::: *."$1"
+    parallel convert {} {.}."${1}" ::: "$1"
 }
 
+# "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
 raw2jpg_ext()
 {
 
@@ -2150,12 +2402,37 @@ raw2jpg_ext()
     done
 
 }
+# "Usage: raw2jpg_embedded_batch ARW jpg/ "
+raw2jpg_embedded_batch()
+{
 
+  if [ -z "${1}" ]; then
+    echo "Usage: raw2jpg_embedded_batch 'ARW|CR2' 'outout Folder' "
+    echo "Usage: Usage: raw2jpg_embedded_batch ARW jpg/ "
+    return 1
+  fi
+  
+    if [ ! -d ./"${2}" ]; then mkdir ./"${2}"; fi;
+
+    # processes raw files
+    for f in *."${1}";
+    do
+      echo "Processing $f"
+      ufraw-batch \
+        --embedded-image \
+        --out-path=./"${2}" \
+        "$f"
+    done
+
+}
+
+#Get upgradable apts
 apt-getUpgradable ()
 {
   { apt-get --just-print upgrade 2>&1 | perl -ne 'if (/Inst\s([\w,\-,\d,\.,~,:,\+]+)\s\[([\w,\-,\d,\.,~,:,\+]+)\]\s\(([\w,\-,\d,\.,~,:,\+]+)\)? /i) {print "$1 (\e[1;34m$2\e[0m -> \e[1;32m$3\e[0m)\n"}';} | while read -r line; do echo -en "$line\n"; done;
 }
 
+#checkt ob angegebene files auf server vorhanden sind
 checkURLs ()
 {
   BASE="http://www.example.com"
@@ -2172,10 +2449,14 @@ checkURLs ()
   done
 }
 
+#epackage_exists
 function package_exists() {
     return dpkg -l "$1" &> /dev/null
 }
 
+
+#"Usage: imgResize '75' '91' "
+#"Usage: imgResize [sizeReduct][quality] "
 function imgResize() {
 
  if [ -z "${1}" ]; then
@@ -2198,3 +2479,397 @@ function getSSL() {
   ssl_client_certificate_file=$(grep ssl_client_certificate /var/www/vhosts/system/knaak.org/conf/nginx.conf)
 
 }
+
+#block all ip from country on all ports
+function iptable_block_bad_countrys() {
+
+  if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
+    echo "/usr/share/xt_geoip/BE not found. Install GeoIP-database"
+    return 1
+  fi;
+
+    iptables -m geoip --src-cc BR,IN,RU,KR,CH,BD --dst-cc BR,IN,RU,KR,CH,BD
+    iptables -I INPUT -m geoip --src-cc BR,IN,RU,KR,CH,BD -j DROP
+
+    iptables -m geoip --src-cc PL,TH,CN,FR,AD,LT,MX --dst-cc PL,NL,TH,CN,FR,AD,LT,MX
+    iptables -I INPUT -m geoip --src-cc PL,TH,CN,FR,AD,LT,MX -j DROP
+
+    iptables -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY --dst-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY
+    iptables -I INPUT -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY -j DROP   
+
+    /sbin/iptables -L INPUT -v | grep CH
+}
+
+#block all ip from country on all ports
+function iptable_ban_country() {
+
+  if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
+    echo "/usr/share/xt_geoip/BE not found. Install GeoIP-database"
+    return 1
+  fi;
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_ban_country CH "   
+    return 1
+  fi
+    /sbin/iptables -m geoip --src-cc "${1}" --dst-cc "${1}"
+    /sbin/iptables -I INPUT -m geoip --src-cc "${1}" -j DROP   
+    /sbin/iptables -L INPUT -v | grep "${1}"
+}
+
+#unblock all ip from country on all ports
+function iptable_unban_country() {
+
+  if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
+    echo "/usr/share/xt_geoip/BE not found. Install GeoIP-database"
+    return 1
+  fi;
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_unban_country CH "   
+    return 1
+  fi    
+    /sbin/iptables -D INPUT -m geoip --src-cc "${1}" -j DROP   
+    /sbin/iptables -L INPUT -v | grep "${1}"
+}
+
+#block  ip on all ports
+function iptable_ban_ip() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_ban_ip ip "   
+    return 1
+  fi
+    
+    /sbin/iptables -I INPUT -s "${1}" -j DROP
+}
+
+#unblock  ip on all ports
+function iptable_unban_ip() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_unban_ip ip "   
+    return 1
+  fi
+    
+    /sbin/iptables -D INPUT -s "${1}" -j DROP
+    iptable_check_ip "${1}"
+}
+
+#is ip blocked
+function iptable_check_ip() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_check_ip IP  "   
+    return 1
+  fi
+    
+    /sbin/iptables -L | grep  ${1}
+
+}
+
+#is subnet blocked
+function iptable_block_subnet() {
+
+ if [ -z "${1}" ]; then
+    echo "Usage: iptable_block_subnet 10.0.0.0/8 "   
+    return 1
+  fi
+    
+    /sbin/iptables -i eth1 -A INPUT -s "${1}" -j DROP
+
+}
+
+#see all blocked IPs
+function iptable_view_blocked() {
+ /sbin/iptables -L -v
+}
+
+#see all blocked IPs
+function iptable_view_blocked_geo() {
+ /sbin/iptables -L -v | grep geo
+}
+
+#diff compare local file with repo file
+function iptable_remove_lines()
+{
+  iptables -L INPUT --line-numbers | grep geo
+  box "type iptables -D INPUT Linenumber"
+
+} 
+
+#diff compare local file with repo file
+function diff_git_file()
+{
+  if [ -z "${1}" ]; then
+      echo "Usage: iptable_diff_git_file raspi/raspi_info.sh"   
+      return 1
+  fi  
+  git fetch origin master
+  git diff origin/master -- "$1"
+}
+
+
+#add user to group
+function user_add_to_group()
+{
+  if [ -z "${1}" ]; then
+      echo "Usage: user_add_to_group user group"   
+      return 1
+  fi
+  
+  if [ -z "${2}" ]; then
+      echo "Usage: user_add_to_group user group"   
+      return 1
+  fi
+  
+  sudo usermod -aG $2 $1
+
+}
+
+#list user groups
+function user_list_groups()
+{
+  if [ -z "${1}" ]; then
+      echo "Usage: user_list_groups user"   
+      return 1
+  fi
+ 
+  sudo groups $1 
+}
+
+#List users and their groups:
+function user_in_groups_list(){
+  for user in $(awk -F: '{print $1}' /etc/passwd); 
+    do groups $user; 
+  done
+
+}
+
+#List groups and their users:
+function groups_with_users_list(){
+
+  cat /etc/group | awk -F: '{print $1, $3, $4}' | while read group gid members; 
+  do
+      members=$members,$(awk -F: "\$4 == $gid {print \",\" \$1}" /etc/passwd);
+      echo "$group: $members" | sed 's/,,*/ /g';
+  done
+
+}
+
+#list only manually added users
+function groups_with_manual_users_list(){
+
+  for user in $(getent passwd {1000..60000} |awk -F: '{print $1}');
+  do 
+      groups $user; 
+  done
+
+}
+
+function zabbix_create_psk(){
+  openssl rand -hex 48 -out /etc/zabbix/key.psk
+  chown zabbix:zabbix /etc/zabbix/key.psk
+  chmod 0400 /etc/zabbix/key.psk  
+
+  cat /etc/zabbix/key.psk  
+
+  if [ -e "/etc/zabbix/zabbix_agentd.conf" ]; then 
+    cp /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.save
+
+    echo -e "\nTLSConnect=psk\n" >> /etc/zabbix/zabbix_agentd.conf
+    echo -e "TLSAccept=psk\n" >> /etc/zabbix/zabbix_agentd.conf
+    echo -e "TLSPSKIdentity=Key1\n" >> /etc/zabbix/zabbix_agentd.conf
+    echo -e "TLSPSKFile=/etc/zabbix/key.psk\n" >> /etc/zabbix/zabbix_agentd.conf
+    
+  fi;
+
+
+}
+
+function freeLinuxSpace() {
+echo "https://askubuntu.com/questions/2793/how-do-i-remove-old-kernel-versions-to-clean-up-the-boot-menu"
+du -sh /var/tmp/
+du -sh /var/cache/apt
+echo " apt-get autoclean"
+du -sh /var/cache/apt
+echo "  apt-get clean"
+du -sh /var/cache/apt
+journalctl --disk-usage
+echo " journalctl --vacuum-time=3d"
+echo " journalctl --disk-usage"
+du -h /var/lib/snapd/snaps
+du -sh ~/.cache/
+
+echo "kernel:"
+uname -r
+
+echo "dpkg --list 'linux-image-*'"
+echo "apt-get purge linux-image-x.x.x-xx-generic"
+}
+
+
+function help_journal()
+{
+
+echo "
+Since yesterday:
+
+$ journalctl --since=yesterday
+
+Give a specific time period:
+
+$ journalctl --since=2012-10-15 --until='2011-10-16 23:59:59'
+
+Pick a specific service & time period:
+
+$ journalctl -u httpd --since=00:00 --until=9:30
+
+Point journalctl at specific devices, services, binaries
+Look at a specific device:
+
+$ journalctl /dev/sdc
+
+Check on a binary:
+
+$ journalctl /usr/sbin/vpnc
+
+Check on the interlieved output from two specifics:
+
+$ journalctl /usr/sbin/vpnc /usr/sbin/dhclient
+
+Show all systemd units that have been started in your journal:
+
+$ journalctl -F _SYSTEMD_UNIT
+"
+
+}
+
+function installer-help(){
+echo " 
+
+
+    #start
+    bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+    sudo -i
+    sudo ap joe
+
+    #block countrys
+      https://linoxide.com/linux-how-to/block-ips-countries-geoip-addons/
+      
+      sudo -i
+      mkcdir /tmp
+      apt-get update && apt-get upgrade
+      apt-get install iptables-dev xtables-addons-common libtext-csv-xs-perl pkg-config
+      wget http://downloads.sourceforge.net/project/xtables-addons/Xtables-addons/xtables-addons-3.7.tar.xz
+      tar xf xtables-addons-3.7.tar.xz
+      cd xtables-addons-3.7
+      ./configure
+      make
+      make install
+
+      cd geoip
+      #get https://legacy-geoip-csv.ufficyo.com/
+      wget -q https://legacy-geoip-csv.ufficyo.com/Legacy-MaxMind-GeoIP-database.tar.gz -O - | tar -xvzf - -C /usr/share/xt_geoip
+      
+      cd /usr/share/xt_geoip/BE
+      cp * ../
+      iptables -m geoip --src-cc BR,IN,RU,KR,CH,BD --dst-cc BR,IN,RU,KR,CH,BD
+      iptables -I INPUT -m geoip --src-cc BR,IN,RU,KR,CH,BD -j DROP
+
+      iptables -m geoip --src-cc PL,NL,TH,CN,FR,AD,LT,MX --dst-cc PL,NL,TH,CN,FR,AD,LT,MX
+      iptables -I INPUT -m geoip --src-cc PL,NL,TH,CN,FR,AD,LT,MX -j DROP
+
+      iptables -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY --dst-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY
+      iptables -I INPUT -m geoip --src-cc MX,HK,SG,IT,VN,RO,PH,TR,IR,MY-j DROP         
+
+      iptables -m geoip --src-cc BD --dst-cc BD
+      iptables -I INPUT -m geoip --src-cc NL -j ACCEPT
+
+
+      #check mit 
+      /sbin/iptables -L INPUT -v
+      /sbin/iptables -L INPUT -v | grep CH
+      #test with nordvpn
+
+"    
+}
+
+
+function help_mysql(){
+
+echo "
+
+  #server2server copy
+    sudo apt-get install mysql-utilities
+     mysqldbcopy --source=user:pw@server.com --destination=user:pw@server.com db_name_source:db_name_new (new db is created automaticly)
+
+
+  #mysqldump  server2server
+    mysqldump -h host.com -u user --password=pw SOURCE_dbname | mysql -h dest_host.com -u root --password=pw  DB_new_name #db must created first
+
+  #import from file using login-path
+    mysql_config_editor set --login-path=choose_path --host=host --user=user --password
+    mysql -login-path=path DB_NAme < DB_name_dump_.sql
+
+
+
+"
+
+}
+
+
+# -t Tabelle	Diese Filterregel gilt für die Tabelle "Tabelle".
+# -I Chain [Position]	Regel wird an Position "Position" der Kette "Chain" eingefügt. Bei Nichtangabe der Position wird die Regel am Anfang der Kette eingefügt.
+# -A Chain	Regel wird an die Kette "Chain" angehängt.
+# -D Chain	Regel wird aus der Kette "Chain" gelöscht.
+# -F Chain	Alle Regeln der Kette "Chain" löschen.
+# -L Chain	Liste alle Regeln der Kette "Chain" auf.
+# -p Protokoll	Das Paket wird nur geprüft, wenn es gemäß "IP-Protokoll" ist (z.B. TCP, UDP, ICMP).
+# -s IP-Adresse	Das Paket wird nur geprüft, wenn es von der definierten IP-Adresse stammt.
+# -d IP-Adresse	Das Paket wird nur geprüft, wenn es an die definierte IP-Adresse gesendet wird.
+# -i Netzwerkschnittstelle	Das Paket wird nur geprüft, wenn es über die definierte Netzwerkschnittstelle eingegangen ist.
+# -o Netzwerkschnittstelle	Das Paket wird nur geprüft, wenn es über die definierte Netzwerkschnittstelle versendet wird.
+# --sport Port-Nr oder --source-port Port-Nr	Das Paket wird nur geprüft, wenn es von der definierten Port-Nummer stammt. Muss zwingend in Verbindung mit -p benutzt werden!
+# --dport Port-Nr oder -destination-port Port-Nr	Das Paket wird nur geprüft, wenn es an die definierte Port-Nummer gesendet wird. Muss zwingend in Verbindung mit -p benutzt werden!
+# -j Aktion	Legt fest, welche Aktion auf das Paket angewendet werden soll, wenn alle Prüfkriterien erfüllt wurden. Weitere Details siehe hier.
+# -P Chain Aktion	Legt eine Policy für eine Chain fest, falls keine Filterregel zutrifft. Weitere Details siehe hier.
+
+# Trifft ein Filterregel auf ein Paket zu, muss noch festgelegt werden, wie mit dem Paket verfahren werden soll (Option -j Aktion, siehe oben). Bei "normaler" Filterung sind die häufigsten Aktionen:
+# verschiedene Aktionen, die auf ein Paket angewendet werden
+# Aktion	Beschreibung
+# ACCEPT	Das Paket wird akzeptiert und angenommen.
+# DROP	Das Paket wird nicht angenommen, der Sender erhält keine Nachricht.
+# REJECT	Das Paket wird nicht angenommen, der Sender wird benachrichtigt.
+# LOG	Die Paketdaten werden im System-Log festgehalten, anschließend wird die nächste Regel der Chain geprüft und ggf. angewendet.
+
+# Note that [[ is actually a command/program that returns either 0 (true) or 1 (false). Any program that obeys the same logic (like all base utils, such as grep(1) or ping(1)) can be used as condition, see examples.
+# [[ -z STRING ]] 	Empty string
+# [[ -n STRING ]] 	Not empty string
+# [[ STRING == STRING ]] 	Equal
+# [[ STRING != STRING ]] 	Not Equal
+# [[ NUM -eq NUM ]] 	Equal
+# [[ NUM -ne NUM ]] 	Not equal
+# [[ NUM -lt NUM ]] 	Less than
+# [[ NUM -le NUM ]] 	Less than or equal
+# [[ NUM -gt NUM ]] 	Greater than
+# [[ NUM -ge NUM ]] 	Greater than or equal
+# [[ STRING =~ STRING ]] 	Regexp
+# (( NUM < NUM )) 	Numeric conditions
+# [[ -o noclobber ]] 	If OPTIONNAME is enabled
+# [[ ! EXPR ]] 	Not
+# [[ X ]] && [[ Y ]] 	And
+# [[ X ]] || [[ Y ]] 	Or
+
+# File conditions
+# [[ -e FILE ]] 	Exists
+# [[ -r FILE ]] 	Readable
+# [[ -h FILE ]] 	Symlink
+# [[ -d FILE ]] 	Directory
+# [[ -w FILE ]] 	Writable
+# [[ -s FILE ]] 	Size is > 0 bytes
+# [[ -f FILE ]] 	File
+# [[ -x FILE ]] 	Executable
+# [[ FILE1 -nt FILE2 ]] 	1 is more recent than 2
+# [[ FILE1 -ot FILE2 ]] 	2 is more recent than 1
+# [[ FILE1 -ef FILE2 ]] 	Same files

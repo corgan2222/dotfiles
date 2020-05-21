@@ -7,6 +7,30 @@ all the Linux Stuff i used over the last 10 years
 
 ![](https://corgan2222.github.io/dotfiles/checkout.jpg)
 
+## Features
+
+- same Alias and Commands on different OS
+- seperate Functions and Alias for each OS
+- easy installer
+- Custom MOTD (Message of the Day) for each OS
+- Backup/Sync via homeshick on GitHub
+- 300 different Alias 
+- 200 Functions
+- 40 Tools
+- 45 installer for any type of Software with Bash GUI Installer
+- Cheat/Hint/Help System
+- create Documentation automaticly for Github
+
+## Support for OS:
+
+- Ubuntu
+- Debian
+- AsusWRT
+- Rasbian 3
+- Rasbian 4
+- Kali Linux
+- Synology 
+
 ## Table of Contents
 
 - [Dotfiles - Alias and basic Functions](#dotfiles---alias-and-basic-functions)
@@ -29,7 +53,18 @@ all the Linux Stuff i used over the last 10 years
 Linux:
 
 ```sh
+#with repo choose
 bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+
+#just this repo
+bash <(curl https://corgan2222.github.io/dotfiles/deploy_headless.sh)
+
+or
+bash <(curl https://sh.knaak.org)
+
+or
+curl sh.knaak.org | bash
+
 gitSaveCredential
 ```
 
@@ -74,6 +109,7 @@ Load:
 
 ```sh
  homeshick pull dotfiles
+ homeshick link #for new files
   reload
 ```
 
@@ -87,6 +123,14 @@ add File or Folder:
 
 ```sh
 homeshick track dotfiles [file, folder]
+```
+
+troubleshoot
+```sh
+homeshick cd dotfiles
+git status
+#rm file
+git pull
 ```
 
 ## Usage example

@@ -185,7 +185,7 @@ runOption(){
 
 
 # shootProfile
-#echo "$CPU_CORES x $CPU_TYPE"
+# echo "$CPU_CORES x $CPU_TYPE"
 # echo "OS: $OS"
 # echo "DIST: $DIST"
 # echo "PSUEDONAME: $PSUEDONAME"

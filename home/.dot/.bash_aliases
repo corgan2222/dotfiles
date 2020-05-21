@@ -34,7 +34,7 @@ alias logsWWW="lnav /var/www/vhosts/knaak.org/logs/"
 
 alias zabbix_server_reload="zabbix_server -R config_cache_reload"
 # ------------------------------------------------------------------------------
-# | Defaults                                                                   |
+# | sudo                                                                       |
 # ------------------------------------------------------------------------------
 
 # Enable simple aliases to be sudo'ed. ("sudone"?)
@@ -88,6 +88,7 @@ alias cd..='cd ..'
 alias cd...='cd ../..'
 alias cd....='cd ../../..'
 alias cd.....='cd ../../../..'
+alias cdHomeshick="homeshick cd dotfiles"
 
 alias ll='ls -alF'
 alias la='ls -A'
@@ -106,7 +107,8 @@ if command -v exa >/dev/null; then
   alias dd='exa --long --header --git -d */'
 fi
 
-alias userls='cat /etc/passwd'
+alias user-ls='cat /etc/passwd'
+alias groups-ls="getent group"
 
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
@@ -183,6 +185,8 @@ alias aptChangelog="aptitude changelog "
 alias aptListSourcesList="cat /etc/apt/sources.list"
 alias aptEditSourcesList="sudo joe /etc/apt/sources.list"
 alias aptListSourcesD="ls -la /etc/apt/sources.list.d/"
+alias aptSourcesSize="aptitude -O installsize -F'%p %I' search '~i'"
+alias aptgetAppInfos_fromthis="apt-cache policy "
 
 
 # ------------------------------------------------------------------------------
@@ -192,14 +196,6 @@ alias aptListSourcesD="ls -la /etc/apt/sources.list.d/"
 alias listLoadedPhpInis7="php --ini"
 alias listLoadedPhpInis73="php73 --ini"
 alias phplint='find . -name "*.php" -exec php -l {} \; | grep "Parse error"'
-
-# ------------------------------------------------------------------------------
-# | Docker                                                                     |
-# ------------------------------------------------------------------------------
-
-alias dl='docker ps'
-alias dr='docker restart'
-alias dockerContainerSize='docker stats --no-stream $(docker ps --format "{{.Names}}") | sed "s/\.[0-9]*\([kGM]i*B \)/\1/" | sort -h -k 4'
 
 # ------------------------------------------------------------------------------
 # | git                                                                        |
@@ -573,6 +569,21 @@ fi
 ###################
 # Docker shortcuts
 ###################
+
+# list running containers
+alias dl='docker ps'
+
+# restart docker
+alias dr='docker restart'
+
+# list ContainerSize
+alias dockerContainerSize='docker stats --no-stream $(docker ps --format "{{.Names}}") | sed "s/\.[0-9]*\([kGM]i*B \)/\1/" | sort -h -k 4'
+
+# prunes docker
+alias docker_prune_system="docker system prune"
+
+# prunes docker with volumes
+alias docker_prune_system_withVolumes="docker system prune -a --volumes"
  
 # list all images
 alias docker_list_images='docker images'
@@ -609,7 +620,7 @@ alias docker_rm_all_orphaned_volumes='docker volume ls -qf dangling=true | xargs
 # docker compose (assumes current directory contains the docker-compose.yml)
 alias dc='docker-compose '
  
-# start socker stack defined by docker-compose.yml
+# start docker stack defined by docker-compose.yml
 alias dc_up='docker-compose up -d'
  
 # stop docker stack defined by docker-compose.yml
@@ -631,3 +642,39 @@ alias ListShellandEnvironmentVariables="printenv "
 
 alias fx="fx ." #npm install -g fx print json
 alias how="function hdi(){ howdoi $* -c -n 5; }; hdi" #pip install howdoi
+
+#wifi
+alias wifi_ls_controller="lspci"
+alias wifi_show_infos="iwconfig wlan0"
+alias wifi_show_quality="iwconfig wlan0 | grep -i --color quality"
+alias wifi_show_quality2="cat /proc/net/wireless"
+alias wifi_show_quality_continuosly="watch -n 1 cat /proc/net/wireless"
+alias wifi_show_quality_continuosly_wavemon="wavemon"
+
+#journalctl 
+alias journal_show_errors="journalctl -p err -b "
+alias journal_show_thisunit="journalctl -u  "
+alias journal_show_live_from="journalctl -f -u "
+alias journal_show_live="journalctl -f"
+
+
+#logrotate
+alias logrotateTest="echo 'logrotate -d /etc/logrotate.d/remote-hosts'"
+alias logrotateTestThis="logrotate -d "
+alias logrotateDoThis="logrotate -f "
+
+#fail2ban
+
+alias fail2ban-client-status="fail2ban-client status"
+alias fail2ban-client-getBlockedIP_all='iptables -L -n | awk '\''$1=="REJECT" && $4!="0.0.0.0/0" {print $4}'\'''
+alias fail2ban-client-status_all="fail2ban-client status | sed -n 's/,//g;s/.*Jail list://p' | xargs -n1 fail2ban-client status"
+alias fail2ban-client-status_this="fail2ban-client status"
+alias fail2ban-test_ssh="fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d/sshd.conf && echo 'from#fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d/sshd.conf'"
+alias fail2ban-test_postfix="fail2ban-regex --print-all-missed /var/log/mail.log /etc/fail2ban/filter.d/sendmail.conf /etc/fail2ban/filter.d/sendmail.conf | less && echo 'from#fail2ban-regex --print-all-missed /var/log/mail.log /etc/fail2ban/filter.d/sendmail.conf /etc/fail2ban/filter.d/sendmail.conf | less'"
+
+#mail
+alias graylistCheckDomains="for i in `mysql -uadmin -p\`cat /etc/psa/.psa.shadow\` psa -Ns -e \"select name from domains\"`; do /usr/local/psa/bin/grey_listing --info-domain $i; done"
+alias graylistCheck='	sqlite3 /var/lib/plesk/mail/greylist/settings.db "select * from remote_domains"'
+alias graylistServerinfo="/usr/local/psa/bin/grey_listing --info-server"
+
+alias checkIP="iptables --list -n"

@@ -7,6 +7,10 @@
 
 
 case "$1" in
+        fanSpeed)
+                # get the Hardware Version
+                cat /tmp/fanSpeed.value
+                ;;
         boardversion)
                 # get the Hardware Version
                 sudo cat /proc/cpuinfo | grep Hardware | tr -d " " | cut -d ":" -f 2
@@ -170,7 +174,7 @@ case "$1" in
         debug)
                 # Temperature in 1/1000 centigrade
                 
-                for src in boardversion boardrevision boardserialnumber cpuvoltage cpuclock cpumem firmwareversion gpumem sdcardtotalsize sdcardused sdcardusedpercent sdcardfree temperature ; do
+                for src in boardversion boardrevision boardserialnumber cpuvoltage cpuclock cpumem firmwareversion gpumem sdcardtotalsize sdcardused sdcardusedpercent sdcardfree temperature fanSpeed; do
                 echo -e "$src:\t$(sudo $HOME/.dot/raspi/raspi_info.sh $src)" ;
                 done
 

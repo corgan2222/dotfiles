@@ -81,12 +81,23 @@ if [ "$DIST" = "Ubuntu" ]; then
   #for file in ~/.dot/ubuntu16/{.bashrc,.exports,.bash_aliases,.srv1.bash_aliases,debian.sh}; do
   #    [ -r "$file" ] && [ -f "$file" ] && _loadFile "$file"
   #done
-  printf "\t%s \t%s \n" fresh "Ubuntu" 
-  _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
-  _loadFile "$HOME"/.dot/ubuntu16/debian.sh "Debian Server Functions"
-  _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
-  _loadFile "$HOME"/.dot/ubuntu16/.bash_aliases "Debian Alias"
-  _loadFile "$HOME"/.dot/ubuntu16/.srv1.bash_aliases "srv1"
+  printf "\t%s \t%s \n" fresh "Ubuntu $PSUEDONAME $REV"   
+ 
+ if [ "$PSUEDONAME" = "disco" ]; then
+    _loadFile "$HOME"/.dot/ubuntu19/.bashrc "Debian Userpromt"
+    _loadFile "$HOME"/.dot/ubuntu19/debian.sh "Debian Server Functions"
+    _loadFile "$HOME"/.dot/ubuntu19/.exports "Exports"
+    _loadFile "$HOME"/.dot/ubuntu19/.bash_aliases "Debian Alias"    
+    figlet -k -f slant "$(hostname)"  | lolcat
+  else
+    _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
+    _loadFile "$HOME"/.dot/ubuntu16/debian.sh "Debian Server Functions"
+    _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
+    _loadFile "$HOME"/.dot/ubuntu16/.bash_aliases "Debian Alias"
+    _loadFile "$HOME"/.dot/ubuntu16/.srv1.bash_aliases "srv1"
+  fi
+  
+
   reload=yes  
 fi  
 
@@ -105,7 +116,7 @@ if [ "$DIST" = "raspbian" ]; then
  _loadFile "$HOME"/.dot/raspi/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/raspi/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST bash_aliases"  
- _loadFile "$HOME"/.dot/raspi/.raspi_bash_functions.sh "$DIST Functions"  
+ _loadFile "$HOME"/.dot/raspi/raspi_bash_functions.sh "$DIST Functions"  
  reload=yes
 fi 
 
@@ -159,7 +170,7 @@ fi
  
 if [ "$reload" = "yes" ]; then
   homeshick refresh
-  homeshick link
+  #homeshick link
 fi
 
 #a command-line fuzzy finde
