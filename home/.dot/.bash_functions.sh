@@ -2807,12 +2807,17 @@ echo "
 
   #mysqldump  server2server
     mysqldump -h host.com -u user --password=pw SOURCE_dbname | mysql -h dest_host.com -u root --password=pw  DB_new_name #db must created first
+    mysqldump -u <user name> --password=<pwd> <original db> | mysql -u <user name> -p <new db>
 
   #import from file using login-path
     mysql_config_editor set --login-path=choose_path --host=host --user=user --password
     mysql -login-path=path DB_NAme < DB_name_dump_.sql
 
+  #dump local
+  mysqldump -u root -p classicmodels > d:\db\classicmodels.sql
 
+  #import local
+  mysql -u root -p classicmodels_backup < d:\db\classicmodels.sql
 
 "
 
