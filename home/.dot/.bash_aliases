@@ -673,7 +673,7 @@ alias fail2ban-test_ssh="fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d
 alias fail2ban-test_postfix="fail2ban-regex --print-all-missed /var/log/mail.log /etc/fail2ban/filter.d/sendmail.conf /etc/fail2ban/filter.d/sendmail.conf | less && echo 'from#fail2ban-regex --print-all-missed /var/log/mail.log /etc/fail2ban/filter.d/sendmail.conf /etc/fail2ban/filter.d/sendmail.conf | less'"
 
 #mail
-alias graylistCheckDomains="for i in `mysql -uadmin -p\`cat /etc/psa/.psa.shadow\` psa -Ns -e \"select name from domains\"`; do /usr/local/psa/bin/grey_listing --info-domain $i; done"
+#alias graylistCheckDomains="for i in `mysql -uadmin -p\`cat /etc/psa/.psa.shadow\` psa -Ns -e \"select name from domains\"`; do /usr/local/psa/bin/grey_listing --info-domain $i; done"
 alias graylistCheck='	sqlite3 /var/lib/plesk/mail/greylist/settings.db "select * from remote_domains"'
 alias graylistServerinfo="/usr/local/psa/bin/grey_listing --info-server"
 
