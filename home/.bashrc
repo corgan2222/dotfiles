@@ -139,7 +139,7 @@ if [ "$DIST" = "kali" ]; then
  reload=yes   
 fi 
 
-if [ "$DIST" = "Unraid" ]; then 
+if [[ "$DIST" = "Unraid" || "$DIST" = "slackware" ]]; then 
  _loadFile "$HOME"/.dot/unraid/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/unraid/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/unraid/.bash_aliases "$DIST bash_aliases" 
