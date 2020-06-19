@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
+W="\e[0;39m"
+G="\e[1;32m"
 
 function f_userHome_save()
 {
-    FROM = "$HOME/"
-    TO = "/mnt/user/source/user-sync/$USER"
+    FROM="$HOME/"
+    TO="/mnt/user/source/user-sync/$USER"
 
-    echo "sync from  $FROM to $TO"
+    echo -e "sync from $G $FROM $W to $G $TO $W"
     mkdir -p $TO
-    mkdir -p /mnt/user/source/user-sync/$USER
+    # mkdir -p /mnt/user/source/user-sync/$USER
     rsync -a $FROM $TO
-    rsync -a $HOME/ /mnt/user/source/user-sync/$USER
+    # rsync -a $HOME/ /mnt/user/source/user-sync/$USER
 }
 
 function f_userHome_restore()
 {
+    TO="$HOME/"
+    FROM="/mnt/user/source/user-sync/$USER"
+
+    echo -e "sync from $G $FROM $W to $G $TO $W"
+    rsync -a $FROM $TO
 
 }
 
@@ -29,9 +36,6 @@ echo -e "
 plesk bin <utility name> [parameters] [options]
 "
     }
-
-W="\e[0;39m"
-G="\e[1;32m"
 
 function help_unraid(){
 echo -e "
@@ -62,5 +66,5 @@ echo -e "
     $G ncdu $W \t Disk Usage Analyze $W
 
 "
-
     }
+
