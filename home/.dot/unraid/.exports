@@ -10,3 +10,7 @@ if [ -d "/usr/local/go/bin" ]; then
 if [ -d "$HOME/.cargo/bin" ]; then
   export PATH="$HOME/.cargo/bin:$PATH"
 fi  
+
+if [ -d "/mnt/user/source/bin" ]; then
+  export PATH="/mnt/user/source/bin:$PATH"
+fi  
