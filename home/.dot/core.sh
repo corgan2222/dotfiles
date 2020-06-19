@@ -62,7 +62,7 @@ shootProfile(){
 				MODELL=$(cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				MODELL_TYPE=$(cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")				
-			
+
 				#AsusWRT
 			elif [ -f /opt/etc/entware_release ] ; then
 				PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
@@ -77,25 +77,38 @@ shootProfile(){
 				#MODELL=
 				MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
 				MODELL_SYSTEM="$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')"
-			
+
 				CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
 				CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)	
+
 			fi
 
-			if [ -f /etc/os-release ] ; then				
+			#raspi / unraid
+			if [ -f /etc/os-release ] ; then
 				#DIST=$(cat /etc/os-release | grep '^NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 				if [ -z "$DIST" ]; then
-					DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')				
+					DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')
 				fi
-				
-				if [ "$DIST" = "raspbian" ]; then 
+
+				#raspi
+				if [ "$DIST" = "raspbian" ]; then
 					PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")								
+					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					
+
 					IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
 					MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
-				fi	
+				fi
+
+				#unraid
+				if [ "$DIST" = "Unraid" ]; then
+					DIST=$(uname -r | sed 's/[^a-zA-Z]*//g')
+					PSUEDONAME=$(cat /etc/os-release| grep '^PRETTY_NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+					DistroBasedOn=$(cat /etc/os-release | grep '^CPE_NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+					KERNEL=$(uname -r)
+				fi
 				#MODELL=$(cat /etc/os-release | grep '^PRETTY_NAME=' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 			fi
 
@@ -196,7 +209,7 @@ runOption(){
 # echo "model: $MODELL"
 # echo "type: $MODELL_TYPE"
 # echo "system: $MODELL_SYSTEM"
-#echo "========"
+# echo "========"
 # printMenu
 
 
