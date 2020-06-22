@@ -678,3 +678,4 @@ alias graylistCheck='	sqlite3 /var/lib/plesk/mail/greylist/settings.db "select *
 alias graylistServerinfo="/usr/local/psa/bin/grey_listing --info-server"
 
 alias checkIP="iptables --list -n"
+alias restartXserver ="sudo systemctl restart display-manager"
