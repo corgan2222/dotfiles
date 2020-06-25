@@ -139,6 +139,19 @@ if [ "$DIST" = "kali" ]; then
  reload=yes   
 fi 
 
+if [[ "$DIST" = "Unraid" || "$DIST" = "slackware" ]]; then 
+ _loadFile "$HOME"/.dot/unraid/.bashrc "$DIST bashrc"
+ _loadFile "$HOME"/.dot/unraid/.exports "$DIST exports"
+ _loadFile "$HOME"/.dot/unraid/.bash_aliases "$DIST bash_aliases" 
+ _loadFile "$HOME"/.dot/unraid/unraid_bash_functions.sh "$DIST bash_aliases" 
+ _loadFile "$HOME"/.dot/unraid/motd/10-display-name "$DIST bash_aliases" 
+ _loadFile "$HOME"/.dot/unraid/motd/20-sysinfo "$DIST bash_aliases" 
+ 
+ reload=yes   
+fi 
+
+echo $DIST
+
 
 
 tempfile_c="/var/log/apt/apt-updates_count.log"
