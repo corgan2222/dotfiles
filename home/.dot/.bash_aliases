@@ -665,7 +665,6 @@ alias logrotateTestThis="logrotate -d "
 alias logrotateDoThis="logrotate -f "
 
 #fail2ban
-
 alias fail2ban-client-status="fail2ban-client status"
 alias fail2ban-client-getBlockedIP_all='iptables -L -n | awk '\''$1=="REJECT" && $4!="0.0.0.0/0" {print $4}'\'''
 alias fail2ban-client-status_all="fail2ban-client status | sed -n 's/,//g;s/.*Jail list://p' | xargs -n1 fail2ban-client status"
@@ -680,3 +679,34 @@ alias graylistServerinfo="/usr/local/psa/bin/grey_listing --info-server"
 
 alias checkIP="iptables --list -n"
 alias restartXserver="sudo systemctl restart display-manager"
+
+#ffmpeg 
+
+#silent
+alias ffmpegs="ffmpeg -loglevel error -hide_banner "
+
+#Display options specific to, and information about, a particular muxer:
+alias ffm_muxerInfo="ffmpeg -h muxer="
+
+#Display options specific to, and information about, a particular demuxer:
+alias ffm_demuxerInfo="ffmpeg -h demuxer="
+
+#List all formats:
+alias ffm_listFormats="ffmpeg -formats"
+
+#List all codecs:
+alias ffm_listCodecs="ffmpeg -codecs"
+alias ffm_listCodecsH264="ffmpeg -loglevel error -hide_banner -codecs | grep 264"
+alias ffm_listCodecsH265="ffmpeg -loglevel error -hide_banner -codecs | grep 265"
+
+#List all encoders:
+alias ffm_listEncoders="ffmpeg -encoders"
+
+#List all decoders:
+alias ffm_listDecoders="ffmpeg -decoders"
+
+#Display options specific to, and information about, a particular encoder:
+alias ffm_DetailsEncoderThis="ffmpeg -loglevel error -hide_banner -h encoder="
+
+#Display options specific to, and information about, a particular decoder:
+alias ffm_DetailsDecoderThis="ffmpeg -loglevel error -hide_banner -h decoder="
