@@ -33,7 +33,6 @@ echo -e "
 \e[0;32m s \e[0m \e[0;34m#savehome\e[0m
 \e[0;32m l \e[0m \e[0;34m#loadhome\e[0m
 \e[0;32m eg \e[0m \e[0;34m#search eg cheats\e[0m
-plesk bin <utility name> [parameters] [options]
 "
     }
 
