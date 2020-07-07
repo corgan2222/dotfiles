@@ -1787,7 +1787,7 @@ function h() {
   alias | grep -i $1
   grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' "$HOME"/.dot/.bash_functions.sh | grep -i $1
   cheat "$1"
-  curl cli.help/suche | grep "$1"
+  curl -s cli.help/suche | grep "$1"
 
 }
 
