@@ -1,5 +1,13 @@
 #https://sbcode.net/grafana/install-promtail-service/
 
+#iptables -A INPUT -p tcp -s localhost --dport 9080 -j ACCEPT
+#iptables -A INPUT -p tcp --dport 9080 -j DROP
+#iptables -L
+
+
+
+
+
 sudo cd /usr/local/bin
 sudo curl -fSL -o promtail.gz "https://github.com/grafana/loki/releases/download/v1.6.1/promtail-linux-amd64.zip"
 sudo gunzip promtail.gz
