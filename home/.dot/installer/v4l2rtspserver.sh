@@ -6,11 +6,8 @@ sudo git clone https://github.com/mpromonet/v4l2rtspserver.git ; cd v4l2rtspserv
 sudo modprobe -v bcm2835-v4l2
 sudo uv4l --driver raspicam --auto-video_nr --encoding h264
 
-cat << EOF > /lib/systemd/system/v4l2rtspserver.service
-
-ExecStart=v4l2rtspserver -P 8554 /dev/video0
-
-EOF
+# /lib/systemd/system/v4l2rtspserver.service
+#ExecStart=v4l2rtspserver -P 8554 /dev/video0
 
 
 cat << EOF >>
