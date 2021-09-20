@@ -5,6 +5,8 @@
 # updated for Raspi4 Stefan Knaak
 #
 
+#sudo usermod -aG video zabbix
+# visudo zabbix  ALL=(ALL:ALL) ALL
 
 case "$1" in
         fanSpeed)
