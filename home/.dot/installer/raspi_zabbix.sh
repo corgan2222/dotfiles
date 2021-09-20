@@ -1,1 +1,0 @@
-raspi_zabbix.sh
