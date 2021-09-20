@@ -1,5 +1,7 @@
 #!/bin/bash
 
+apt-get install -y git
+
 # bootstrap script to install Homeshick and you preferred castles to a new
 # system.
 

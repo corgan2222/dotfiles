@@ -21,7 +21,8 @@ alias ipLeases="cat /var/lib/misc/dnsmasq.leases"
 alias vpn4_stop="service stop_vpnclient4"
 alias vpn4_start="service start_vpnclient4"
 alias tcp_dump_port_53="tcpdump -i eth0 -p port 853 or 53 -n"
-alias lnav="tail /jffs/syslog.log -f"
+alias lnav="tail /tmp/syslog.log -f"
+alias zabbixAgentCheck="/opt/etc/init.d/S07zabbix_agentd check"
 
 function help(){
 echo '        

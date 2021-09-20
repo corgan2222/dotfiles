@@ -1,6 +1,6 @@
 #!/bin/bash
     #etckeeper
-    sudo -i
+    #sudo -i
     cd /root/.ssh
     ssh-keygen
     cat id_rsa.pub 

@@ -4,6 +4,6 @@ sudo dpkg -i zabbix-cli_2.2.1-1_all.deb
 
 echo "
 zabbix-cli-init --zabbix-url http://192.168.2.25/api_jsonrpc.php
-export ZABBIX_USERNAME=xxx
-export ZABBIX_PASSWORD=corgan80982
+export ZABBIX_USERNAME=ZABBIX_USERNAME
+export ZABBIX_PASSWORD=ZABBIX_PASSWORD
 "

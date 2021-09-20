@@ -15,7 +15,7 @@ try:
     else:
         with open('$HOME/.kutt-cli/apikey.txt') as f:
             API = f.read()
-            #print (API)
+            print (API)
             f.close()
 except:
     print ("Get an API key from kutt.it and run `kutt config-api`")
