@@ -46,6 +46,7 @@ echo -e "
     $G free $W \t Shows how much free memory is available.
     $G hostname -I $W \t Shows the IP address
     $G lsusb $W \t Lists USB hardware connected
+    $G docker-shell $W \t interactiv Docker Shell
 
     Nerdpack System:
     $G fd $W \t find $W
@@ -63,6 +64,9 @@ echo -e "
     Nerdpack Filesystem:
     $G iotop $W \t I/O usage information $W
     $G ncdu $W \t Disk Usage Analyze $W
+    
+    $G more Console $W \t https://wiki.unraid.net/Console
+    $G more Filesystem $W \t https://wiki.unraid.net/Check_Disk_Filesystems
 
 "
     }
