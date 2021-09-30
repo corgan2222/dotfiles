@@ -1699,7 +1699,7 @@ function telegrafAfterUpdate() {
   echo "joe /lib/systemd/system/telegraf.service"
   echo "joe /usr/lib/telegraf/scripts/telegraf.service"
   echo "service telegraf restart"
-  echo "systemctl daemon-reload2"
+  echo "systemctl daemon-reload"
   echo "service telegraf restart"
   echo "/var/log/telegraf/telegraf.log"
 
@@ -2700,6 +2700,9 @@ echo " journalctl --vacuum-time=3d"
 echo " journalctl --disk-usage"
 du -h /var/lib/snapd/snaps
 du -sh ~/.cache/
+echo " find ~/.cache/ -depth -type f -atime +365"
+echo " find ~/.cache/ -type f -atime +365 -delete"
+
 
 echo "kernel:"
 uname -r
