@@ -2481,8 +2481,11 @@ function getSSL() {
 }
 
 #block all ip from country on all ports
-function iptable_block_bad_countrys() {
+function iptable_block_bad_countrys() 
+{
 
+  #https://imanudin.net/2020/06/28/how-to-block-access-based-on-geoip-on-ubuntu/
+  
   if [ ! -d "/usr/share/xt_geoip/BE" ]; then 
     echo "/usr/share/xt_geoip/BE not found. Install GeoIP-database"
     return 1
