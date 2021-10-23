@@ -1,5 +1,33 @@
 #!/bin/bash
 
+function db()
+{
+
+PARENT_DIR=$(basename "${PWD%/*}")
+CURRENT_DIR="${PWD##*/}"
+image=$(to_lower "$PARENT_DIR/$CURRENT_DIR")
+
+
+#get timestamp for the tag
+timestamp=$(date +%Y%m%d%H%M%S)
+
+tag=$image:$timestamp
+latest=$image:latest
+
+#build image
+sudo docker build -t $tag -t $latest .
+echo $tag
+echo $latest
+#push to dockerhub
+sudo docker login
+#sudo docker login -u username -p password
+sudo docker push $image
+
+#remove dangling images
+#sudo docker system prune -f
+}
+
+
 function prompt_yn () 
 {
     while true; do
@@ -2828,6 +2856,7 @@ echo "
 "
 
 }
+
 
 
 # -t Tabelle	Diese Filterregel gilt für die Tabelle "Tabelle".
