@@ -1,0 +1,1 @@
+../../ubuntu16/motd/PersonalMOTD.sh

@@ -72,6 +72,7 @@ shopt -s histappend
 _loadFile "$HOME"/.dot/.bash_aliases "Base Alias"
 _loadFile "$HOME"/.dot/.bash_functions.sh "Base Functions"
 _loadFile "$HOME"/.dot/.exports "Base Exports"
+_loadFile "$HOME"/.dot/bin/sensible.bash "Bash Stuff"
 
 if [ "$DIST" = "Ubuntu" ]; then   
   # load the shell dotfiles, and then some:
@@ -83,21 +84,25 @@ if [ "$DIST" = "Ubuntu" ]; then
   #done
   printf "\t%s \t%s \n" fresh "Ubuntu $PSUEDONAME $REV"   
  
- if [ "$PSUEDONAME" = "disco" ]; then
-    _loadFile "$HOME"/.dot/ubuntu19/.bashrc "Debian Userpromt"
-    _loadFile "$HOME"/.dot/ubuntu19/debian.sh "Debian Server Functions"
-    _loadFile "$HOME"/.dot/ubuntu19/.exports "Exports"
-    _loadFile "$HOME"/.dot/ubuntu19/.bash_aliases "Debian Alias"    
-    figlet -k -f slant "$(hostname)"  | lolcat
-  else
-    _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
-    _loadFile "$HOME"/.dot/ubuntu16/debian.sh "Debian Server Functions"
-    _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
-    _loadFile "$HOME"/.dot/ubuntu16/.bash_aliases "Debian Alias"
-    _loadFile "$HOME"/.dot/ubuntu16/.srv1.bash_aliases "srv1"
-  fi
-  
-
+  if [ "$PSUEDONAME" = "disco" ]; then
+      printf "disco "   
+      _loadFile "$HOME"/.dot/ubuntu19/.bashrc "Debian Userpromt"
+      _loadFile "$HOME"/.dot/ubuntu19/.exports "Exports"
+      _loadFile "$HOME"/.dot/ubuntu19/.bash_aliases "Debian Alias"    
+      figlet -k -f slant "$(hostname)"  | lolcat
+    elif [ "$PSUEDONAME" = "bionic" ]; then  
+    printf "bionic "   
+      _loadFile "$HOME"/.dot/ubuntu18/.bashrc "Debian Userpromt"
+      _loadFile "$HOME"/.dot/ubuntu18/.exports "Exports"
+      _loadFile "$HOME"/.dot/ubuntu18/.bash_aliases "Debian Alias"    
+      figlet -k -f slant "$(hostname)"  | lolcat
+    else
+    printf "else "   
+      _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
+      _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
+      _loadFile "$HOME"/.dot/ubuntu16/.bash_aliases "Debian Alias"
+      _loadFile "$HOME"/.dot/ubuntu16/.srv1.bash_aliases "srv1"
+    fi
   reload=yes  
 fi  
 
@@ -196,6 +201,11 @@ if [ -d ~/.dot/bin ] ; then
   export PATH=~/.dot/bin:$PATH
 fi
 
+if [ -d ~/.git-radar ] ; then
+  export PATH=~/.git-radar:$PATH
+fi
+
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
@@ -211,7 +221,9 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS/@/}
 export COMP_WORDBREAKS
 
 if type complete &>/dev/null; then
-  _pm2_completion () {
+
+  _pm2_completion () 
+  {
     local si="$IFS"
     IFS=$'\n' COMPREPLY=($(COMP_CWORD="$COMP_CWORD" \
                            COMP_LINE="$COMP_LINE" \
@@ -220,9 +232,13 @@ if type complete &>/dev/null; then
                            2>/dev/null)) || return $?
     IFS="$si"
   }
+
   complete -o default -F _pm2_completion pm2
+
 elif type compctl &>/dev/null; then
-  _pm2_completion () {
+
+  _pm2_completion () 
+  {
     local cword line point words si
     read -Ac words
     read -cn cword

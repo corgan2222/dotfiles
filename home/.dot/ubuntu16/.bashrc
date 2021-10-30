@@ -46,11 +46,12 @@ if [ "$color_prompt" = yes ]; then
     }
 
     function getmyIP {
-          ifconfig | grep ^eth -A2 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1 }'  
+         ifconfig | grep ^enp2s0 -A2 | grep 'inet ' | awk '{ print $2 }'
     }
 
     # get current status of git repo
-    function parse_git_dirty {
+    function parse_git_dirty 
+    {
         status=`git status 2>&1 | tee`
         dirty=`echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?"`
         untracked=`echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?"`
@@ -84,13 +85,19 @@ if [ "$color_prompt" = yes ]; then
         fi
     }
 
-    function nonzero_return() {
-            RETVAL=$?
-            [ $RETVAL -ne 0 ] && echo "$RETVAL"
+    function nonzero_return() 
+    {
+        RETVAL=$?
+        [ $RETVAL -ne 0 ] && echo "$RETVAL"
     }
 
-    export PS1="\`nonzero_return\`_\`parse_git_branch\`_\t~\[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[36m\]\`getmyIP\`\[\e[m\] [\H] \[\e[33m\]\w\[\e[m\]  \[\e[35m\]#\[\e[m\] "
 
+        if [ -d ~/.git-radar ] ; then
+                
+                export PS1="\`nonzero_return\` \t \[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[36m\]\`getmyIP\`\[\e[m\][\H] [\$(git-radar --bash --fetch)] \[\e[33m\]\w\[\e[m\]  \[\e[35m\]#\[\e[m\] "
+        else
+                export PS1="\`nonzero_return\`_\`parse_git_branch\`_\t~\[\e[31m\]\u\[\e[m\]\[\e[33m\]@\[\e[m\]\[\e[36m\]\`getmyIP\`\[\e[m\] [\H] \[\e[33m\]\w\[\e[m\]  \[\e[35m\]#\[\e[m\] "
+        fi
 
 else
     PS1='\t-${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
