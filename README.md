@@ -1,8 +1,7 @@
 
 # Dotfiles - bash Profile, Alias and basic Functions
 
-> Scripts and Functions
-
+300 different Alias, 200 Functions, 40 Tools, 45 installer
 all the Linux Stuff i used over the last 10 years
 
 ![](https://corgan2222.github.io/dotfiles/checkout.jpg)
