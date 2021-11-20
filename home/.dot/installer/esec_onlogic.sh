@@ -2,7 +2,7 @@
 sudo apt-get update
 sudo apt-get upgrade
 
-APPS="curl wget lnav joe jo htop git tree pv figlet unzip apt-transport-https ca-certificates curl software-properties-common mosquitto mosquitto-clients python3 python3-pip"
+APPS="wget lnav joe jo htop tree pv lolcat figlet unzip apt-transport-https ca-certificates curl software-properties-common mosquitto-clients python3 python3-pip"
 
 for i in ${APPS}
 do
@@ -10,7 +10,7 @@ do
     if [[ $? -ne 0 ]]; then
         printf "\033[0;31m ${i} failed \033[0m \n"        
     else
-     printf "\032[0;31m ${i} failed \032[0m \n"	    
+     printf "\032[0;31m ${i} successfully installed \032[0m \n"	    
     fi
 done
 
