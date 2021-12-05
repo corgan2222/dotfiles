@@ -359,6 +359,7 @@ function saveHome()
   fi
 }
 
+
 #load newest dotfiles
 function loadHome() {
   homeshick pull dotfiles  
@@ -1314,6 +1315,27 @@ function jsonc() {
   fi
 }
 
+function json2yaml(){
+  
+  if [ -z "${1}" ]; then
+    echo "Usage: json2yaml file.json file.yaml "
+    return 1
+  fi
+
+  cp -p "${1}" "${2}"
+
+}
+
+function kill_all_of_process(){
+
+  if [ -z "${1}" ]; then
+    echo "Usage: kill_all_of_process ffmpeg "
+    return 1
+  fi
+
+  ps -ef | grep "${1}" | grep -v grep | awk '{print $2}' | xargs kill -9
+}
+
 # -------------------------------------------------------------------
 # escape: Escape UTF-8 characters into their 3-byte format
 function escape() {
@@ -1322,6 +1344,11 @@ function escape() {
   if [ -t 1 ]; then
     echo # newline
   fi
+}
+
+# scan multiple log subdirectories for the latest log files and tail them
+function logsLatest(){
+  ls /var/log/* -ld | tr -s " " | cut -d" " -f9 | xargs -i{} sh -c 'echo "\n---{}---\n"; tail -n50 {}/`ls -tr {} | tail -n1`'
 }
 
 # -------------------------------------------------------------------
@@ -2380,6 +2407,43 @@ raw2jpg_embedded(){
     ufraw-batch --out-type=jpeg --embedded-image "$1"
 }
 
+# find all active IP addresses in a network
+scanNetwork_nmap(){
+  
+  if ! [ -x "$(command -v nmap)" ]; then
+    echo 'Error: nmap is not installed.' >&2
+    exit 1
+  fi
+
+
+  if [ -z "${1}" ]; then
+    echo "Usage: scanNetwork 192.168.2 "   
+    return 1
+  fi
+
+  nmap -sP "${1}.0/24"; arp-scan --localnet | grep "${1}.[0-9]* *ether"
+
+  if ! [ -x "$(command -v arp-scan)" ]; then
+    echo 'Error: arp-scan is not installed.' >&2
+  fi
+}
+
+# Quickly ping range of IP adresses and return only those that are online
+scanNetwork_ping(){
+
+  if [ -z "${1}" ]; then
+    echo "Usage: scanNetwork_ping 192.168.2 "   
+    return 1
+  fi
+
+  network="${1}"
+
+  { for i in {1..254}; do ping -c 1 -W 1 ${network}.$i & done } | grep "64 bytes"
+
+}
+
+
+
 # "Usage: raw2jpg_convert 'ARW|CR2' "
 raw2jpg_convert(){
 
@@ -2858,6 +2922,36 @@ echo "
 }
 
 
+#parallel portscan
+function portscan_parallel (){
+  time seq 65535 | parallel -k --joblog portscan -j9 --pipe --cat -j200% -n9000 --tagstring '\033[30;3{=$_=++$::color%8=}m' 'nc -vz localhost $(head -n1 {})-$(tail -n1 {})'
+}
+
+#mural
+function corganwashere(){
+  tput setaf 1;tput rev;h=$(tput lines);w=$[$(tput cols)/6];c=$(seq -ws '_____|' $[$w+1]|tr -d "0-9");for a in $(seq $[$h/2]);do echo $c;echo ${c//|___/___|};done;tput cup 0;toilet -t -f bigmono12 "?Corganwashere";tput cup $h
+}
+
+
+#List all accessed configuration files while executing a program in linux terminal (improved version)
+function get_all_configs_of_programm()
+{
+
+  if [ -z "${1}" ]; then
+      echo "Usage: get_all_configs_of_programm docker"   
+      return 1
+  fi
+
+  strace 2>&1 "${1}" |egrep -o "\".*\.conf\""
+
+}
+
+#Generates a TV noise alike output in the terminal
+function tvNoise(){
+
+while true;do printf "$(awk -v c="$(tput cols)" -v s="$RANDOM" 'BEGIN{srand(s);while(--c>=0){printf("\xe2\x96\\%s",sprintf("%o",150+int(10*rand())));}}')";done
+
+}
 
 # -t Tabelle	Diese Filterregel gilt für die Tabelle "Tabelle".
 # -I Chain [Position]	Regel wird an Position "Position" der Kette "Chain" eingefügt. Bei Nichtangabe der Position wird die Regel am Anfang der Kette eingefügt.
