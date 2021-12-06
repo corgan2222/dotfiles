@@ -2953,6 +2953,123 @@ while true;do printf "$(awk -v c="$(tput cols)" -v s="$RANDOM" 'BEGIN{srand(s);w
 
 }
 
+
+function prq()
+{
+
+  if [ ! -d "${1}" ]; then
+      echo "Usage: prq python_project_folder_path "   
+      return 1
+  fi
+
+  if ! command -v pipreqs > /dev/null; then
+    pip3 install pipreqs    
+    pipreqs "${1}"
+  else
+    pipreqs "${1}"
+  fi  
+  
+}
+
+function h_bash(){
+echo '
+if [[ -z "$string" ]]; then
+  echo "String is empty"
+elif [[ -n "$string" ]]; then
+  echo "String is not empty"
+fi
+
+[[ -z STRING ]] 	Empty string
+[[ -n STRING ]] 	Not empty string
+[[ STRING == STRING ]] 	Equal
+[[ STRING != STRING ]] 	Not Equal
+[[ NUM -eq NUM ]] 	Equal
+[[ NUM -ne NUM ]] 	Not equal
+[[ NUM -lt NUM ]] 	Less than
+[[ NUM -le NUM ]] 	Less than or equal
+[[ NUM -gt NUM ]] 	Greater than
+[[ NUM -ge NUM ]] 	Greater than or equal
+[[ STRING =~ STRING ]] 	Regexp
+(( NUM < NUM )) 	Numeric conditions
+More conditions
+[[ -o noclobber ]] 	If OPTIONNAME is enabled
+[[ ! EXPR ]] 	Not
+[[ X && Y ]] 	And
+[[ X || Y ]] 	Or
+
+File conditions
+[[ -e FILE ]] 	Exists
+[[ -r FILE ]] 	Readable
+[[ -h FILE ]] 	Symlink
+[[ -d FILE ]] 	Directory
+[[ -w FILE ]] 	Writable
+[[ -s FILE ]] 	Size is > 0 bytes
+[[ -f FILE ]] 	File
+[[ -x FILE ]] 	Executable
+[[ FILE1 -nt FILE2 ]] 	1 is more recent than 2
+[[ FILE1 -ot FILE2 ]] 	2 is more recent than 1
+[[ FILE1 -ef FILE2 ]] 	Same files
+
+Basic for loop
+for i in /etc/rc.*; do
+  echo $i
+done
+
+cat file.txt | while read line; do
+  echo $line
+done
+
+for i in {1..5}; do
+    echo "Welcome $i"
+done
+
+$((a + 200))      # Add 200 to $a
+
+case "$1" in
+  start | up)
+    vagrant up
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|ssh}"
+    ;;
+esac
+
+
+
+printf "Hello %s, Im %s" Sven Olga
+#=> "Hello Sven, Im Olga
+
+printf "1 + 1 = %d" 2
+#=> "1 + 1 = 2"
+
+printf "This is how you print a float: %f" 2
+#=> "This is how you print a float: 2.000000"
+
+Directory of script
+DIR="${0%/*}"
+
+Special variables
+$? 	Exit status of last task
+$! 	PID of last background task
+$$ 	PID of shell
+$0 	Filename of the shell script
+$_ 	Last argrument of the previous command
+
+
+
+if ping -c 1 google.com; then
+  echo "It appears you have a working internet connection"
+fi
+
+
+
+https://devhints.io/bash
+
+'
+
+}
+
 # -t Tabelle	Diese Filterregel gilt für die Tabelle "Tabelle".
 # -I Chain [Position]	Regel wird an Position "Position" der Kette "Chain" eingefügt. Bei Nichtangabe der Position wird die Regel am Anfang der Kette eingefügt.
 # -A Chain	Regel wird an die Kette "Chain" angehängt.

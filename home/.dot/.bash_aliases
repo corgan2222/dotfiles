@@ -729,3 +729,11 @@ alias backd="/bin/bash | nc -l 1234"
 # Quick and dirty hardware summary where lshw is not available. Requires util-linux, procps, pciutils, usbutils and net-tools, which should be preinstalled on most systems. 
 alias gethw='(printf "\nCPU\n\n"; lscpu; printf "\nMEMORY\n\n"; free -h; printf "\nDISKS\n\n"; lsblk; printf "\nPCI\n\n"; lspci; printf "\nUSB\n\n"; lsusb; printf "\nNETWORK\n\n"; ifconfig) | less'
 
+#python
+alias py_createVirt="python3 -m venv env"
+alias pi="pip3 install"
+alias pf="pip3 freeze"
+alias pr="pip3 install -r requirements.txt"
+
+
+
