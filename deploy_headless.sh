@@ -18,7 +18,7 @@ castles+=("corgan2222/dotfiles")
 
 if [[ ! -f $HOME/.homesick/repos/homeshick/homeshick.sh ]]; then
   if command -v git >/dev/null; then
-      git clone git://github.com/andsens/homeshick.git $HOME/.homesick/repos/homeshick
+      git clone https://github.com/andsens/homeshick.git $HOME/.homesick/repos/homeshick
   else
     echo "no git found... path?"    
   fi    
