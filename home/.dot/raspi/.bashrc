@@ -1,6 +1,11 @@
 #!/bin/bash -x
 # If not running interactively, don't do anything
-[ -z "$PS1" ] && return
+#[ -z "$PS1" ] && return
+# fix not able to login to gui bug
+case $- in
+    *i*) ;;
+      *) return;;
+esac
 
 HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend
