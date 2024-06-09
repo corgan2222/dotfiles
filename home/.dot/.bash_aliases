@@ -624,19 +624,23 @@ alias docker_rm_all_orphaned_volumes='docker volume ls -qf dangling=true | xargs
 alias dc='docker-compose '
  
 # start docker stack defined by docker-compose.yml as deamon
-alias dcud='docker-compose up -d'
+alias dcupd='docker-compose up -d'
 
 # start docker stack defined by docker-compose.yml
-alias dcu='docker-compose up '
+alias dcup='docker-compose up '
  
 # stop docker stack defined by docker-compose.yml
-alias dcd='docker-compose down'
+alias dcdn='docker-compose down'
  
 # rebuild docker stack
-alias dcr='docker-compose up -d --build'
+alias dcb='docker-compose up -d --build'
  
 # watch logs in docker stack
 alias dcl='watch -n2 "docker-compose logs | tail -f"'
+
+# watch logs in docker stack
+alias dcp='docker-compose pull'
+
 
 ###########################
 # VNC shortcuts
