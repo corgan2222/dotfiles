@@ -1,7 +1,7 @@
 #!/bin/bash
 #sudo apt-get update
 #sudo apt-get upgrade
-APPS="curl wget lnav joe jo htop git tree pv figlet unzip mtr"
+APPS="curl wget lnav joe jo htop git tree pv figlet unzip mtr bat"
 
 for i in ${APPS}
 do
