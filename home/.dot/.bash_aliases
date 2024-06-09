@@ -742,5 +742,63 @@ alias pi="pip3 install"
 alias pf="pip3 freeze"
 alias pr="pip3 install -r requirements.txt"
 
+#nmap
+#scan for open ports on target.
+alias nmap_open_ports="sudo nmap --open"
 
+# list all network interfaces on host where the command runs.
+alias nmap_list_interfaces="sudo nmap --iflist"
 
+#slow scan that avoids to spam the targets logs.
+alias nmap_slow="sudo nmap -sS -v -T1"
+
+# scan to see if hosts are up with TCP FIN scan.
+alias nmap_scanIP="sudo nmap -sF -v"
+
+#aggressive full scan that scans all ports, tries to determine OS and service versions.
+alias nmap_full="sudo nmap -sS -T4 -PE -PP -PS80,443 -PY -g 53 -A -p1-65535 -v"
+
+#TCP ACK scan to check for firewall existence.
+alias nmap_check_for_firewall="sudo nmap -sA -p1-65535 -v -T4"
+
+#host discovery with SYN and ACK probes instead of just pings to avoid firewall restrictions.
+alias nmap_ping_through_firewall="nmap -PS -PA"
+
+#fast scan of the top 300 popular ports.
+alias nmap_fast="sudo nmap -F -T5 --version-light --top-ports 300"
+
+#detects versions of services and OS, runs on all ports.
+alias nmap_detect_versions="sudo nmap -sV -p1-65535 -O --osscan-guess -T4 -Pn"
+
+#uses vulscan script to check target services for vulnerabilities.
+alias nmap_check_for_vulns="sudo nmap --script=vuln"
+
+#same as full but via UDP
+alias nmap_full_udp="sudo nmap -sS -sU -T4 -A -v -PE -PS22,25,80 -PA21,23,80,443,3389 "
+
+#try to traceroute using the most common ports.
+alias nmap_traceroute="sudo nmap -sP -PE -PS22,25,80 -PA21,23,80,3389 -PU -PO --traceroute "
+
+#same as nmap_full but also runs all the scripts.
+alias nmap_full_with_scripts="sudo nmap -sS -sU -T4 -A -v -PE -PP -PS21,22,23,25,80,113,31339 -PA80,113,443,10042 -PO --script all "
+
+#ittle "safer" scan for OS version as connecting to only HTTP and HTTPS ports doesn't look so attacking.
+alias nmap_web_safe_osscan="sudo nmap -p 80,443 -O -v --osscan-guess --fuzzy "
+
+#ICMP scan for active hosts
+alias nmap_ping_scan="sudo nmap -n -sP"
+
+#OS-Scan
+alias nmap_scanIP_os="sudo nmap -O "
+
+#OS & Service Scan
+alias nmap_scanIP_osService="sudo nmap -A "
+
+# find all active IP addresses in a network
+alias nmap_scanNetwork="scanNetwork_nmap"
+
+#Host-Discovery mit ARP
+alias scanNetwork_arp="arp -a"
+
+#Host-Discovery mit ARP-scan
+alias scanNetwork_arpScan="arp-scan --localnet"

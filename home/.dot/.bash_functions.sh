@@ -2407,42 +2407,6 @@ raw2jpg_embedded(){
     ufraw-batch --out-type=jpeg --embedded-image "$1"
 }
 
-# find all active IP addresses in a network
-scanNetwork_nmap(){
-  
-  if ! [ -x "$(command -v nmap)" ]; then
-    echo 'Error: nmap is not installed.' >&2
-    exit 1
-  fi
-
-
-  if [ -z "${1}" ]; then
-    echo "Usage: scanNetwork 192.168.2 "   
-    return 1
-  fi
-
-  nmap -sP "${1}.0/24"; arp-scan --localnet | grep "${1}.[0-9]* *ether"
-
-  if ! [ -x "$(command -v arp-scan)" ]; then
-    echo 'Error: arp-scan is not installed.' >&2
-  fi
-}
-
-# Quickly ping range of IP adresses and return only those that are online
-scanNetwork_ping(){
-
-  if [ -z "${1}" ]; then
-    echo "Usage: scanNetwork_ping 192.168.2 "   
-    return 1
-  fi
-
-  network="${1}"
-
-  { for i in {1..254}; do ping -c 1 -W 1 ${network}.$i & done } | grep "64 bytes"
-
-}
-
-
 
 # "Usage: raw2jpg_convert 'ARW|CR2' "
 raw2jpg_convert(){
@@ -3069,6 +3033,95 @@ https://devhints.io/bash
 '
 
 }
+
+# find all active IP addresses in a network
+scanNetwork_nmap(){
+  
+  if ! [ -x "$(command -v nmap)" ]; then
+    echo 'Error: nmap is not installed.' >&2
+    exit 1
+  fi
+
+
+  if [ -z "${1}" ]; then
+    echo "Usage: scanNetwork 192.168.2 "   
+    return 1
+  fi
+
+  nmap -sP "${1}.0/24"; arp-scan --localnet | grep "${1}.[0-9]* *ether"
+
+  if ! [ -x "$(command -v arp-scan)" ]; then
+    echo 'Error: arp-scan is not installed.' >&2
+  fi
+}
+
+# Quickly ping range of IP adresses and return only those that are online
+scanNetwork_ping(){
+
+  if [ -z "${1}" ]; then
+    echo "Usage: scanNetwork_ping 192.168.2 "   
+    return 1
+  fi
+
+  network="${1}"
+
+  { for i in {1..254}; do ping -c 1 -W 1 ${network}.$i & done } | grep "64 bytes"
+
+}
+
+# Function to get the local IP and run nmap
+nmap_scanNetworkPing() {
+    # Get the local IP address
+    local IP=$(hostname -I | awk '{print $1}')
+    
+    # Extract the network part of the IP address
+    local NETWORK=$(echo $IP | awk -F. '{print $1 "." $2 "." $3 ".0/24"}')
+    
+    # Run nmap with the constructed network range
+    sudo nmap -PE -sn -oG - $NETWORK
+    
+}
+
+# Function to get the local IP and run nmap
+nmap_scanNetworkAdvance() {
+    # Get the local IP address
+    local IP=$(hostname -I | awk '{print $1}')
+    
+    # Extract the network part of the IP address
+    local NETWORK=$(echo $IP | awk -F. '{print $1 "." $2 "." $3 ".0/24"}')
+    
+    # Run nmap with the constructed network range
+    sudo nmap -sn -oG - $NETWORK  
+}
+
+# Function to get the local IP and run nmap
+nmap_listScan() {
+    # Get the local IP address
+    local IP=$(hostname -I | awk '{print $1}')
+    
+    # Extract the network part of the IP address
+    local NETWORK=$(echo $IP | awk -F. '{print $1 "." $2 "." $3 ".0/24"}')
+    
+    # Run nmap with the constructed network range
+    sudo nmap -sL $NETWORK     
+}
+
+
+function nmap_bacnet_scanNetwork {
+# get the IP address
+    # Get the local IP address
+    local IP=$(hostname -I | awk '{print $1}')
+    
+    # Extract the network part of the IP address
+    local NETWORK=$(echo $IP | awk -F. '{print $1 "." $2 "." $3 ".0/24"}')
+
+echo "Start nmap scan: sudo nmap --script bacnet-info -sU -p 47808 $NETWORK"
+echo ""
+sudo nmap --script bacnet-info -sU -p 47808 $NETWORK 
+echo ""
+
+}
+
 
 # -t Tabelle	Diese Filterregel gilt für die Tabelle "Tabelle".
 # -I Chain [Position]	Regel wird an Position "Position" der Kette "Chain" eingefügt. Bei Nichtangabe der Position wird die Regel am Anfang der Kette eingefügt.
