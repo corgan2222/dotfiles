@@ -1,6 +1,10 @@
 #!/bin/bash
-
-apt-get install -y git
+if ! command -v git >/dev/null; then
+    echo ""
+    echo "Git not isntalled. Install git."
+    echo ""
+    sudo apt-get install -y git
+fi 
 
 # bootstrap script to install Homeshick and you preferred castles to a new
 # system.
@@ -14,7 +18,6 @@ else
 fi
 
 trap 'rm -f "$tmpfile"' EXIT
-
 castles+=("corgan2222/dotfiles")
 
 
