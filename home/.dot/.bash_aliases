@@ -118,6 +118,9 @@ alias cd_Aptlist='cd /etc/apt/'
 alias cd_git='cd "$HOME"/git'
 alias cd_Scripts='cd $HOME/git/scripts'
 
+alias ssdn='sudo shutdown now'
+alias ssrn='sudo reboot now'
+
 # ------------------------------------------------------------------------------
 # | Search and Find                                                            |
 # ------------------------------------------------------------------------------
