@@ -2370,7 +2370,7 @@ function gitHelpNew()
 dtags () {
     local image="${1}"
 
-    wget -q https://registry.hub.docker.com/v1/repositories/"${image}"/tags -O - \
+    wget -q https://registry.hub.docker.com/v2/repositories/"${image}"/tags -O - \
         | tr -d '[]" ' | tr '}' '\n' | awk -F: '{print $3}'
 }
 
@@ -2530,12 +2530,6 @@ function imgResize() {
   imgp -x "${1}" -w -p --pr -q "${2}"
 }
 
-function getSSL() {
-  ssl_certificate_file=$(grep ssl_certificate /var/www/vhosts/system/knaak.org/conf/nginx.conf)
-  ssl_client_certificate_file=$(grep ssl_client_certificate /var/www/vhosts/system/knaak.org/conf/nginx.conf)
-
-}
-
 #block all ip from country on all ports
 function iptable_block_bad_countrys() 
 {
@@ -2661,7 +2655,7 @@ function iptable_remove_lines()
 function diff_git_file()
 {
   if [ -z "${1}" ]; then
-      echo "Usage: iptable_diff_git_file raspi/raspi_info.sh"   
+      echo "Usage: diff_git_file raspi/raspi_info.sh"   
       return 1
   fi  
   git fetch origin master
@@ -3119,7 +3113,30 @@ echo "Start nmap scan: sudo nmap --script bacnet-info -sU -p 47808 $NETWORK"
 echo ""
 sudo nmap --script bacnet-info -sU -p 47808 $NETWORK 
 echo ""
+}
 
+# Function: lanv
+# Ensures 'lnav' is installed and uses it to view system logs. If '/var/log/syslog' is absent, logs are streamed from 'journalctl'. 
+# It checks for 'lnav' presence, installs it if missing, and chooses the appropriate log source based on system configuration.
+# Usage: Call 'lanv' without arguments to view logs. Requires sudo privileges for installation and log access.
+function lnav() {
+    # Find the full path of lnav
+    local lnav_path=$(which lnav)
+    
+    # If lnav is not installed, install it.
+    if [ -z "$lnav_path" ]; then
+        echo "lnav is not installed. Installing lnav..."
+        sudo apt-get update && sudo apt-get install -y lnav
+        lnav_path=$(which lnav)  # Re-check for lnav path after installation
+    fi
+
+    # After ensuring lnav is installed, check if /var/log/syslog exists.
+    if [ -z "$1" ]; then  # This checks for no arguments.
+        if [ ! -f "/var/log/syslog" ]; then
+            # If /var/log/syslog does not exist, use journalctl to feed logs into lnav.
+            journalctl --since today -f -n 100 --no-pager | $lnav_path
+        fi
+    fi
 }
 
 

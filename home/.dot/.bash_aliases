@@ -240,7 +240,7 @@ alias portsu="netstat -lnp"
 
 # external ip address
 alias myip_dns="dig +short myip.opendns.com @resolver1.opendns.com"
-alias myip_http="GET http://ipecho.net/plain && echo"
+alias myip_http="curl http://ipecho.net/plain && echo"
 
 alias ping='ping -c 5'
 # Do not wait interval 1 second, go fast #
@@ -666,14 +666,13 @@ alias wifi_show_infos="iwconfig wlan0"
 alias wifi_show_quality="iwconfig wlan0 | grep -i --color quality"
 alias wifi_show_quality2="cat /proc/net/wireless"
 alias wifi_show_quality_continuosly="watch -n 1 cat /proc/net/wireless"
-alias wifi_show_quality_continuosly_wavemon="wavemon"
+alias wifi_show_quality_continuosly_wavemon="sudo wavemon"
 
 #journalctl 
 alias journal_show_errors="journalctl -p err -b "
 alias journal_show_thisunit="journalctl -u  "
 alias journal_show_live_from="journalctl -f -u "
 alias journal_show_live="journalctl -f"
-
 
 #logrotate
 alias logrotateTest="echo 'logrotate -d /etc/logrotate.d/remote-hosts'"
