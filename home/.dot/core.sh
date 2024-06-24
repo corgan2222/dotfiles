@@ -90,7 +90,17 @@ shootProfile(){
 					DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')
 				fi
 
-				#raspi
+				#raspbian
+				if [ "$DIST" = "debian" ]; then
+					PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+
+					IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
+					MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
+				fi
+
+				#debian
 				if [ "$DIST" = "raspbian" ]; then
 					PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")

@@ -94,7 +94,14 @@ me=$(whoami)
 
 # Greetings
 greetings="$borderBar$(color $greetingsColor "$(center "Welcome back, $me! on $(hostname)")")$borderBar\n"
-greetings="$greetings$borderBar$(color $statsLabelColor "$(center "$MODELL_SYSTEM")")$borderBar"
+greetings="$greetings$borderBar$(color $statsLabelColor "$(center "$MODELL_SYSTEM")")$borderBar\n"
+
+DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')
+PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
+
+greetings="$greetings$borderBar$(color $statsLabelColor "$(center "$DIST $PSUEDONAME $REV")")$borderBar"
+
 
 # System information
 read loginFrom loginIP loginDate <<< $(last $me --time-format iso -2 | awk 'NR==2 { print $2,$3,$4 }')
@@ -132,7 +139,7 @@ label3="$borderBar  $(color $statsLabelColor "Memory........:") $label3$borderBa
 label4="$(extend "$(df -h ~ | awk 'NR==2 { printf "Total: %sB, Used: %sB, Free: %sB",$2,$3,$4; }')")"
 label4="$borderBar  $(color $statsLabelColor "Home space....:") $label4$borderBar"
 
-label5="$(extend "$(/opt/vc/bin/vcgencmd measure_temp | cut -c "6-9")ºC")"
+label5="$(extend "$(vcgencmd measure_temp | cut -c "6-9")ºC")"
 label5="$borderBar  $(color $statsLabelColor "Temperature...:") $label5$borderBar"
 
 label6="$(extend "$(hostname -I)")"

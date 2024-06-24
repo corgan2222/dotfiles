@@ -1,5 +1,5 @@
 #!/bin/bash -x
-
+ 
 [ -z "$PS1" ] && return
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
@@ -74,6 +74,8 @@ _loadFile "$HOME"/.dot/.bash_functions.sh "Base Functions"
 _loadFile "$HOME"/.dot/.exports "Base Exports"
 _loadFile "$HOME"/.dot/bin/sensible.bash "Bash Stuff"
 
+#printf "\t%s \t%s \n" "$DIST $PSUEDONAME $REV $MODELL_TYPE" 
+
 if [ "$DIST" = "Ubuntu" ]; then   
   # load the shell dotfiles, and then some:
   # * ~/.path can be used to extend `$PATH`.
@@ -82,7 +84,7 @@ if [ "$DIST" = "Ubuntu" ]; then
   #for file in ~/.dot/ubuntu16/{.bashrc,.exports,.bash_aliases,.srv1.bash_aliases,debian.sh}; do
   #    [ -r "$file" ] && [ -f "$file" ] && _loadFile "$file"
   #done
-  printf "\t%s \t%s \n" fresh "Ubuntu $PSUEDONAME $REV"   
+  #printf "\t%s \t%s \n" fresh "Ubuntu $PSUEDONAME $REV"   
  
   if [ "$PSUEDONAME" = "disco" ]; then
       printf "disco "   
@@ -117,14 +119,13 @@ if [ "$DIST" = "Synology" ]; then
   reload=yes
 fi  
 
-if [ "$DIST" = "raspbian" ]; then 
+if [[ "$DIST" = "raspbian" || "$DIST" = "debian" ]]; then 
  _loadFile "$HOME"/.dot/raspi/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/raspi/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST bash_aliases"  
  _loadFile "$HOME"/.dot/raspi/raspi_bash_functions.sh "$DIST Functions"  
  reload=yes
 fi 
-
 
 if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then 
  _loadFile "$HOME"/.dot/asuswrt/.bashrc "$DIST bashrc"
@@ -134,7 +135,6 @@ if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then
  _loadFile "$HOME"/.dot/asuswrt/EntwareApps.sh "$DIST EntwareApps.sh"  
  _loadFile "$HOME"/.dot/asuswrt/motd_asus.sh "$DIST motd_asus.sh"  
 fi 
-
 
 if [ "$DIST" = "kali" ]; then 
  _loadFile "$HOME"/.dot/kali/.bashrc "$DIST bashrc"
@@ -155,7 +155,7 @@ if [[ "$DIST" = "Unraid" || "$DIST" = "slackware" ]]; then
  reload=yes   
 fi 
 
-echo $DIST
+#echo $DIST
 
 
 
