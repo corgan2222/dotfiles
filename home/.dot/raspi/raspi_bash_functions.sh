@@ -8,29 +8,23 @@ echo '
     cat /proc/version: Shows you which version of the Raspberry Pi you are using.
     df -h: Shows information about the available disk space.
     df /: Shows how much free disk space is available.
-    dpkg – –get–selections | grep XXX: Shows all of the installed packages that are related to XXX.
-    dpkg – –get–selections: Shows all of your installed packages.
+    dpkg --get-selections : Shows all of your installed packages.    
     free: Shows how much free memory is available.
     hostname -I: Shows the IP address of your Raspberry Pi.
-    lsusb: Lists USB hardware connected to your Raspberry Pi.
-    UP key: Pressing the UP key will print the last command entered into the command prompt. This is a quick way to repeat previous commands or make corrections to commands.
     vcgencmd measure_temp: Shows the temperature of the CPU.
     vcgencmd get_mem arm && vcgencmd get_mem gpu: Shows the memory split between the CPU and GPU.
-    cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
-    600000
+    cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq    
     cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-    1500000 (bisher 1400000)
     vcgencmd get_config sdram_freq # RAM
-    sdram_freq=0 (bisher 500)
     vcgencmd get_config core_freq # Video Core
-    core_freq=500 (bisher 400)
     vcgencmd get_config gpu_freq # 3D-Core
-    gpu_freq=500 (bisher 300)    
+
+    lsusb: Lists USB hardware connected to your Raspberry Pi.
 '
     }
     
 #get app installer help    
-function installer-help-raspi(){
+function help_raspi_installer(){
 echo " 
     #base
     sudo raspi-config
@@ -46,10 +40,40 @@ echo "
   
     #change swap
     # https://www.elektronik-kompendium.de/sites/raspberry-pi/2002131.htm
-    sudo joe /etc/dphys-swapfile
-            
-    
+    sudo joe /etc/dphys-swapfile                
 "    
+}
+
+function help_raspi_cam() {
+echo " 
+    https://www.raspberrypi.com/documentation/computers/camera_software.html#libcamera : Official Raspberry Pi camera documentation link.
+    -n : Disable preview mode.
+    --qt-preview : Opens a QT-based GUI preview.
+
+    lsusb : Lists connected USB devices.
+    v4l2-ctl --list-devices : list usb cams
+    v4l2-ctl --list-formats-ext : list usb cams ext
+    ffmpeg -f v4l2 -list_formats all -i /dev/video0 : list ffmpeg modes for video0
+
+    rpicam-hello -n : Run rpicam-hello without preview.
+    rpicam-hello : Run rpicam-hello with default settings.
+    libcamera-hello --list-cameras : Lists all detected cameras.
+
+    rpicam-jpeg -n --output test.jpg : Capture a JPEG image without preview.
+    rpicam-still -n --output test.jpg : Capture a still JPEG image without preview.
+    rpicam-still --qt-preview --output test.jpg : Capture a still image with QT preview.
+    rpicam-still -n --encoding png --output test.png : Capture a PNG image without preview.
+    rpicam-still -n --raw --output test.jpg : Capture a raw image and save as JPEG without preview.
+    rpicam-still -n -o long_exposure.jpg --shutter 100000000 --gain 1 --awbgains 1,1 --immediate : Capture with long exposure settings.
+    rpicam-still -n -r -o test.jpg --width 2028 --height 1520 : Captures a 2028x1520 resolution JPEG without preview.
+
+    rpicam-vid -n -t 10s -o test.h264 : Record a 10-second H.264 video without preview.
+    rpicam-vid -n -t 10s --qt-preview : Record a 10-second video with QT preview.
+    rpicam-vid -n -t 10000 --codec mjpeg -o test.mjpeg : Record a 10-second MJPEG video without preview.
+    rpicam-vid -n -t 10000 --codec yuv420 -o test.data : Record video with YUV420 codec, output as raw data.
+    rpicam-vid -n -t 0 --inline -o - | cvlc stream:///dev/stdin --sout '#rtp{sdp=rtsp://:8554/stream1}' :demux=h264 : Stream live video over RTSP using VLC.
+    rpicam-vid -n -o test.h264 --width 1920 --height 1080 : Captures 1080p video without preview.
+"
 }
 
 #install extFat Filesystem 
