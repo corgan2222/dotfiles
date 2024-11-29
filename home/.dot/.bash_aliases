@@ -617,8 +617,11 @@ alias docker_rm_all_volumes='docker volume ls -q | xargs --no-run-if-empty docke
  
 # remove all orphaned docker volumes 
 alias docker_rm_all_orphaned_volumes='docker volume ls -qf dangling=true | xargs --no-run-if-empty docker volume rm'
- 
-    
+
+#show all container with internal IP 
+alias docker_net_info='sudo docker ps -q | xargs -n 1 sudo docker inspect --format "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} {{ .Name }}" | sed "s/ \// /"'
+
+
 ###########################
 # Docker Compose shortcuts
 ###########################
@@ -808,3 +811,7 @@ alias scanNetwork_arp="arp -a"
 
 #Host-Discovery mit ARP-scan
 alias scanNetwork_arpScan="arp-scan --localnet"
+
+#influx get infos about the hdd size per measurment
+alas influx_hdd_measurment = "sudo influx_inspect report-disk -detailed /data/var/lib/influxdb/ "
+alas influx_hdd_measurment_save = "sudo influx_inspect report-disk -detailed /data/var/lib/influxdb/ > data.json "

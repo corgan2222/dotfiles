@@ -2885,6 +2885,59 @@ function portscan_parallel (){
   time seq 65535 | parallel -k --joblog portscan -j9 --pipe --cat -j200% -n9000 --tagstring '\033[30;3{=$_=++$::color%8=}m' 'nc -vz localhost $(head -n1 {})-$(tail -n1 {})'
 }
 
+function portsD() {
+    if ! command -v netstat &> /dev/null; then
+        echo "Error: netstat is not installed. Please install it using your package manager."
+        return 1  # Exit the function with an error code
+    fi    
+
+    # Define a list of ports to ignore
+    IGNORE_PORTS=(53)
+
+    echo "Processing netstat output and appending program paths and working directories..."
+
+    # Print header with fixed column widths
+    printf "%-22s %-25s %-45s %-s\n" "Local Address" "PID/Program Name" "Program Path" "Working Directory"
+
+    # Run netstat command and process the output
+    sudo netstat -lnpt4e | while read -r line; do
+        # Skip the header line
+        if [[ "$line" == *"Proto Recv-Q Send-Q"* ]]; then
+            continue
+        fi
+
+        # Only process lines where state is LISTEN
+        if [[ "$line" == *LISTEN* ]]; then
+            # Extract the port number from Local Address
+            local_addr=$(echo "$line" | awk '{print $4}')
+            port=$(echo "$local_addr" | awk -F: '{print $NF}')
+
+            # Check if the port is in the ignore list
+            if [[ " ${IGNORE_PORTS[@]} " =~ " $port " ]]; then
+                continue
+            fi
+
+            # Extract PID/Program Name
+            pid_prog=$(echo "$line" | awk '{print $9}')
+
+            # Extract PID from PID/Program Name
+            pid=$(echo "$pid_prog" | cut -d'/' -f1)
+            program_path="Unknown"
+            working_dir="Unknown"
+
+            # Retrieve the full path of the program using the PID
+            if [[ "$pid" =~ ^[0-9]+$ ]]; then
+                program_path=$(sudo readlink -f /proc/$pid/exe 2>/dev/null || echo "Unknown")
+                working_dir=$(sudo readlink -f /proc/$pid/cwd 2>/dev/null || echo "Unknown")
+            fi
+
+            # Print formatted output with fixed column widths
+            printf "%-22s %-25s %-45s %-s\n" "$local_addr" "$pid_prog" "$program_path" "$working_dir"
+        fi
+    done
+}
+
+
 #mural
 function corganwashere(){
   tput setaf 1;tput rev;h=$(tput lines);w=$[$(tput cols)/6];c=$(seq -ws '_____|' $[$w+1]|tr -d "0-9");for a in $(seq $[$h/2]);do echo $c;echo ${c//|___/___|};done;tput cup 0;toilet -t -f bigmono12 "?Corganwashere";tput cup $h

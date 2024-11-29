@@ -19,4 +19,4 @@ fi
 #[ ! -s ~/.plesk_banner ] || . ~/.plesk_banner
  
 
-export PATH="$HOME/.cargo/bin:$PATH"
+. "$HOME/.cargo/env"
