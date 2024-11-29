@@ -813,5 +813,5 @@ alias scanNetwork_arp="arp -a"
 alias scanNetwork_arpScan="arp-scan --localnet"
 
 #influx get infos about the hdd size per measurment
-alias influx_hdd_measurment = "sudo influx_inspect report-disk -detailed /data/var/lib/influxdb/ "
-alias influx_hdd_measurment_save = "sudo influx_inspect report-disk -detailed /data/var/lib/influxdb/ > data.json "
+alias influx_hdd_measurment="sudo influx_inspect report-disk -detailed /data/var/lib/influxdb/ "
+alias influx_hdd_measurment_save="sudo influx_inspect report-disk -detailed /data/var/lib/influxdb/ > data.json "
