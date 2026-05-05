@@ -119,13 +119,22 @@ if [ "$DIST" = "Synology" ]; then
   reload=yes
 fi  
 
-if [[ "$DIST" = "raspbian" || "$DIST" = "debian" ]]; then 
+if [[ "$DIST" = "raspbian" || "$DIST" = "debian" ]]; then
  _loadFile "$HOME"/.dot/raspi/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/raspi/.exports "$DIST exports"
- _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST bash_aliases"  
- _loadFile "$HOME"/.dot/raspi/raspi_bash_functions.sh "$DIST Functions"  
+ _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST bash_aliases"
+ _loadFile "$HOME"/.dot/raspi/raspi_bash_functions.sh "$DIST Functions"
  reload=yes
-fi 
+fi
+
+if [ "$DIST" = "proxmox" ]; then
+ _loadFile "$HOME"/.dot/proxmox/.bashrc "$DIST bashrc"
+ _loadFile "$HOME"/.dot/proxmox/.exports "$DIST exports"
+ _loadFile "$HOME"/.dot/proxmox/.bash_aliases "$DIST bash_aliases"
+ _loadFile "$HOME"/.dot/proxmox/proxmox_bash_functions.sh "$DIST Functions"
+ _loadFile "$HOME"/.dot/proxmox/motd_proxmox.sh "$DIST motd_proxmox"
+ reload=yes
+fi
 
 if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then 
  _loadFile "$HOME"/.dot/asuswrt/.bashrc "$DIST bashrc"

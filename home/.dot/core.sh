@@ -96,8 +96,23 @@ shootProfile(){
 					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 
-					IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
-					MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
+					if [ -f /proc/device-tree/model ]; then
+						IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
+						MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
+					fi
+				fi
+
+				#proxmox VE (debian-based, identify via -pve kernel or /etc/pve)
+				if [ "$DIST" = "debian" ] && { uname -r 2>/dev/null | grep -q -- '-pve' || [ -d /etc/pve ]; }; then
+					DIST="proxmox"
+					PSUEDONAME=$(cat /etc/os-release | grep '^VERSION_CODENAME' | awk -F= '{ print $2 }' | sed -e 's/^"//' -e 's/"$//')
+					REV=$(cat /etc/os-release | grep '^VERSION_ID' | awk -F= '{ print $2 }' | sed -e 's/^"//' -e 's/"$//')
+					if command -v pveversion >/dev/null 2>&1; then
+						MODELL_TYPE=$(pveversion 2>/dev/null | head -1 | awk '{ print $2 }')
+					else
+						MODELL_TYPE=$(uname -r)
+					fi
+					MODELL_SYSTEM=$(uname -r)
 				fi
 
 				#debian
@@ -106,8 +121,10 @@ shootProfile(){
 					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
 
-					IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
-					MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
+					if [ -f /proc/device-tree/model ]; then
+						IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
+						MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
+					fi
 				fi
 
 				#unraid
