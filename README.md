@@ -1,7 +1,7 @@
 
 # Dotfiles - bash Profile, Alias and basic Functions
 
-300 different Alias, 200 Functions, 40 Tools, 45 installer
+473 Aliases · 205 Functions · 40 Tools · 79 Installers
 all the Linux Stuff i used over the last 10 years
 
 ![](https://corgan2222.github.io/dotfiles/checkout.jpg)
@@ -13,22 +13,28 @@ all the Linux Stuff i used over the last 10 years
 - easy installer
 - Custom MOTD (Message of the Day) for each OS
 - Backup/Sync via homeshick on GitHub
-- 300 different Alias 
-- 200 Functions
+- 473 Aliases across all platforms
+- 205 Functions
 - 40 Tools
-- 45 installer for any type of Software with Bash GUI Installer
+- 79 Installers for any type of Software with Bash GUI Installer
 - Cheat/Hint/Help System
 - create Documentation automaticly for Github
 
 ## Support for OS:
 
-- Ubuntu
-- Debian
-- AsusWRT
-- Rasbian 3
-- Rasbian 4
-- Kali Linux
-- Synology 
+| Distro | Aliases | Functions | Tools | Installers |
+|--------|--------:|----------:|------:|-----------:|
+| **base** (all platforms) | 313 | 187 | 40 | 79 |
+| proxmox | 46 | 9 | — | — |
+| ubuntu19 | 20 | — | — | — |
+| ubuntu16 | 27 | — | — | — |
+| ubuntu18 | — | — | — | — |
+| raspi | 27 | 5 | — | — |
+| asuswrt | 16 | — | — | — |
+| synology | 12 | — | — | — |
+| unraid | 12 | 4 | — | — |
+| kali | — | — | — | — |
+| **Total** | **473** | **205** | **40** | **79** |
 
 ## Table of Contents
 
