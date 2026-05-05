@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# set column width
+COLUMNS=6
+# colors
+green="\e[1;32m"
+red="\e[1;31m"
+undim="\e[0m"
+
+mapfile -t containers < <( docker ps --format "{{.Names}} {{.Status}}" -a | awk '{ print $1,$2 }' | sed '/^\s*$/d' | tail -n +1)
+
+IFS=$'\n' containers=($(sort <<<"${containers[*]}"))
+unset IFS
+
+out=""
+for i in "${!containers[@]}"; do
+    IFS=" " read name status <<< ${containers[i]}
+    # color green if service is active, else red
+    if [[ "${status}" == "Up" ]]; then
+        out+="${green}${name,,}${undim},"
+    else
+        out+="${red}${name,,}${undim},"
+    fi
+    # insert \n every $COLUMNS column
+    if [ $((($i+1) % $COLUMNS)) -eq 0 ]; then
+        out+="\n"
+    fi
+done
+out+="\n"
+
+printf "\nDocker status:\n"
+printf "$out" | column -ts $',' | sed -e 's/^/  /'

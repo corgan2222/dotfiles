@@ -1,0 +1,32 @@
+# Force LF for all shell/dotfiles regardless of platform autocrlf settings.
+# These files are sourced by bash on Linux hosts and CRLF breaks them.
+
+*           text=auto eol=lf
+
+*.sh        text eol=lf
+*.bash      text eol=lf
+.bashrc     text eol=lf
+.bash_*     text eol=lf
+.profile    text eol=lf
+.exports    text eol=lf
+.aliases    text eol=lf
+.functions  text eol=lf
+.secrets    text eol=lf
+
+# motd scripts (no extension)
+home/.dot/*/motd/*          text eol=lf
+home/.dot/*/motd_*.sh       text eol=lf
+
+# Windows-only files keep CRLF
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Binary
+*.png       binary
+*.jpg       binary
+*.gif       binary
+*.ico       binary
+*.zip       binary
+*.gz        binary
+*.tar       binary

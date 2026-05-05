@@ -19,4 +19,4 @@ fi
 #[ ! -s ~/.plesk_banner ] || . ~/.plesk_banner
  
 
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
