@@ -89,6 +89,50 @@ done < <(ip -4 addr show 2>/dev/null \
            /inet / && !/127\.0\.0\.1/ { print $2, iface }')
 [ $_any_ip -eq 0 ] && R+=( "  (none)" )
 
+# get IP of a running LXC container
+_lxc_ip() {
+    timeout 2 pct exec "$1" -- ip -4 addr show 2>/dev/null \
+        | awk '/inet / && !/127\.0\.0\.1/ { print $2; exit }' \
+        | cut -d/ -f1
+}
+
+# get listening ports of a running LXC container (excludes 22/53/loopback)
+_lxc_ports() {
+    timeout 3 pct exec "$1" -- ss -tlnH 2>/dev/null \
+        | awk '{
+            split($4, a, ":");
+            p = a[length(a)]+0;
+            if (p > 0 && p != 22 && p != 53 && !seen[p]++) printf "%d ", p
+          }' \
+        | tr ' ' '\n' | sort -n | tr '\n' ' ' | sed 's/ $//'
+}
+
+# get IP of a running KVM VM via QEMU guest agent
+_kvm_ip() {
+    pvesh get "/nodes/$(hostname)/qemu/$1/agent/network-get-interfaces" \
+        --output-format json 2>/dev/null \
+        | python3 -c "
+import sys,json
+try:
+    for i in json.load(sys.stdin).get('result',[]):
+        for a in i.get('ip-addresses',[]):
+            if a.get('ip-address-type')=='ipv4' and not a['ip-address'].startswith('127.'):
+                print(a['ip-address']); sys.exit()
+except: pass
+" 2>/dev/null
+}
+
+# scan common app ports on a KVM VM IP (requires nmap; skips 22/53)
+_NMAP_PORTS="80,443,1883,3000,3306,4443,5000,5432,6379,8080,8081,8086,\
+8096,8123,8443,8888,8920,9000,9090,9117,27017,32400"
+_kvm_ports() {
+    [ -z "$1" ] && return
+    command -v nmap >/dev/null 2>&1 || return
+    nmap -p "$_NMAP_PORTS" --open -T4 -q --host-timeout 4s "$1" 2>/dev/null \
+        | awk '/^[0-9]+\/tcp.*open/ { split($1,a,"/"); printf "%s ", a[1] }' \
+        | sed 's/ $//'
+}
+
 # containers & VMs
 if command -v pct >/dev/null 2>&1 || command -v qm >/dev/null 2>&1; then
     R+=( "" )
@@ -98,7 +142,14 @@ if command -v pct >/dev/null 2>&1 || command -v qm >/dev/null 2>&1; then
     if command -v pct >/dev/null 2>&1; then
         while read -r _id _st _name; do
             _sc=$C_GREEN; [ "$_st" != "running" ] && _sc=$C_RED
-            R+=( "  ${C_DIM}LXC${C_RST} [${_id}] $(printf '%-18s' "$_name") ${_sc}${_st}${C_RST}" )
+            if [ "$_st" = "running" ]; then
+                _gip=$(_lxc_ip "$_id")
+                _gports=$(_lxc_ports "$_id")
+            else
+                _gip=""; _gports=""
+            fi
+            R+=( "  ${C_DIM}LXC${C_RST}[${_id}] $(printf '%-13s' "$_name") ${C_CYAN}$(printf '%-15s' "${_gip:--}")${C_RST} ${_sc}${_st}${C_RST}" )
+            [ -n "$_gports" ] && R+=( "  ${C_DIM}↳${C_RST} ${C_CYAN}${_gports}${C_RST}" )
             _any_guest=1
         done < <(pct list 2>/dev/null | awk 'NR>1 { print $1, $2, $NF }')
     fi
@@ -106,7 +157,14 @@ if command -v pct >/dev/null 2>&1 || command -v qm >/dev/null 2>&1; then
     if command -v qm >/dev/null 2>&1; then
         while read -r _id _name _st; do
             _sc=$C_GREEN; [ "$_st" != "running" ] && _sc=$C_RED
-            R+=( "  ${C_DIM}KVM${C_RST} [${_id}] $(printf '%-18s' "$_name") ${_sc}${_st}${C_RST}" )
+            if [ "$_st" = "running" ]; then
+                _gip=$(_kvm_ip "$_id")
+                _gports=$(_kvm_ports "$_gip")
+            else
+                _gip=""; _gports=""
+            fi
+            R+=( "  ${C_DIM}KVM${C_RST}[${_id}] $(printf '%-13s' "$_name") ${C_CYAN}$(printf '%-15s' "${_gip:--}")${C_RST} ${_sc}${_st}${C_RST}" )
+            [ -n "$_gports" ] && R+=( "  ${C_DIM}↳${C_RST} ${C_CYAN}${_gports}${C_RST}" )
             _any_guest=1
         done < <(qm list 2>/dev/null | awk 'NR>1 { print $1, $2, $3 }')
     fi
@@ -127,7 +185,7 @@ R+=( "  ${C_GREEN}h${C_RST}         search aliases + functions" )
 
 # ── render two-column table ────────────────────────────────────────────────
 LW=40   # visible content width — left
-RW=40   # visible content width — right
+RW=48   # visible content width — right
 
 _ROWS=$(( ${#L[@]} > ${#R[@]} ? ${#L[@]} : ${#R[@]} ))
 
