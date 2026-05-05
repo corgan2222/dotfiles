@@ -58,9 +58,6 @@ all the Linux Stuff i used over the last 10 years
 Linux:
 
 ```sh
-#with repo choose
-bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
-
 #just this repo
 bash <(curl https://corgan2222.github.io/dotfiles/deploy_headless.sh)
 
@@ -141,16 +138,6 @@ git pull
 ## Usage example
 
 _For alias and functions check the [Wiki][https://github.com/corgan2222/dotfiles/wiki]._
-
-## Release History
-
-- 0.0.1
-  - first deploy
-
-## ToDo
-
-- merge with Asus Merlin
-- scripts
 
 ## Software Used and thanks
 
