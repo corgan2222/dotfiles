@@ -3194,7 +3194,7 @@ function lnav() {
 
 # Function: logs
 # Lists and opens logs under /var/log. Uses only bash and busybox tools, so it also works on embedded systems.
-# Usage: logs           one line per service with its number of files
+# Usage: logs           one entry per service with its number of files, in two columns
 #        logs <name>    all files of <name> incl. rotated and compressed ones in lnav,
 #                       without lnav 'tail -f' on the plain files, without files the systemd journal of <name>
 function logs() {
@@ -3224,7 +3224,19 @@ function logs() {
             else
                 echo "$n 1"
             fi
-        done | awk '{ c[$1] += $2 } END { for (n in c) if (c[n]) printf "%-34s %4d file(s)\n", n, c[n] }' | sort
+        done | awk '{ c[$1] += $2 } END { for (n in c) if (c[n]) print n, c[n] }' | sort |
+            # two columns, sorted top to bottom; one column on terminals below 76 chars
+            awk -v w="${COLUMNS:-80}" '{ n[NR] = $1; c[NR] = $2 } END {
+                cols = (w >= 76) ? 2 : 1; rows = int((NR + cols - 1) / cols)
+                for (r = 1; r <= rows; r++) {
+                    line = ""
+                    for (k = 0; k < cols; k++) {
+                        i = r + k * rows
+                        if (i <= NR) line = line sprintf("%-31s %4d   ", n[i], c[i])
+                    }
+                    sub(/ +$/, "", line); print line
+                }
+            }'
         return
     fi
 
