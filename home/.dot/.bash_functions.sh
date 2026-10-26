@@ -3192,6 +3192,73 @@ function lnav() {
     fi
 }
 
+# Function: logs
+# Lists and opens logs under /var/log. Uses only bash and busybox tools, so it also works on embedded systems.
+# Usage: logs           one line per service with its number of files
+#        logs <name>    all files of <name> incl. rotated and compressed ones in lnav,
+#                       without lnav 'tail -f' on the plain files, without files the systemd journal of <name>
+function logs() {
+    local dir=/var/log f n ext
+    local files=() plain=()
+
+    if [ -z "$1" ]; then
+        for f in "$dir"/*; do
+            n=${f##*/}
+            # strip rotation and compression suffixes:
+            # auth.log.2.gz -> auth, syslog-20261026 -> syslog, telegraf.2026-10-16-1792167900.log -> telegraf
+            while :; do
+                ext=${n##*.}
+                case $n in
+                    *.gz|*.xz|*.bz2|*.zst|*.old|*.log|*.err|*.out) n=${n%.*} ;;
+                    *-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]) n=${n%-*} ;;
+                    # last part only digits, '-' or '_', so php7.4-fpm stays
+                    *.*) [ -z "${ext//[0-9_-]/}" ] && n=${n%.*} || break ;;
+                    *) break ;;
+                esac
+            done
+            # binary files lnav cannot read
+            case $n in journal|wtmp|btmp|lastlog|faillog|'*') continue ;; esac
+            # a directory counts with the files in it
+            if [ -d "$f" ]; then
+                echo "$n $(ls -A "$f" 2>/dev/null | wc -l)"
+            else
+                echo "$n 1"
+            fi
+        done | awk '{ c[$1] += $2 } END { for (n in c) if (c[n]) printf "%-34s %4d file(s)\n", n, c[n] }' | sort
+        return
+    fi
+
+    for f in "$dir/$1" "$dir/$1".* "$dir/$1"-[0-9]*; do
+        # empty directories (chronograf logs to the journal) do not count
+        [ -d "$f" ] && [ -z "$(ls -A "$f" 2>/dev/null)" ] && continue
+        [ -e "$f" ] && files+=("$f")
+    done
+
+    if [ ${#files[@]} -eq 0 ]; then
+        if type -P journalctl >/dev/null && journalctl -u "$1" -n 1 -q --no-pager 2>/dev/null | grep -q .; then
+            if type -P lnav >/dev/null; then
+                journalctl -u "$1" --since today --no-pager | command lnav
+            else
+                journalctl -u "$1" -n 100 -f
+            fi
+        else
+            echo "logs: nothing found for '$1' in $dir" >&2
+            return 1
+        fi
+    elif type -P lnav >/dev/null; then
+        command lnav "${files[@]}"
+    else
+        for f in "${files[@]}"; do
+            [ -d "$f" ] && set -- "$f"/* || set -- "$f"
+            for f in "$@"; do
+                case $f in *.gz|*.xz|*.bz2|*.zst) ;; *) [ -f "$f" ] && plain+=("$f") ;; esac
+            done
+        done
+        [ ${#plain[@]} -eq 0 ] && { echo "logs: only compressed files for '$1', install lnav" >&2; return 1; }
+        tail -n 100 -f "${plain[@]}"
+    fi
+}
+
 
 # -t Tabelle	Diese Filterregel gilt für die Tabelle "Tabelle".
 # -I Chain [Position]	Regel wird an Position "Position" der Kette "Chain" eingefügt. Bei Nichtangabe der Position wird die Regel am Anfang der Kette eingefügt.

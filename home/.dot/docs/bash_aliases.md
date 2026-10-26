@@ -23,6 +23,9 @@
 # load
 >*alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
 
+# logs
+>* logs: one line per service under /var/log; logs <name>: open its files in lnav (fallback tail -f or journalctl)
+
 # logs_multi_all
 
 # logs_lnav_all
