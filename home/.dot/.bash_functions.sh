@@ -3183,12 +3183,12 @@ function lnav() {
         lnav_path=$(which lnav)  # Re-check for lnav path after installation
     fi
 
-    # After ensuring lnav is installed, check if /var/log/syslog exists.
-    if [ -z "$1" ]; then  # This checks for no arguments.
-        if [ ! -f "/var/log/syslog" ]; then
-            # If /var/log/syslog does not exist, use journalctl to feed logs into lnav.
-            journalctl --since today -f -n 100 --no-pager | $lnav_path
-        fi
+    # With arguments, or when /var/log/syslog exists, run lnav as usual.
+    # Without both, feed today's journal into lnav.
+    if [ -n "$1" ] || [ -f "/var/log/syslog" ]; then
+        "$lnav_path" "$@"
+    else
+        journalctl --since today -f -n 100 --no-pager | "$lnav_path"
     fi
 }
 
