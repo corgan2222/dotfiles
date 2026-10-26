@@ -87,19 +87,16 @@ if [ "$DIST" = "Ubuntu" ]; then
   #printf "\t%s \t%s \n" fresh "Ubuntu $PSUEDONAME $REV"   
  
   if [ "$PSUEDONAME" = "disco" ]; then
-      printf "disco "   
       _loadFile "$HOME"/.dot/ubuntu19/.bashrc "Debian Userpromt"
       _loadFile "$HOME"/.dot/ubuntu19/.exports "Exports"
       _loadFile "$HOME"/.dot/ubuntu19/.bash_aliases "Debian Alias"    
       figlet -k -f slant "$(hostname)"  | lolcat
-    elif [ "$PSUEDONAME" = "bionic" ]; then  
-    printf "bionic "   
+    elif [ "$PSUEDONAME" = "bionic" ]; then
       _loadFile "$HOME"/.dot/ubuntu18/.bashrc "Debian Userpromt"
       _loadFile "$HOME"/.dot/ubuntu18/.exports "Exports"
       _loadFile "$HOME"/.dot/ubuntu18/.bash_aliases "Debian Alias"    
       figlet -k -f slant "$(hostname)"  | lolcat
     else
-    printf "else "   
       _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
       _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
       _loadFile "$HOME"/.dot/ubuntu16/.bash_aliases "Debian Alias"
@@ -195,8 +192,26 @@ fi
 [[ -s "$HOME"/.autojump/etc/profile.d/autojump.sh ]] && source "$HOME"/.autojump/etc/profile.d/autojump.sh
 
  
+# Hint instead of 'homeshick refresh': its [yN] prompt blocked logins of scripts and agents.
+# Reports commits known from the last fetch and fetches in the background for the next login.
+_dotfilesCheck()
+{
+  local repo name behind to=""
+  command -v git >/dev/null || return
+  command -v timeout >/dev/null && to="timeout 20"
+  for repo in "$HOME"/.homesick/repos/*; do
+    [ -d "$repo/.git" ] || continue
+    name=${repo##*/}
+    behind=$(git -C "$repo" rev-list --count HEAD..@{u} 2>/dev/null)
+    [ "${behind:-0}" -gt 0 ] && print_style " $name: $behind new commit(s), update with: homeshick pull $name" "warning" && echo
+    # fetch at most every 6 hours; never ask for credentials
+    [ -n "$(find "$repo/.git/FETCH_HEAD" -mmin -360 2>/dev/null)" ] && continue
+    ( GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="ssh -o BatchMode=yes" $to git -C "$repo" fetch -q >/dev/null 2>&1 & )
+  done
+}
+
 if [ "$reload" = "yes" ]; then
-  homeshick refresh
+  _dotfilesCheck
   #homeshick link
 fi
 
