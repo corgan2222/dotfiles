@@ -28,14 +28,14 @@ function help_raspi_installer(){
 echo " 
     #base
     sudo raspi-config
-    sudo joe /boot/config.txt
+    sudo joe /boot/firmware/config.txt   # Bookworm and later; up to Bullseye: /boot/config.txt
     nano /etc/default/keyboard
     sudo nano /etc/default/keyboard
     sudo reboot now
     sudo apt-get install git
 
     #64bit
-    sudo /boot/config.txt
+    sudo joe /boot/firmware/config.txt
     arm_64bit=1
   
     #change swap

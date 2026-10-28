@@ -4,7 +4,7 @@
 
 
 alias ap='opkg install '
-alias apuu="opkg update && okpg upgrade"
+alias apuu="opkg update && opkg upgrade"
 alias apt_List="/bin/bash /root/.dot/asuswrt/EntwareApps.sh"
 alias apt_getUpgradable="opkg list-upgradable"
 #https://bin.entware.net/mipselsf-k3.4/Packages.html
@@ -14,12 +14,10 @@ alias wifi_sta_info7='( [ -z "$WL" ] && WL="wl"; set -- `$WL -i eth7 assoclist` 
 alias pktq_stats='( [ -z "$WL" ] && WL="wl"; STAS="C:" ; set -- `$WL assoclist` ; while [ _$1 = _assoclist ] ; do STAS="$STAS A:$2" ; shift 2 ; done ; $WL pktq_stats $STAS )'
 alias wlver='$WL ver; $WL cap; $WL revinfo; $WL status; $WL assoclist'
 
-alias asus_temp1=$(wl -i eth6 phy_tempsense | awk '{ print $1 * .5 + 20 }')
-alias asus_temp2=$(wl -i eth7 phy_tempsense | awk '{ print $1 * .5 + 20 }')
+alias asus_temp1="wl -i \$(nvram get wl0_ifname) phy_tempsense | awk '{ print \$1 * .5 + 20 }'"
+alias asus_temp2="wl -i \$(nvram get wl1_ifname) phy_tempsense | awk '{ print \$1 * .5 + 20 }'"
 alias ipLeases="cat /var/lib/misc/dnsmasq.leases"
 
-alias vpn4_stop="service stop_vpnclient4"
-alias vpn4_start="service start_vpnclient4"
 alias tcp_dump_port_53="tcpdump -i eth0 -p port 853 or 53 -n"
 alias lnav="tail /tmp/syslog.log -f"
 alias zabbixAgentCheck="/opt/etc/init.d/S07zabbix_agentd check"

@@ -4,11 +4,7 @@
 
 alias cdshares='cd /mnt/user'
 alias grep='grep --color=auto'
-
-alias d='exa --long --header --git -g'
-alias da='exa --long --header --git -g -all'
-alias dt='exa --long --header --git -T -g'
-alias dd='exa --long --header --git -d */'
+# d, da, dt and lsdir come from the base aliases (eza or exa when installed)
 
 alias hh='help_unraid'
 alias UserHome_save='f_userHome_save'

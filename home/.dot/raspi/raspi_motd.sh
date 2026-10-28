@@ -104,7 +104,10 @@ greetings="$greetings$borderBar$(color $statsLabelColor "$(center "$DIST $PSUEDO
 
 
 # System information
-read loginFrom loginIP loginDate <<< $(last $me --time-format iso -2 | awk 'NR==2 { print $2,$3,$4 }')
+# Debian 13 dropped last from util-linux, the package wtmpdb brings it back; without it the line says "None".
+# wtmpdb complains on stderr while it has no database yet (28.10.26)
+command -v last >/dev/null 2>&1 &&
+  read loginFrom loginIP loginDate <<< $(last $me --time-format iso -2 2>/dev/null | awk 'NR==2 { print $2,$3,$4 }')
 
 # TTY login
 if [[ $loginDate == - ]]; then
@@ -121,8 +124,10 @@ fi
 
 
 # IP-Adressen ermitteln
-if ( ifconfig | grep -q "eth0" ) ; then IP_LAN=`ifconfig eth0 | grep "inet" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_LAN="---" ; fi ;
-if ( ifconfig | grep -q "wlan" ) ; then IP_WLAN=`ifconfig wlan0 | grep "inet addr" | cut -d ":" -f 2 | cut -d " " -f 1` ; else IP_WLAN="---" ; fi ;
+# every interface, whatever it is called (lib/net.sh: eth0, end0, wlan0, ...), at most three in the line
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/net.sh"
+_dot_ip_line() { dot_ips "${3:-3}" | awk -v c="$1" -v r="$2" '{ printf "%s", (n++ ? " | " : "") }
+  $1 == "+" { printf "%s", $0; next } { printf "%s: %s%s%s", $1, c, $2, r }'; }
 
 label1="$(extend "$login")"
 label1="$borderBar  $(color $statsLabelColor "Last Login....:") $label1$borderBar"
@@ -142,7 +147,7 @@ label4="$borderBar  $(color $statsLabelColor "Home space....:") $label4$borderBa
 label5="$(extend "$(vcgencmd measure_temp | cut -c "6-9")ºC")"
 label5="$borderBar  $(color $statsLabelColor "Temperature...:") $label5$borderBar"
 
-label6="$(extend "$(hostname -I)")"
+label6="$(extend "$(_dot_ip_line '' '')")"
 label6="$borderBar  $(color $statsLabelColor "LAN IP........:") $label6$borderBar"
 
 stats="$label1\n$label2\n$label3\n$label4\n$label5\n$label6"

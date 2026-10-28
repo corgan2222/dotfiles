@@ -40,10 +40,6 @@ if [ "$color_prompt" = yes ]; then
             fi
     }
 
-    function getmyIP {
-          ifconfig | grep ^br0 -A2 | grep 'inet' | head -1 | awk '{ print $2 }'
-    }
-
     # get current status of git repo
     function parse_git_dirty {
         status=`git status 2>&1 | tee`

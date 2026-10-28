@@ -1,1 +1,2 @@
-/home/pi/.dot/raspi/raspi_motd.sh
+# motd of the Raspberry Pi, run (not sourced) so its helpers stay out of the shell
+[ -x "$HOME"/.dot/raspi/raspi_motd.sh ] && ! _dot_motd_off && "$HOME"/.dot/raspi/raspi_motd.sh

@@ -55,7 +55,7 @@
 #       mosquitto-client                    Used to send 'MQTT' topic messages to the 'MQTT Broker' Mosquitto on RaspberryPi/Windows etc.
 #                                           e.g.    Install mosquitto on RaspberryPi : https://pastebin.com/Etn59ppp
 #                                                   Subscribe to topic:     mosquitto_sub -d -u admin -P xxxxxxxxxx -t /RT-AC86U/Test
-#                                                   Test from router:       mosquitto_pub -h 10.88.8.148 -t /RT-AC86U/Test -m "Myrouter is sending a test message"
+#                                                   Test from router:       mosquitto_pub -h <broker-ip> -t /RT-AC86U/Test -m "Myrouter is sending a test message"
 
 
 # Print between line beginning with'#==' to first blank line inclusive
@@ -76,12 +76,15 @@ ANSIColours
 # Help request ?
 if [ "$1" == "help" ] || [ "$1" == "-h" ];then      # Show help
    ShowHelp
-   exit 0
+   # sourced by .bashrc: return, exit would close the login shell
+   return 0 2>/dev/null || exit 0
 fi
 
 echo -e $cBYEL
 
-opkg update
+# the list of installed apps needs no fresh package index; opkg update at every login cost a download
+# (EntwareApps.sh update refreshes it on purpose)
+[ "${1:-}" = update ] && opkg update
 
 #opkg upgrade
 
@@ -104,23 +107,24 @@ else
 
     echo -e $cRESET"\n"$cWRED"Entware Apps/Scripts installed /opt/bin:"$cRESET"\n"$cBGRE
     #ls /opt/bin | grep -v "opkg" | grep -v "\." >/tmp/column.txt
-    ls -l /opt/bin | grep -v "opkg" | grep -v /jffs/scripts | awk '{print $9}' >/tmp/column.txt
+    # >| writes past noclobber (bin/sensible.bash), the file may be left from an earlier login
+    ls -l /opt/bin | grep -v "opkg" | grep -v /jffs/scripts | awk '{print $9}' >|/tmp/column.txt
     column -or /tmp/column.txt
     echo -e $cBCYA
-    rm /tmp/column.txt
-    [ -f /opt/bin/diversion ] && echo "diversion" >/tmp/column.txt      # Spoof 'diversion' as a script
+    rm -f /tmp/column.txt
+    [ -f /opt/bin/diversion ] && echo "diversion" >|/tmp/column.txt      # Spoof 'diversion' as a script
     ls -l /opt/bin | awk '/scripts/ {print $9}' >>/tmp/column.txt
     sort /tmp/column.txt -o /tmp/column.txt
     column -or /tmp/column.txt
 
     echo -e $cRESET"\n"$cWRED"Entware Apps installed /opt/sbin:"$cRESET"\n"$cBGRE
-    ls -l /opt/sbin | grep -v "opkg" | grep -v /jffs/scripts | awk '{print $9}' >/tmp/column.txt
+    ls -l /opt/sbin | grep -v "opkg" | grep -v /jffs/scripts | awk '{print $9}' >|/tmp/column.txt
     column -or /tmp/column.txt
     echo -e $cBCYA
-    ls -l /opt/sbin | awk '/scripts/ {print $9}' >/tmp/column.txt
+    ls -l /opt/sbin | awk '/scripts/ {print $9}' >|/tmp/column.txt
     column -or /tmp/column.txt
     echo -e $cRESET
-    #rm /tmp/column.txt
+    rm -f /tmp/column.txt
 fi
 
 # To refresh 'zlib' and 'lib*' except 'libc '......

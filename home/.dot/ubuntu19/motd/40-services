@@ -6,7 +6,7 @@ COLUMNS=6
 green="\e[1;32m"
 red="\e[1;31m"
 undim="\e[0m"
-services=( "grafana-server" "influxdb" "telegraf" "mysql" "mongod" "docker" "rsyslog" "apache2" "nginx" "plesk-php73-fpm.service" "memcached" "mariadb.service" "fail2ban" "openvpn@knaak_wasserstadt.service" "openvpnas" "spamassassin" "zerotier-one.service" "zabbix-agent" )
+services=( "grafana-server" "influxdb" "telegraf" "mysql" "mongod" "docker" "rsyslog" "apache2" "nginx" "plesk-php73-fpm.service" "memcached" "mariadb.service" "fail2ban" "openvpnas" "spamassassin" "zerotier-one.service" "zabbix-agent" )
 # sort services
 IFS=$'\n' services=($(sort <<<"${services[*]}"))
 unset IFS

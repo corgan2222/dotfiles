@@ -1,0 +1,7 @@
+#!/bin/bash
+# Cygwin, Git Bash and MSYS2: ln and homeshick create native Windows symlinks. Without Developer Mode or admin rights
+# ln fails instead of quietly copying the file (nativestrict). A winsymlinks setting of the user stays.
+case $DIST in
+  cygwin) [[ ${CYGWIN:-} == *winsymlinks* ]] || export CYGWIN="winsymlinks:nativestrict ${CYGWIN:-}" ;;
+  msys) [[ ${MSYS:-} == *winsymlinks* ]] || export MSYS="winsymlinks:nativestrict ${MSYS:-}" ;;
+esac

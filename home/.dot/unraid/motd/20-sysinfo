@@ -26,11 +26,7 @@ $W  Memory......: $G$USED$W used, $G$FREE$W free, $G$TOTAL$W in total$W"
 
 printf "\nIP addresses:"
 #printf "IP.Address=\"%s\" \n" $(hostname --all-ip-addresses) | grep -v 127.0.0 | grep -v '127.0.0.1' | grep -v '172.27'
-_eth0=$(ip route show | grep 'br0 proto' | head -2 | tail -1)
-_zt=$(ip route show | grep zt | head -2 | tail -1)
-echo -e "\t $G$_eth0$W"
-echo -e "\t\t $G$_zt$W"
+# every interface, whatever it is called (lib/net.sh); container bridges count in one line
+. "$(dirname "${BASH_SOURCE[0]}")/../../lib/net.sh"
+dot_ips 6 | while read -r _if _ip; do echo -e "\t $_if $G$_ip$W"; done
 
-services=( "grafana-server" "influxdb" "telegraf" "mysql" "mongod" "docker" "rsyslog" "apache2" "nginx" "plesk-php73-fpm.service" "memcached" "mariadb.service" "fail2ban" "openvpn@knaak_wasserstadt.service" "openvpnas" "spamassassin" "zerotier-one.service" "zabbix-agent" )
-# sort services
-IFS=$'\n' services=($(sort <<<"${services[*]}"))
