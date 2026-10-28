@@ -4,6 +4,7 @@
 >* ------------------------------------------------------------------------------
 
 # c
+>* short names only where no program of that name exists: an alias hides the program in the shell
 
 # cl
 
@@ -22,9 +23,6 @@
 
 # load
 >*alias load='source ~/.bashrc && source ~/.dot/.bash_aliases && source ~/.dot/.bash_functions.sh'
-
-# logs
->* logs: one line per service under /var/log; logs <name>: open its files in lnav (fallback tail -f or journalctl)
 
 # logs_multi_all
 
@@ -48,8 +46,6 @@
 
 # logsPlesk
 
-# logsWWW
-
 # zabbix_server_reload
 
 # sudo
@@ -58,6 +54,7 @@
 # joe
 
 # vi
+>* vi -> joe only with joe installed
 
 # hmm
 
@@ -121,7 +118,8 @@
 
 # da
 
-# dd
+# lsdir
+>* list only directories (named lsdir, an alias dd would hide the dd command)
 
 # d
 
@@ -129,9 +127,11 @@
 
 # dt
 
-# dd
+# lsdir
 
-# userls
+# user
+
+# groups
 
 # path
 >* Print each PATH entry on a separate line
@@ -141,6 +141,10 @@
 # cd_git
 
 # cd_Scripts
+
+# ssdn
+
+# ssrn
 
 # sgrep
 >* super-grep ;)
@@ -232,22 +236,17 @@
 
 # aptSourcesSize
 
+# aptgetAppInfos_fromthis
+
 # listLoadedPhpInis7
 
-# listLoadedPhpInis73
-
 # phplint
-
-# dl
-
-# dr
-
-# dockerContainerSize
 
 # gitp
 >* ------------------------------------------------------------------------------
 >* | git                                                                        |
 >* ------------------------------------------------------------------------------
+>* pushes the current branch
 
 # gitsub
 
@@ -256,26 +255,24 @@
 # gitsubget
 
 # gitadd
+>* only tracked files, like saveHome
 
 # gc
+>* only where graphviz's gc is not installed
 
 # prettyGitLog
 
 # prettyGitLog_clean
 >* git config --global alias.lg "log --color --graph --pretty=format:'%C(>*dc322f)%h%C(>*b58900)%d %C(>*eee8d5)%s %C(>*dc322f)| %C(>*586f75)%cr %C(>*dc322f)| %C(>*586e75)%an%Creset' --abbrev-commit"
 
-# createGitChangelog
-
 # map
 
 # makescript
 
-# wget
+# checkport_lsof
 >* ------------------------------------------------------------------------------
 >* | Network                                                                    |
 >* ------------------------------------------------------------------------------
-
-# checkport
 
 # ports
 
@@ -306,7 +303,6 @@
 >* show only active network listeners
 
 # nginxreload
->*also pass it via sudo so whoever is admin can reload it without calling yo
 
 # nginxtest
 
@@ -356,7 +352,8 @@
 # meminfo
 >* pass options to free
 
-# ps
+# psg
+>* find the PID of any process: psg [name] (named psg, an alias ps broke every later ps call)
 
 # psmem
 >* get top process eating memory
@@ -413,22 +410,17 @@
 
 # renameImagaExif
 
-# sulast
->* becoming root + executing last command
-
 # mountc
-
-# mountMedien
 
 # devList
 
 # helpMount
 
 # dec2hex
->* decimal to hexadecimal value
+>* decimal to hexadecimal value: dec2hex 255
 
 # urldecode
->* urldecode - url http network decode
+>* urldecode - url http network decode: urldecode 'a%20b'
 
 # rot13
 >* ROT13-encode text. Works for decoding, too! ;)
@@ -519,25 +511,6 @@
 
 # pretty
 
-# backup
->* if cron fails or if you want backup on demand just run these commands >*
->* again pass it via sudo so whoever is in admin group can start the job >*
->* Backup scripts >*
-
-# nasbackup
-
-# s3backup
-
-# rsnapshothourly
-
-# rsnapshotdaily
-
-# rsnapshotweekly
-
-# rsnapshotmonthly
-
-# amazonbackup
-
 # mcdstats
 >*>* Memcached server status  >*>*
 
@@ -608,13 +581,26 @@
 
 # difflight
 
-# debianSynoStart
-
 # grafanaListDashboards
 
 # grafanaImportDashbaord
 
 # convert_CR2_to_JPG
+
+# dl
+>* list running containers
+
+# dr
+>* restart docker
+
+# dockerContainerSize
+>* list ContainerSize
+
+# docker_prune_system
+>* prunes docker
+
+# docker_prune_system_withVolumes
+>* prunes docker with volumes
 
 # docker_list_images
 >* list all images
@@ -643,19 +629,29 @@
 # docker_rm_all_orphaned_volumes
 >* remove all orphaned docker volumes 
 
+# docker_net_info
+>*show all container with internal IP 
+
 # dc
 >* docker compose (assumes current directory contains the docker-compose.yml)
+>* only where the desk calculator dc is not installed
 
-# dc_up
->* start socker stack defined by docker-compose.yml
+# dcupd
+>* start docker stack defined by docker-compose.yml as deamon
 
-# dc_down
+# dcup
+>* start docker stack defined by docker-compose.yml
+
+# dcdn
 >* stop docker stack defined by docker-compose.yml
 
-# dc_rebuild
+# dcb
 >* rebuild docker stack
 
-# dc_logs
+# dcl
+>* watch logs in docker stack
+
+# dcp
 >* watch logs in docker stack
 
 # vncServerStop
@@ -666,11 +662,170 @@
 
 # vncServerPW
 
-# install_zerotiert
-
 # ListShellandEnvironmentVariables
 
 # fx
 
 # how
+>* function: howdoi "$@" -c -n 5 (pip install howdoi)
+
+# wifi_ls_controller
+>*wifi
+
+# wifi_show_infos
+
+# wifi_show_quality
+
+# wifi_show_quality2
+
+# wifi_show_quality_continuosly
+
+# wifi_show_quality_continuosly_wavemon
+
+# journal_show_errors
+>*journalctl 
+
+# journal_show_thisunit
+
+# journal_show_live_from
+
+# journal_show_live
+
+# logrotateTest
+>*logrotate
+
+# logrotateTestThis
+
+# logrotateDoThis
+
+# fail2ban
+
+# fail2ban
+
+# fail2ban
+
+# fail2ban
+
+# fail2ban
+
+# fail2ban
+
+# graylistCheck
+
+# graylistServerinfo
+
+# checkIP
+
+# restartXserver
+
+# ffmpegs
+>*silent
+
+# ffm_muxerInfo
+>*Display options specific to, and information about, a particular muxer:
+
+# ffm_demuxerInfo
+>*Display options specific to, and information about, a particular demuxer:
+
+# ffm_listFormats
+>*List all formats:
+
+# ffm_listCodecs
+>*List all codecs:
+
+# ffm_listCodecsH264
+
+# ffm_listCodecsH265
+
+# ffm_listEncoders
+>*List all encoders:
+
+# ffm_listDecoders
+>*List all decoders:
+
+# ffm_DetailsEncoderThis
+>*Display options specific to, and information about, a particular encoder:
+
+# ffm_DetailsDecoderThis
+>*Display options specific to, and information about, a particular decoder:
+
+# list_functions
+>* function: lists the functions with line and file, without the internal _ ones
+
+# topFiles
+>*top for files
+
+# gethw
+>* Quick and dirty hardware summary where lshw is not available. Requires util-linux, procps, pciutils, usbutils and net-tools, which should be preinstalled on most systems. 
+
+# py_createVirt
+>*python
+
+# pi
+
+# pf
+
+# pir
+>* pip install -r requirements.txt (pr is the coreutils pager)
+
+# nmap_open_ports
+>*nmap
+>*scan for open ports on target.
+
+# nmap_list_interfaces
+>* list all network interfaces on host where the command runs.
+
+# nmap_slow
+>*slow scan that avoids to spam the targets logs.
+
+# nmap_scanIP
+>* scan to see if hosts are up with TCP FIN scan.
+
+# nmap_full
+>*aggressive full scan that scans all ports, tries to determine OS and service versions.
+
+# nmap_check_for_firewall
+>*TCP ACK scan to check for firewall existence.
+
+# nmap_ping_through_firewall
+>*host discovery with SYN and ACK probes instead of just pings to avoid firewall restrictions.
+
+# nmap_fast
+>*fast scan of the top 300 popular ports.
+
+# nmap_detect_versions
+>*detects versions of services and OS, runs on all ports.
+
+# nmap_check_for_vulns
+>*uses vulscan script to check target services for vulnerabilities.
+
+# nmap_full_udp
+>*same as full but via UDP
+
+# nmap_traceroute
+>*try to traceroute using the most common ports.
+
+# nmap_full_with_scripts
+>*same as nmap_full but also runs all the scripts.
+
+# nmap_web_safe_osscan
+>*ittle "safer" scan for OS version as connecting to only HTTP and HTTPS ports doesn't look so attacking.
+
+# nmap_ping_scan
+>*ICMP scan for active hosts
+
+# nmap_scanIP_os
+>*OS-Scan
+
+# nmap_scanIP_osService
+>*OS & Service Scan
+
+# nmap_scanNetwork
+>* find all active IP addresses in a network
+
+# scanNetwork_arp
+>*Host-Discovery mit ARP
+
+# scanNetwork_arpScan
+>*Host-Discovery mit ARP-scan
 

@@ -1,30 +1,19 @@
 #!/bin/bash
 
-function db()
-{
-
-PARENT_DIR=$(basename "${PWD%/*}")
-CURRENT_DIR="${PWD##*/}"
-image=$(to_lower "$PARENT_DIR/$CURRENT_DIR")
-
-
-#get timestamp for the tag
-timestamp=$(date +%Y%m%d%H%M%S)
-
-tag=$image:$timestamp
-latest=$image:latest
-
-#build image
-sudo docker build -t $tag -t $latest .
-echo $tag
-echo $latest
-#push to dockerhub
-sudo docker login
-#sudo docker login -u username -p password
-sudo docker push $image
-
-#remove dangling images
-#sudo docker system prune -f
+# docker_build_push: builds the Dockerfile in the current directory as <parent>/<dir>:<timestamp> and :latest, then
+# pushes both tags to Docker Hub. Until 28.10.26 it was "db" and logged in and pushed without asking.
+# "docker push image" without a tag pushes only :latest, so both tags are named.
+function docker_build_push() {
+  local image tag latest
+  [ -f Dockerfile ] || { echo "docker_build_push: no Dockerfile in $PWD" >&2; return 1; }
+  image=$(to_lower "$(basename "${PWD%/*}")/${PWD##*/}")
+  tag=$image:$(date +%Y%m%d%H%M%S)
+  latest=$image:latest
+  sudo docker build -t "$tag" -t "$latest" . || return 1
+  echo "built $tag and $latest"
+  confirm "Log in to Docker Hub and push $tag and $latest" || return 1
+  sudo docker login || return 1
+  sudo docker push "$tag" && sudo docker push "$latest"
 }
 
 
@@ -204,125 +193,82 @@ function findStringInFiles() {
   fi
 }
 
-#create ssh files for new user
+# createUserSSH: ~/.ssh with an ed25519 key pair whose public key is in authorized_keys, optionally a PuTTY .ppk.
+# Safe to run again: an existing key stays, the public key goes into authorized_keys once. Before 28.10.26 the
+# quoted "~/.ssh" never matched (the check was always true), and it expected id_rsa, which ssh-keygen no longer
+# writes by default since OpenSSH 9.5.
 function createUserSSH() {
-
-  if [ ! -d "~/.ssh" ]; then
-    cd ~
-    mkdir .ssh
-    chmod 700 ~/.ssh
-  else
-    echo "Folder ~/.ssh exists"  
+  local d=$HOME/.ssh key pub
+  key=$d/id_ed25519
+  mkdir -p "$d" && chmod 700 "$d" || return 1
+  [ -f "$d/authorized_keys" ] || { touch "$d/authorized_keys" && chmod 600 "$d/authorized_keys"; } || return 1
+  if [ -f "$key" ]; then echo "$key exists, kept"; else ssh-keygen -t ed25519 -f "$key" || return 1; fi
+  pub=$(<"$key.pub")
+  grep -qxF -- "$pub" "$d/authorized_keys" || printf '%s\n' "$pub" >>"$d/authorized_keys"
+  if [ ! -f "$key.ppk" ] && confirm "Create $key.ppk for PuTTY (installs puttygen if missing)"; then
+    # puttygen: putty-tools on the Debian family, putty elsewhere
+    command -v puttygen >/dev/null || pkg_install "$([ "$DOT_PKG" = apt ] && echo putty-tools || echo putty)" ||
+      return 1
+    puttygen "$key" -o "$key.ppk"
   fi
-
-  if [ ! -f "~/.ssh/authorized_keys" ]; then    
-    cd ~/.ssh
-    touch authorized_keys
-    chmod 600 ~/.ssh/authorized_keys
-    ssh-keygen
-    cat id_rsa.pub >> authorized_keys
-
-    if get_yes_keypress "Create id_rsa.ppk putty version? Will install putty-tools. Do you like this [y/n]? "
-    then 
-        echo "install putty-tools"
-        sudo apt-get install putty-tools
-        puttygen id_rsa -o id_rsa.ppk
-    fi
-
-    if get_yes_keypress "Convert PPK Files to Private and Public Keys with puttygen ? [y/n]? "
-    then 
-        echo "puttygen id_rsa.ppk"
-        puttygen id_rsa.ppk -O private-openssh -o my_key.private
-        puttygen id_rsa.ppk -O public-openssh -o my_key.public
-    fi
-
-    
-  else
-    echo "file ~/.ssh/authorized_keys exists"  
-  fi  
-  
-
 }
 
+# adds a user with a home folder and a password; the system hashes it (chpasswd), the password goes in on stdin.
+# Before 28.10.26 it hashed with DES and a fixed salt (only 8 characters counted) and matched names by prefix.
 function user_add_with_pass_and_folder()
 {
-  if [ $(id -u) -eq 0 ]; then
-    read -p "Enter username : " username
-    read -s -p "Enter password : " password
-    egrep "^$username" /etc/passwd >/dev/null
-    if [ $? -eq 0 ]; then
-      echo "$username exists!"
-      exit 1
-    else
-      pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
-      useradd -m -p $pass $username
-      [ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
-
-        read -r -p "Add home folder /home/$username [Y/n]" response
-        response=${response,,} # tolower
-        if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
-            
-      
-          mkdir /home/$username
-          #git clone https://github.com/corgan2222/dotfiles.git /home/$username
-          chown $username:root /home/$username
-
-          [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
-      fi
-    fi
-  else
-    echo "Only root may add a user to the system"
-    exit 2
-  fi
-
+  local username password
+  [ "$(id -u)" -eq 0 ] || { echo "Only root may add a user to the system"; return 2; }
+  read -r -p "Enter username : " username
+  [[ $username =~ ^[a-z_][a-z0-9_-]*$ ]] || { echo "not a valid user name: '$username'"; return 1; }
+  getent passwd "$username" >/dev/null && { echo "$username exists!"; return 1; }
+  read -r -s -p "Enter password : " password; echo
+  [ -n "$password" ] || { echo "empty password, nothing added"; return 1; }
+  useradd -m -- "$username" || { echo "Failed to add a user!"; return 1; }
+  printf '%s:%s\n' "$username" "$password" | chpasswd ||
+    { echo "user added, but setting the password failed: passwd $username"; return 1; }
+  echo "User $username has been added, home /home/$username"
 }
 
+# removes a user and its home folder after a question (default no)
+# 28.10.26: "^$username" with an empty name matched every line of /etc/passwd, Enter meant yes and "rm -R /home/" ran
+# even when userdel failed: Enter twice removed /home. Now the name must be valid and exist, userdel -r removes the
+# home folder from the passwd entry and nothing else.
 function user_remove()
 {
-
-  if [ $(id -u) -eq 0 ]; then
-    read -p "Enter username : " username
-    egrep "^$username" /etc/passwd >/dev/null
-    if [ $? -eq 0 ]; then
-      read -r -p "shure to remove and the homefolder /home/$username [Y/n]" response
-      response=${response,,} # tolower
-      if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
-
-        userdel $username                
-        sudo rm -R /home/$username -f                             
-
-        [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
-      fi
-    else
-      echo "$username dont exists!"
-      exit 1
-    fi
-  else
+  local username response
+  if [ "$(id -u)" -ne 0 ]; then
     echo "Only root may delete a user"
-    exit 2
+    return 2
   fi
+  read -r -p "Enter username : " username
+  if ! [[ $username =~ ^[a-z_][a-z0-9_-]*$ ]] || ! getent passwd "$username" >/dev/null; then
+    echo "$username dont exists!"
+    return 1
+  fi
+  # system accounts (postgres, influxdb …) have their data in their home: userdel -r would delete it (28.10.26)
+  local uid home min
+  uid=$(getent passwd "$username" | cut -d: -f3) home=$(getent passwd "$username" | cut -d: -f6)
+  min=$(awk '$1 == "UID_MIN" { print $2 }' /etc/login.defs 2>/dev/null); min=${min:-1000}
+  [ "$uid" -ge "$min" ] || { echo "$username is a system account (uid $uid), not removed"; return 1; }
+  read -r -p "Remove the user $username and its home folder $home? [y/N] " response
+  [[ ${response,,} =~ ^(y|yes)$ ]] || return 1
+  userdel -r -- "$username"
 }
 
-#replaceStringInFile 'string' 'replace' file"
-function replaceStringInFile()
-{
-  if [ -z "${1}" ]; then
-    echo "Usage:  replaceStringInFile 'string' 'replace' file"
-    return 1
-  fi
-
-  if [ -z "${2}" ]; then
-    echo "Usage:  replaceStringInFile 'string' 'replace' file"
-    return 1
-  fi
-
-   if [ -f "${3}" ]; then
-    echo "file $3 not found"
-    return 1
-  fi
-
-  sed -i 's/"$1"/"$2"/g' $3
- #sed -i 's/old-word/new-word/g' file
+# replaceStringInFile 'string' 'replace' file: replaces every literal occurrence of string in the file
+# Until 28.10.26 the file check was inverted and sed searched for the text "$1" (in single quotes nothing expands).
+function replaceStringInFile() {
+  [ $# -eq 3 ] && [ -n "$1" ] || { echo "Usage:  replaceStringInFile 'string' 'replace' file" >&2; return 1; }
+  [ -f "$3" ] || { echo "file $3 not found" >&2; return 1; }
+  local content LC_ALL=C
+  # bash instead of sed: quoted "$1" and "$2" are literal text, sed would need every regex character escaped.
+  # read -d '' keeps the trailing newlines that $(<file) would drop; >| writes past noclobber (bin/sensible.bash)
+  IFS= read -r -d '' content <"$3"
+  # read stops at the first NUL byte: a binary or UTF-16 file would lose the rest (28.10.26, review). LC_ALL=C makes
+  # ${#content} count bytes
+  [ ${#content} -eq "$(wc -c <"$3")" ] || { echo "$3 is a binary file, not changed" >&2; return 1; }
+  printf '%s' "${content//"$1"/"$2"}" >|"$3"
 }
 
 #GetFilelist_clean /home/user
@@ -340,32 +286,35 @@ function GetFilelist_prefix()
   #find ../PATH/TO/FOLDER/TO/LIST/FILES/FROM -type f -printf "%f\n"
 }
 
-#init homeShick
+#init homeShick; -f: an HTTP error page is not run as a script
 function initHome() {
-  /bin/bash <(curl https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
+  bash <(curl -fsSL https://corgan2222.github.io/dotfiles/deploy_homeshick.sh)
 }
 
-#save changes in dotfiles
-function saveHome() 
-{
-  if [ $# -eq 0 ]; then
-    echo "add commit message"
-    return 1
-  else
-    homeshick cd dotfiles
-    gitadd "${1}"
-    gitp
-    cd -
-  fi
+# saveHome "message" [path…]: commits the changes to files the dotfiles repository tracks already (git add -u) and
+# the paths given (relative to the repository, e.g. home/.dot/new.sh), and pushes the current branch only after a
+# yes. New files come in with addToHome, homeshick track stages them. Until 28.10.26 it ran "git add *" (every
+# untracked file) and pushed to master without asking, and master is the GitHub Pages site.
+function saveHome() {
+  [ $# -gt 0 ] || { echo "usage: saveHome 'commit message' [path in the repository…]" >&2; return 1; }
+  local msg=$1 repo=$HOME/.homesick/repos/dotfiles
+  shift
+  [ -d "$repo/.git" ] || { echo "saveHome: no repository in $repo" >&2; return 1; }
+  git -C "$repo" add -u || return 1
+  [ $# -eq 0 ] || git -C "$repo" add -- "$@" || return 1
+  git -C "$repo" status --short
+  git -C "$repo" commit -m "$msg" || return 1
+  confirm "Push $(git -C "$repo" rev-parse --abbrev-ref HEAD) to origin" && git -C "$repo" push origin HEAD
 }
 
 
-#load newest dotfiles
-function loadHome() {
-  homeshick pull dotfiles  
-  homeshick link
-  reload
+# updates the dotfiles: pull, link new files, remove links of deleted ones, setup questions of what is new
+# (~/.dot/update.sh), then a new login shell with all of it
+function dotupdate() {
+  bash "$HOME/.dot/update.sh" "$@" && exec "$SHELL" -l
 }
+# the old name (alias l)
+function loadHome() { dotupdate "$@"; }
 
 #check dotfiles
 function checkHome() {
@@ -384,7 +333,7 @@ function addToHome() {
     echo "usage addToHome [file, file, folder]"
     return 1
   else
-    homeshick track dotfiles "${1}"
+    homeshick track dotfiles "$@"
   fi
 }
 
@@ -394,14 +343,9 @@ function mkcdir() {
     cd -P -- "$1"
 }
 
-#kill all processess
+#kill all processess with this name, see kill_all_of_process
 function psKillAllX() {
-  if [ $# -eq 0 ]; then
-    echo "usage addToHome [file, file, folder]"
-    return 1
-  else
-    ps -ef | grep "${1}" | grep -v grep | awk '{print $2}' | xargs -r kill -9
-  fi
+  kill_all_of_process "$@"
 }
 
 # Convert video to gif file.
@@ -425,32 +369,53 @@ function man() {
     man "$@"
 }
 
-# extract: unified archive extractor
-# usage: extract <file>
+# extract: unified archive extractor, unpacks into the current directory
+# usage: extract <file> [file…]   (tar.gz/bz2/xz/zst/lz, zip, rar, 7z, gz, bz2, xz, zst, lzma, Z, deb, rpm, iso, cab/exe)
+# Missing tools fall back to 7z or bsdtar; basics.sh installs unrar, 7zip, zip/unzip.
+# unzip and unrar ask before they replace a file; until 28.10.26 -o and -o+ overwrote without a word.
+# tar and bsdtar keep existing files (-k) and name each one as an error; 7z asks itself.
 extract() {
-  if [ -f $1 ]; then
-    case $1 in
-    *.tar.bz2) tar xjf $1 ;;
-    *.tar.gz) tar xzf $1 ;;
-    *.bz2) bunzip2 $1 ;;
-    *.rar) rar x $1 ;;
-    *.gz) gunzip $1 ;;
-    *.tar) tar xf $1 ;;
-    *.tbz2) tar xjf $1 ;;
-    *.tgz) tar xzf $1 ;;
-    *.zip) unzip $1 ;;
-    *.Z) uncompress $1 ;;
-    *.7z) 7z x $1 ;;
-    *.exe) cabextract $1 ;;
-    *)
-      echo "'$1' cannot be extracted via extract"
-      false
-      ;;
-    esac
-  else
-    'echo' -e "'$1' is not a valid file\nusage: extract <file>\n"
-    false
-  fi
+  [ $# -gt 0 ] || { echo "usage: extract <file> [file…]" >&2; return 1; }
+  local f f2 lower rc=0 sevenz
+  sevenz=$(command -v 7z || command -v 7zz || command -v 7za)
+  for f in "$@"; do
+    if [ ! -f "$f" ]; then echo "extract: '$f' is not a file" >&2; rc=1; continue; fi
+    lower=${f,,}
+    case $lower in
+      *.tar.gz|*.tgz|*.tar.bz2|*.tbz|*.tbz2|*.tar.xz|*.txz|*.tar.lz|*.tar|*.tar.lzma)
+        tar -kxf "$f" ;;
+      *.tar.zst|*.tzst)
+        if command -v zstd >/dev/null; then tar --zstd -kxf "$f"
+        elif command -v bsdtar >/dev/null; then bsdtar -kxf "$f"
+        else echo "extract: install zstd (basics.sh)" >&2; false; fi ;;
+      *.zip|*.jar|*.whl|*.apk)
+        if command -v unzip >/dev/null; then unzip "$f"; else ${sevenz:-false} x "$f"; fi ;;
+      *.rar)
+        if command -v unrar >/dev/null; then unrar x "$f"
+        elif [ -n "$sevenz" ]; then "$sevenz" x "$f"
+        elif command -v bsdtar >/dev/null; then bsdtar -kxf "$f"
+        else echo "extract: no rar tool, install unrar (basics.sh)" >&2; false; fi ;;
+      *.7z|*.iso)
+        if [ -n "$sevenz" ]; then "$sevenz" x "$f"
+        elif command -v bsdtar >/dev/null; then bsdtar -kxf "$f"
+        else echo "extract: install 7zip (basics.sh)" >&2; false; fi ;;
+      # single compressed files: decompress into the current directory, never over an existing file
+      *.gz|*.bz2|*.xz|*.zst|*.lzma|*.z)
+        local out base=${f##*/} tool
+        out=${base%.*}
+        case $lower in
+          *.gz) tool="gzip -dc" ;; *.bz2) tool="bzip2 -dc" ;; *.xz) tool="xz -dc" ;;
+          *.zst) tool="zstd -dc" ;; *.lzma) tool="xz --format=lzma -dc" ;; *.z) tool="uncompress -c" ;;
+        esac
+        if [ -e "$out" ]; then echo "extract: '$out' exists, not overwritten" >&2; false
+        else $tool "$f" > "$out" || { rm -f "$out"; false; }; fi ;;
+      *.deb)  if command -v dpkg-deb >/dev/null; then f2=${f##*/}; dpkg-deb -x "$f" "${f2%.*}"; else ar x "$f"; fi ;;
+      *.rpm)  if command -v bsdtar >/dev/null; then bsdtar -kxf "$f"; else rpm2cpio "$f" | cpio -idmv; fi ;;
+      *.cab|*.exe|*.msi) cabextract "$f" ;;
+      *) echo "extract: '$f' has an unknown archive type" >&2; false ;;
+    esac || { echo "extract: '$f' failed" >&2; rc=1; }
+  done
+  return $rc
 }
 
 #create folder with the current date
@@ -541,26 +506,25 @@ function nonzero_return() {
   [ $RETVAL -ne 0 ] && echo "$RETVAL"
 }
 
+# _case lower|upper: converts STDIN; python3 handles umlauts in every locale, tr is the fallback without python3
+function _case() {
+  if command -v python3 >/dev/null; then
+    python3 -c "import sys; sys.stdout.write(sys.stdin.read().$1())"
+  elif [ "$1" = lower ]; then
+    tr '[:upper:]' '[:lower:]'
+  else
+    tr '[:lower:]' '[:upper:]'
+  fi
+}
+
 # lc: Convert the parameters or STDIN to lowercase.
 function lc() {
-  if [ $# -eq 0 ]; then
-    python -c 'import sys; print sys.stdin.read().decode("utf-8").lower()'
-  else
-    for i in "$@"; do
-      echo $i | python -c 'import sys; print sys.stdin.read().decode("utf-8").lower()'
-    done
-  fi
+  if [ $# -eq 0 ]; then _case lower; else printf '%s\n' "$@" | _case lower; fi
 }
 
 # uc: Convert the parameters or STDIN to uppercase.
 function uc() {
-  if [ $# -eq 0 ]; then
-    python -c 'import sys; print sys.stdin.read().decode("utf-8").upper()'
-  else
-    for i in "$@"; do
-      echo $i | python -c 'import sys; print sys.stdin.read().decode("utf-8").upper()'
-    done
-  fi
+  if [ $# -eq 0 ]; then _case upper; else printf '%s\n' "$@" | _case upper; fi
 }
 
 # -------------------------------------------------------------------
@@ -848,8 +812,9 @@ function testConnection() {
 
 # -------------------------------------------------------------------
 # netstat_used_local_ports: get used tcp-ports
+# (netstat or, where net-tools is missing, ss: both have the local address in column 4)
 function netstat_used_local_ports() {
-  netstat -atn |
+  { command -v netstat >/dev/null && netstat -atn || ss -atn; } |
     awk '{printf "%s\n", $4}' |
     grep -oE '[0-9]*$' |
     sort -n |
@@ -859,28 +824,18 @@ function netstat_used_local_ports() {
 # -------------------------------------------------------------------
 # netstat_free_local_port: get one free tcp-port
 function netstat_free_local_port() {
-  # didn't work with zsh / bash is ok
-  #read lowerPort upperPort < /proc/sys/net/ipv4/ip_local_port_range
-
+  local port used
+  used=$(netstat_used_local_ports)
   for port in $(seq 32768 61000); do
-    for i in $(netstat_used_local_ports); do
-      if [[ $used_port -eq $port ]]; then
-        continue
-      else
-        echo $port
-        return 0
-      fi
-    done
+    grep -qx "$port" <<<"$used" || { echo "$port"; return 0; }
   done
-
   return 1
 }
 
 # -------------------------------------------------------------------
 # connection_overview: get stats-overview about your connections
 netstat_connection_overview() {
-  netstat -nat |
-    awk '{print $6}' |
+  if command -v netstat >/dev/null; then netstat -nat | awk '{print $6}'; else ss -nat | awk 'NR > 1 {print $1}'; fi |
     sort |
     uniq -c |
     sort -n
@@ -945,32 +900,23 @@ function iptablesBlockIP() {
 # -------------------------------------------------------------------
 # ips: get the local IP's
 function ips() {
-  ifconfig | grep "inet " | awk '{ print $2 }' | cut -d ":" -f 2
+  ip -4 -o addr show | awk '{sub(/\/.*/, "", $4); print $4}'
 }
 
 # -------------------------------------------------------------------
 # os-info: show some info about your system
 function os-info() {
-  lsb_release -a
+  lsb_release -a 2>/dev/null || cat /etc/os-release
   uname -a
-
-  if [ -z /etc/lsb-release ]; then
-    cat /etc/lsb-release
-  fi
-
-  if [ -z /etc/issue ]; then
-    cat /etc/issue
-  fi
-
-  if [ -z /proc/version ]; then
-    cat /proc/version
-  fi
+  [ -r /etc/issue ] && cat /etc/issue
+  [ -r /proc/version ] && cat /proc/version
+  return 0
 }
 
 # -------------------------------------------------------------------
 # command_exists: check if a command exists
 function command_exists() {
-  return type "$1" &>/dev/null
+  type "$1" &>/dev/null
 }
 
 # -------------------------------------------------------------------
@@ -978,11 +924,11 @@ function command_exists() {
 function stripspace() {
   if [ $# -eq 0 ]; then
     echo "Usage: stripspace FILE"
-    exit 1
+    return 1
   else
-    local tempfile=mktemp
-    git stripspace <"$1" >tempfile
-    mv tempfile "$1"
+    local tempfile
+    tempfile=$(mktemp) || return 1
+    git stripspace <"$1" >"$tempfile" && mv "$tempfile" "$1" || { rm -f "$tempfile"; return 1; }
   fi
 }
 
@@ -1012,22 +958,16 @@ function lsssh() {
 # -------------------------------------------------------------------
 # calc: Simple calculator
 # usage: e.g.: 3+3 || 6*6/2
+# The old sed chain held a comment inside $(...), which made the next "-e" a command: decimals ended in
+# "-e: command not found" (28.10.26).
 function calc() {
-  local result=""
-  result="$(printf "scale=10;$*\n" | bc --mathlib | tr -d '\\\n')"
-  #                       └─ default (when `--mathlib` is used) is 20
-  #
-  if [[ "$result" == *.* ]]; then
-    # improve the output for decimal numbers
-    printf "$result" |
-      sed -e 's/^\./0./' $(# add "0" for cases like ".5"` \
-        -e 's/^-\./-0./'
-      ) # add "0" for cases like "-.5"`\
-    -e 's/0*$//;s/\.$//' # remove trailing zeros
-  else
-    printf "$result"
+  local result
+  result=$(printf 'scale=10;%s\n' "$*" | bc -l | tr -d '\\\n')
+  if [[ $result == *.* ]]; then
+    # "0" before ".5" and "-.5", no trailing zeros
+    result=$(printf '%s' "$result" | sed -e 's/^\./0./' -e 's/^-\./-0./' -e 's/0*$//;s/\.$//')
   fi
-  printf "\n"
+  printf '%s\n' "$result"
 }
 
 # -------------------------------------------------------------------
@@ -1040,8 +980,10 @@ function mkd() {
 # mkf: Create a new directory, enter it and create a file
 #
 # usage: mkf /tmp/lall/foo.txt
+# The file name is taken after the cd, so relative paths work; quoted, so spaces stay (28.10.26)
 function mkf() {
-  mkd $(dirname "$@") && touch $@
+  [ $# -eq 1 ] || { echo "usage: mkf dir/file" >&2; return 1; }
+  mkd "$(dirname -- "$1")" && touch -- "$(basename -- "$1")"
 }
 
 # -------------------------------------------------------------------
@@ -1197,9 +1139,12 @@ function file_backup_compressed() {
 # -------------------------------------------------------------------
 # file_backup: creating a backup of a file (with date)
 function file_backup() {
-  for FILE; do
-    [[ -e "$1" ]] && cp "$1" "${1}_$(date +%Y-%m-%d_%H-%M-%S)" || echo "\"$1\" not found." >&2
+  local f rc=0
+  for f; do
+    if [[ -e "$f" ]]; then cp -a -- "$f" "${f}_$(date +%Y-%m-%d_%H-%M-%S)" || rc=1
+    else echo "\"$f\" not found." >&2; rc=1; fi
   done
+  return $rc
 }
 
 # -------------------------------------------------------------------
@@ -1242,7 +1187,7 @@ function create_server() {
   sleep 1 && o "http://localhost:${port}/" &
   # Set the default Content-Type to `text/plain` instead of `application/octet-stream`
   # And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
-  python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port"
+  python3 -c $'import http.server as s\nm = s.SimpleHTTPRequestHandler.extensions_map\nm[""] = "text/plain"\nfor k, v in list(m.items()):\n\tm[k] = v + ";charset=UTF-8"\ns.test(HandlerClass=s.SimpleHTTPRequestHandler, port=int(__import__("sys").argv[1]))' "$port"
 }
 
 # -------------------------------------------------------------------
@@ -1308,10 +1253,15 @@ function cpuinfo() {
 #
 # usage: json '{"foo":42}'` or `echo '{"foo":42}' | json
 function jsonc() {
+  # pygmentize (python3-pygments) only colours, without it the formatted JSON comes plain
+  local hl=cat fmt="python3 -m json.tool"
+  command -v pygmentize >/dev/null && hl="pygmentize -l javascript"
+  # Arch has no python3 in its base system; jq comes with basics.sh everywhere
+  command -v python3 >/dev/null || fmt="jq ."
   if [ -t 0 ]; then # argument
-    python -mjson.tool <<<"$*" | pygmentize -l javascript
+    $fmt <<<"$*" | $hl
   else # pipe
-    python -mjson.tool | pygmentize -l javascript
+    $fmt | $hl
   fi
 }
 
@@ -1326,14 +1276,28 @@ function json2yaml(){
 
 }
 
+# kills the processes with exactly this name, after a look at the list: SIGTERM first, SIGKILL only on a second yes
+# 28.10.26: "ps -ef | grep name | xargs kill -9" matched any part of the command line and also killed the own SSH
+# session (sshd-session) and editors with the name in their arguments; pgrep -x compares the process name only
 function kill_all_of_process(){
-
-  if [ -z "${1}" ]; then
-    echo "Usage: kill_all_of_process ffmpeg "
+  local pids a
+  if [ $# -ne 1 ] || [ -z "$1" ]; then
+    echo "Usage: kill_all_of_process ffmpeg"
     return 1
   fi
-
-  ps -ef | grep "${1}" | grep -v grep | awk '{print $2}' | xargs kill -9
+  # the kernel keeps 15 characters of a process name: longer names are matched as the command's file name
+  local -a sel=(-x -- "$1")
+  [ ${#1} -le 15 ] || sel=(-f -- "^(\S*/)?$1( |$)")
+  pids=$(pgrep "${sel[@]}") || { echo "no process named $1"; return 1; }
+  pgrep -a "${sel[@]}" 2>/dev/null || echo "$pids" # busybox pgrep may lack -a
+  read -r -p "Stop these processes (SIGTERM)? [y/N] " a
+  [[ ${a,,} =~ ^(y|yes)$ ]] || return 1
+  kill $pids
+  sleep 2
+  pids=$(pgrep "${sel[@]}") || return 0
+  read -r -p "Still running: $(echo $pids). Kill them (SIGKILL)? [y/N] " a
+  [[ ${a,,} =~ ^(y|yes)$ ]] || return 1
+  kill -9 $pids
 }
 
 # -------------------------------------------------------------------
@@ -1511,9 +1475,35 @@ function shorturl() {
     return 1
   fi
 
-  curl -s https://www.googleapis.com/urlshortener/v1/url \
-    -H 'Content-Type: application/json' \
-    -d '{"longUrl": '\"$1\"'}' | grep id | cut -d '"' -f 4
+  # Google's URL shortener closed in 2019; is.gd needs no account
+  curl -fsS --get --data-urlencode "url=$1" "https://is.gd/create.php?format=simple" && echo
+}
+
+# -------------------------------------------------------------------
+# o: open a file, folder or URL with the default program (no argument: this folder)
+function o() {
+  local cmd
+  cmd=$(command -v xdg-open || command -v cygstart || command -v open) || {
+    echo "o: no opener here (xdg-open from xdg-utils, cygstart on Cygwin)" >&2
+    return 1
+  }
+  "$cmd" "${@:-.}"
+}
+
+# -------------------------------------------------------------------
+# gz: compare the size of a file with its gzipped size
+function gz() {
+  [ -r "${1:-}" ] || { echo "Usage: gz <file>" >&2; return 1; }
+  local orig gzip
+  orig=$(wc -c <"$1") gzip=$(gzip -c "$1" | wc -c)
+  awk -v o="$orig" -v g="$gzip" 'BEGIN { printf "orig: %d bytes\ngzip: %d bytes (%.2f%%)\n", o, g, o ? g * 100 / o : 0 }'
+}
+
+# -------------------------------------------------------------------
+# codepoint: Unicode code point of a character: codepoint € -> U+20AC (needs a UTF-8 locale)
+function codepoint() {
+  [ -n "${1:-}" ] || { echo "Usage: codepoint <character>" >&2; return 1; }
+  printf 'U+%04X\n' "'$1"
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1522,9 +1512,9 @@ function ppp() {
 
   # Check if ImageMagick's convert command-line tool is installed.
 
-  if ! command -v "convert" $ >/dev/null; then
-    printf "Please install ImageMagick's 'convert' command-line tool!"
-    exit
+  if ! command -v "convert" >/dev/null; then
+    printf "Please install ImageMagick's 'convert' command-line tool!\n"
+    return 1
   fi
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1653,11 +1643,12 @@ function to_lower() {
 # Arguments:
 #   $1 -> Message
 #   $2 -> Exit status (optional)
+# In the interactive shell it returns instead of exiting, which would close the session; a caller stops with: die "…" || return
 function die() {
   local m="$1"   # message
   local e=${2-1} # default exit status 1
-  echo "$m"
-  exit $e
+  echo "$m" >&2
+  return $e
 }
 
 ##################################################################
@@ -1672,9 +1663,10 @@ function is_root() {
 # Purpose: Return true $user exits in /etc/passwd
 # Arguments: $1 (username) -> Username to check in /etc/passwd
 # Return: True or False
+# Without a name or with PASSWD_FILE unset grep waited on stdin, and "ro" matched root (28.10.26)
 function is_user_exits() {
-  local u="$1"
-  grep -q "^${u}" $PASSWD_FILE && return $TRUE || return $FALSE
+  [ -n "$1" ] || return 1
+  grep -q "^$1:" "${PASSWD_FILE:-/etc/passwd}"
 }
 
 ##################################################################
@@ -1760,19 +1752,12 @@ function telegrafAfterUpdate() {
 
 }
 
-#https://coderwall.com/p/xatm5a/bash-one-liner-to-read-yaml-files
+# yaml_r file [key.path]: one value of a YAML file through yq (basics.sh). Until 28.10.26 it put file name and key
+# into Ruby code and installed the gem hash_dot
 function yaml_r() {
-  hashdot=$(gem list hash_dot)
-  if ! [ "$hashdot" != "" ]; then sudo gem install "hash_dot"; fi
-  if [ -f $1 ]; then
-    cmd=" Hash.use_dot_syntax = true; hash = YAML.load(File.read('$1'));"
-    if [ "$2" != "" ]; then
-      cmd="$cmd puts hash.$2;"
-    else
-      cmd="$cmd puts hash;"
-    fi
-    ruby -r yaml -r hash_dot <<<$cmd
-  fi
+  [ -f "$1" ] || { echo "usage: yaml_r file.yaml [key.path]" >&2; return 1; }
+  command -v yq >/dev/null || { echo "yaml_r: yq is missing, install it with basics.sh" >&2; return 1; }
+  yq ".${2:-}" "$1"
 }
 
 #info about perl
@@ -1877,23 +1862,26 @@ function cheatsh() {
 # source: http://superuser.com/questions/436314/how-can-i-get-bash-to-perform-tab-completion-for-my-aliases
 alias_completion() {
   local namespace="alias_completion"
+  # completion line per command, from one "complete -p" (no subprocess per alias: each costs 10-30 ms on Windows)
+  local -A compl=()
+  local cl trig
+  while IFS= read -r cl; do
+    [[ $cl == *" -F "* ]] || continue
+    trig=${cl##* }
+    trig=${trig#\"}; trig=${trig%\"}
+    compl[$trig]=$cl
+  done < <(complete -p)
+  ((${#compl[@]} == 0)) && return 0
 
-  # parse function based completion definitions, where capture group 2 => function and 3 => trigger
-  local compl_regex='complete( +[^ ]+)* -F ([^ ]+) ("[^"]+"|[^ ]+)'
   # parse alias definitions, where capture group 1 => trigger, 2 => command, 3 => command arguments
   local alias_regex="alias ([^=]+)='(\"[^\"]+\"|[^ ]+)(( +[^ ]+)*)'"
-
-  # create array of function completion triggers, keeping multi-word triggers together
-  eval "local completions=($(complete -p | sed -rne "/$compl_regex/s//'\3'/p"))"
-  ((${#completions[@]} == 0)) && return 0
-
-  # create temporary file for wrapper functions and completions
-  rm -f "/tmp/${namespace}-*.XXXXXXXXXX" # preliminary cleanup
-  local tmp_file="$(mktemp "/tmp/${namespace}-${RANDOM}.XXXXXXXXXX")" || return 1
-
-  # read in "<alias> '<aliased command>' '<command args>'" lines from defined aliases
-  local line
+  # the wrappers and completions collect in a variable and run once at the end (no temporary file)
+  local out= line noglob=
+  # the evals expand a glob in an alias (*/) against the current folder: 496 ms in a /tmp with 7669 entries (28.10.26)
+  [[ $- == *f* ]] || { set -f; noglob=1; }
   while read line; do
+    # the evals below run command substitutions in the alias body: iw dev, date, ls at every login (28.10.26)
+    [[ $line == *'$('* || $line == *'`'* || $line == *'<('* || $line == *'>('* ]] && continue
     eval "local alias_tokens=($line)" 2>/dev/null || continue # some alias arg patterns cause an eval parse error
     local alias_name="${alias_tokens[0]}" alias_cmd="${alias_tokens[1]}" alias_args="${alias_tokens[2]# }"
 
@@ -1902,8 +1890,8 @@ alias_completion() {
     eval "local alias_arg_words=($alias_args)" 2>/dev/null || continue
 
     # skip alias if there is no completion function triggered by the aliased command
-    [[ " ${completions[*]} " =~ " $alias_cmd " ]] || continue
-    local new_completion="$(complete -p "$alias_cmd")"
+    [ -n "${compl[$alias_cmd]:-}" ] || continue
+    local new_completion=${compl[$alias_cmd]}
 
     # create a wrapper inserting the alias arguments if any
     if [[ -n $alias_args ]]; then
@@ -1912,20 +1900,22 @@ alias_completion() {
       # avoid recursive call loops by ignoring our own functions
       if [[ "${compl_func#_$namespace::}" == $compl_func ]]; then
         local compl_wrapper="_${namespace}::${alias_name}"
-        echo "function $compl_wrapper {
+        out+="function $compl_wrapper {
            (( COMP_CWORD += ${#alias_arg_words[@]} ))
            COMP_WORDS=($alias_cmd $alias_args \${COMP_WORDS[@]:1})
            $compl_func
-         }" >>"$tmp_file"
+         }
+"
         new_completion="${new_completion/ -F $compl_func / -F $compl_wrapper }"
       fi
     fi
 
     # replace completion trigger by alias
-    new_completion="${new_completion% *} $alias_name"
-    echo "$new_completion" >>"$tmp_file"
+    out+="${new_completion% *} $alias_name
+"
   done < <(alias -p | sed -rne "s/$alias_regex/\1 '\2' '\3'/p")
-  source "$tmp_file" && rm -f "$tmp_file"
+  [ -z "$noglob" ] || set +f
+  eval "$out"
 }
 if [ -n "$BASH_VERSION" ]; then
   alias_completion
@@ -1956,14 +1946,13 @@ function err() {
 function yt2mp3() 
 {
 
-  if command -v youtube-dl >/dev/null; then
-    url=$1
-    youtube-dl --verbose "$url" -x --audio-format mp3
-   else
-    echo "cant find  youtube-dl, install via"
-    echo "sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl"
-    echo "sudo chmod a+rx /usr/local/bin/youtube-dl"      
-  fi
+  # youtube-dl is unmaintained and breaks on YouTube; yt-dlp is its successor with the same options
+  local ytdl
+  ytdl=$(command -v yt-dlp || command -v youtube-dl) || {
+    echo "needs yt-dlp: pkg_install yt-dlp (or: pipx install yt-dlp)" >&2
+    return 1
+  }
+  "$ytdl" "$1" -x --audio-format mp3
 }
 
 #mail tester imap
@@ -2022,9 +2011,9 @@ function get_remote_file() {
     fi
 
     # ------ if emtpy curl and wget not found
-    if [ ${bin_dl} = "" ]; then
+    if [ -z "${bin_dl}" ]; then
       echo "need curl or wget for work please install one of them"
-      exit 98
+      return 98
     fi
 
     # download file
@@ -2035,12 +2024,12 @@ function get_remote_file() {
         cd -
       }
     else
-      # ${1} is not an remote file EXIT !
-      exit 98
+      # ${1} is not an remote file
+      return 98
     fi
   else
     echo "check parameters for function #> get_remote_file"
-    exit 9
+    return 9
   fi
 }
 
@@ -2059,7 +2048,7 @@ function check_files_in_zip() {
     fi
   else
     echo "check parameters for function #> check_files_in_zip"
-    exit 9
+    return 9
   fi
 }
 
@@ -2071,8 +2060,8 @@ function geo-ip() {
     return 1
   else
 
-    ret=$(curl --silent "http://api.db-ip.com/v2/free/$1")
-    echo "$ret"
+    # HTTPS, and -f: an error page is not printed as the answer (28.10.26)
+    curl -fsS "https://api.db-ip.com/v2/free/$1" && echo
 
   fi
 }
@@ -2119,10 +2108,14 @@ function Export_image_file_statistics_to_csv_tabs()
 #convert raw to jpg
 function convert_cr2_to_jpg(){
 
-  if command -v ufraw >/dev/null; then
-    echo "sudo ​apt-get install ufraw"
+  # ufraw left Debian 11, Ubuntu 20.04 and Fedora; dcraw plus ImageMagick do the same
+  if command -v ufraw-batch >/dev/null; then
+    for i in *.CR2; do ufraw-batch "$i" --out-type=jpeg --output "$i.jpg"; done
+  elif command -v dcraw >/dev/null && command -v convert >/dev/null; then
+    for i in *.CR2; do dcraw -c -w "$i" | convert - "$i.jpg"; done
   else
-    for i in *.CR2; do ufraw-batch $i --out-type=jpeg --output $i.jpg; done;
+    echo "needs dcraw and ImageMagick: pkg_install dcraw imagemagick" >&2
+    return 1
   fi  
 
 }
@@ -2131,20 +2124,20 @@ function convert_cr2_to_jpg(){
   #echo scp /path/to/local/file username@hostname:/path/to/remote/file  
 function ssh_copy_to_host()
 {
-  scp "$3 $1@$2:$4"
+  scp "$3" "$1@$2:$4"
 }
 
   #Copy something from some system to some other system:
   #scp username1@hostname1:/path/to/file username2@hostname2:/path/to/other/file 	
 function ssh_copy_from_host_to_host(){
- scp "$1@$2:$3 $4@$5:$6"
+  scp "$1@$2:$3" "$4@$5:$6"
   
 }
 	
   #Copy something from another system to this system:
   #scp username@hostname:/path/to/remote/file /path/to/local/file  
 function ssh_copy_fron_host(){
-  scp "$1@$2:$3 $4"
+  scp "$1@$2:$3" "$4"
 }
 	
 #dcraw -c RAW-Dateiname | convert - Ausgabedatei.FORMAT  
@@ -2153,7 +2146,7 @@ function convert_CR2_to_JPG_dcraw()
   dcraw -c "$1" | convert - "$2.$3"
 }
 
-#curl -i -k -X GET -u root:rootpw "https://knaak.org:8443/api/v2/domains" -H  "accept: application/json"
+# show the validity dates of the TLS certificate of a domain: checkSSLfromDomain example.com
 function checkSSLfromDomain()
 {  
   echo "++++++++++++++++ $1 ++++++++++++++++" ;
@@ -2482,9 +2475,10 @@ raw2jpg_embedded_batch()
 
 }
 
-#Get upgradable apts
+#Get upgradable apts (apt only; pkg_upgradable works everywhere)
 apt-getUpgradable ()
 {
+  [ "$DOT_PKG" = apt ] || { pkg_upgradable; return; }
   { apt-get --just-print upgrade 2>&1 | perl -ne 'if (/Inst\s([\w,\-,\d,\.,~,:,\+]+)\s\[([\w,\-,\d,\.,~,:,\+]+)\]\s\(([\w,\-,\d,\.,~,:,\+]+)\)? /i) {print "$1 (\e[1;34m$2\e[0m -> \e[1;32m$3\e[0m)\n"}';} | while read -r line; do echo -en "$line\n"; done;
 }
 
@@ -2505,9 +2499,75 @@ checkURLs ()
   done
 }
 
-#epackage_exists
+# true when the login screen (MOTD) is switched off: DOT_MOTD=0 in the environment or in ~/.extra (setup.sh asks
+# once). Read from the file because .bashrc loads ~/.extra after the MOTDs.
+function _dot_motd_off() {
+  [ "${DOT_MOTD:-}" = 0 ] && return 0
+  [ -z "${DOT_MOTD:-}" ] && grep -qs '^export DOT_MOTD=0' "$HOME/.extra"
+}
+
+# --- packages on every system: DOT_PKG comes from lib/detect.sh (core.sh) ---
+
+# installs packages with the package manager of this system: pkg_install lnav
+function pkg_install() {
+  case $DOT_PKG in
+    apt)     sudo apt-get update -qq && sudo apt-get install -y "$@" ;;
+    dnf|yum) sudo "$DOT_PKG" install -y "$@" ;;
+    pacman)  sudo pacman -S --needed --noconfirm "$@" ;;
+    zypper)  sudo zypper --non-interactive install "$@" ;;
+    apk)     sudo apk add "$@" ;;
+    opkg)    opkg install "$@" ;;
+    *)       echo "no supported package manager here, install by hand: $*" >&2; return 1 ;;
+  esac
+}
+
+# Installs a missing command on demand: bash calls this when a command is not found. Only commands that the aliases and
+# functions here use and that lib/cmdpkg.sh maps to a package (ffmpeg, nmap, python3, ...); the question comes only on
+# a terminal. Anything else goes to the handler the distribution brought (command-not-found on Ubuntu, PackageKit on
+# Fedora), else to bash's usual message. Off: DOT_INSTALL_ON_DEMAND=0
+# The "()" matters: without it eval ran the body of Ubuntu's handler at every login, and its "return" stopped loading
+# this file (28.10.26: "_dot_cnf_prev{: command not found", 41 functions missing)
+declare -F command_not_found_handle >/dev/null && ! declare -F _dot_cnf_prev >/dev/null &&
+  eval "_dot_cnf_prev () $(declare -f command_not_found_handle | tail -n +2)"
+function command_not_found_handle() {
+  local pkg
+  if [ "${DOT_INSTALL_ON_DEMAND:-1}" != 0 ] && [ -t 0 ] && [ -t 1 ] && [ -r "$HOME/.dot/lib/cmdpkg.sh" ]; then
+    . "$HOME/.dot/lib/cmdpkg.sh"
+    pkg=$(_dot_cmdpkg "$1")
+    if [ -n "$pkg" ]; then
+      # default No: until 28.10.26 Enter (or a stray key) installed the package
+      if confirm "$1 is not installed. Install the package $pkg now"; then
+        pkg_install "$pkg" && hash -r && command -v "$1" >/dev/null && { "$@"; return; }
+      fi
+    fi
+  fi
+  if declare -F _dot_cnf_prev >/dev/null; then _dot_cnf_prev "$@"; return; fi
+  printf 'bash: %s: command not found\n' "$1" >&2
+  return 127
+}
+
+# true when the package is installed: package_exists curl
 function package_exists() {
-    return dpkg -l "$1" &> /dev/null
+  case $DOT_PKG in
+    apt)            dpkg-query -W -f '${Status}' "$1" 2>/dev/null | grep -q 'ok installed' ;;
+    dnf|yum|zypper) rpm -q "$1" >/dev/null 2>&1 ;;
+    pacman)         pacman -Q "$1" >/dev/null 2>&1 ;;
+    apk)            apk info -e "$1" >/dev/null 2>&1 ;;
+    opkg)           opkg list-installed "$1" 2>/dev/null | grep -q . ;;
+    *)              return 1 ;;
+  esac
+}
+
+# lists the packages with a newer version, without changing anything
+function pkg_upgradable() {
+  case $DOT_PKG in
+    apt)     apt list --upgradable 2>/dev/null | tail -n +2 ;;
+    dnf|yum) "$DOT_PKG" -q check-update; [ $? -le 100 ] ;;
+    pacman)  if command -v checkupdates >/dev/null; then checkupdates; else pacman -Qu; fi ;;
+    zypper)  zypper -q list-updates ;;
+    apk)     apk -u list 2>/dev/null ;;
+    opkg)    opkg list-upgradable ;;
+  esac
 }
 
 
@@ -2625,11 +2685,13 @@ function iptable_check_ip() {
 function iptable_block_subnet() {
 
  if [ -z "${1}" ]; then
-    echo "Usage: iptable_block_subnet 10.0.0.0/8 "   
+    echo "Usage: iptable_block_subnet 198.51.100.0/24 [interface]"
     return 1
   fi
-    
-    /sbin/iptables -i eth1 -A INPUT -s "${1}" -j DROP
+  # interface optional: until 28.10.26 it was eth1, a name current systems rarely have (enp*, ens*)
+  local iface=()
+  [ -n "$2" ] && iface=(-i "$2")
+  /sbin/iptables -A INPUT "${iface[@]}" -s "${1}" -j DROP
 
 }
 
@@ -2740,28 +2802,33 @@ function zabbix_create_psk(){
 
 }
 
+# shows what takes space in caches, logs and old kernels, with the command that frees it on this system
 function freeLinuxSpace() {
-echo "https://askubuntu.com/questions/2793/how-do-i-remove-old-kernel-versions-to-clean-up-the-boot-menu"
-du -sh /var/tmp/
-du -sh /var/cache/apt
-echo " apt-get autoclean"
-du -sh /var/cache/apt
-echo "  apt-get clean"
-du -sh /var/cache/apt
-journalctl --disk-usage
-echo " journalctl --vacuum-time=3d"
-echo " journalctl --disk-usage"
-du -h /var/lib/snapd/snaps
-du -sh ~/.cache/
-echo " find ~/.cache/ -depth -type f -atime +365"
-echo " find ~/.cache/ -type f -atime +365 -delete"
+  local cache
+  du -sh /var/tmp/ 2>/dev/null
+  case $DOT_PKG in
+    apt)     cache=/var/cache/apt;       echo " clean: sudo apt-get autoclean / sudo apt-get clean" ;;
+    dnf|yum) cache=/var/cache/$DOT_PKG;  echo " clean: sudo $DOT_PKG clean all" ;;
+    pacman)  cache=/var/cache/pacman/pkg; echo " clean: sudo pacman -Sc (paccache -r keeps three versions)" ;;
+    zypper)  cache=/var/cache/zypp;      echo " clean: sudo zypper clean --all" ;;
+    apk)     cache=/var/cache/apk;       echo " clean: sudo apk cache clean" ;;
+  esac
+  [ -n "$cache" ] && du -sh "$cache" 2>/dev/null
+  if command -v journalctl >/dev/null; then
+    journalctl --disk-usage
+    echo " clean: sudo journalctl --vacuum-time=3d"
+  fi
+  [ -d /var/lib/snapd/snaps ] && du -sh /var/lib/snapd/snaps && echo " old snap revisions: snap list --all | grep disabled"
+  du -sh ~/.cache/ 2>/dev/null
+  echo " clean: find ~/.cache/ -type f -atime +365 -delete"
 
-
-echo "kernel:"
-uname -r
-
-echo "dpkg --list 'linux-image-*'"
-echo "apt-get purge linux-image-x.x.x-xx-generic"
+  echo "kernel: $(uname -r)"
+  case $DOT_PKG in
+    apt)     dpkg --list 'linux-image-*' | awk '/^ii/ {print "  " $2}'
+             echo " remove old ones: sudo apt autoremove --purge" ;;
+    dnf|yum) rpm -q kernel kernel-core 2>/dev/null | sed 's/^/  /'
+             echo " old kernels go by installonly_limit in /etc/dnf/dnf.conf: sudo dnf remove --oldinstallonly" ;;
+  esac
 }
 
 
@@ -2973,12 +3040,12 @@ function prq()
       return 1
   fi
 
+  # installs pipreqs only after a yes (until 28.10.26 without asking); _pip refuses outside a venv where PEP 668 rules
   if ! command -v pipreqs > /dev/null; then
-    pip3 install pipreqs    
-    pipreqs "${1}"
-  else
-    pipreqs "${1}"
-  fi  
+    confirm "pipreqs is not installed. Install it with pip" || return 1
+    _pip install pipreqs || return 1
+  fi
+  pipreqs "${1}"
   
 }
 
@@ -3086,12 +3153,12 @@ scanNetwork_nmap(){
   
   if ! [ -x "$(command -v nmap)" ]; then
     echo 'Error: nmap is not installed.' >&2
-    exit 1
+    return 1
   fi
 
 
   if [ -z "${1}" ]; then
-    echo "Usage: scanNetwork 192.168.2 "   
+    echo "Usage: scanNetwork 192.0.2 "   
     return 1
   fi
 
@@ -3106,7 +3173,7 @@ scanNetwork_nmap(){
 scanNetwork_ping(){
 
   if [ -z "${1}" ]; then
-    echo "Usage: scanNetwork_ping 192.168.2 "   
+    echo "Usage: scanNetwork_ping 192.0.2 "   
     return 1
   fi
 
@@ -3119,7 +3186,7 @@ scanNetwork_ping(){
 # Function to get the local IP and run nmap
 nmap_scanNetworkPing() {
     # Get the local IP address
-    local IP=$(hostname -I | awk '{print $1}')
+    local IP=$(getmyIP)
     
     # Extract the network part of the IP address
     local NETWORK=$(echo $IP | awk -F. '{print $1 "." $2 "." $3 ".0/24"}')
@@ -3132,7 +3199,7 @@ nmap_scanNetworkPing() {
 # Function to get the local IP and run nmap
 nmap_scanNetworkAdvance() {
     # Get the local IP address
-    local IP=$(hostname -I | awk '{print $1}')
+    local IP=$(getmyIP)
     
     # Extract the network part of the IP address
     local NETWORK=$(echo $IP | awk -F. '{print $1 "." $2 "." $3 ".0/24"}')
@@ -3144,7 +3211,7 @@ nmap_scanNetworkAdvance() {
 # Function to get the local IP and run nmap
 nmap_listScan() {
     # Get the local IP address
-    local IP=$(hostname -I | awk '{print $1}')
+    local IP=$(getmyIP)
     
     # Extract the network part of the IP address
     local NETWORK=$(echo $IP | awk -F. '{print $1 "." $2 "." $3 ".0/24"}')
@@ -3157,7 +3224,7 @@ nmap_listScan() {
 function nmap_bacnet_scanNetwork {
 # get the IP address
     # Get the local IP address
-    local IP=$(hostname -I | awk '{print $1}')
+    local IP=$(getmyIP)
     
     # Extract the network part of the IP address
     local NETWORK=$(echo $IP | awk -F. '{print $1 "." $2 "." $3 ".0/24"}')
@@ -3173,58 +3240,78 @@ echo ""
 # It checks for 'lnav' presence, installs it if missing, and chooses the appropriate log source based on system configuration.
 # Usage: Call 'lanv' without arguments to view logs. Requires sudo privileges for installation and log access.
 function lnav() {
-    # Find the full path of lnav
-    local lnav_path=$(which lnav)
+    # Find the full path of lnav (type -P: the program, not this function; which is missing on minimal systems)
+    local lnav_path f
+    lnav_path=$(type -P lnav)
     
-    # If lnav is not installed, install it.
+    # If lnav is not installed, install it after a yes (until 28.10.26 without asking).
     if [ -z "$lnav_path" ]; then
-        echo "lnav is not installed. Installing lnav..."
-        sudo apt-get update && sudo apt-get install -y lnav
-        lnav_path=$(which lnav)  # Re-check for lnav path after installation
+        confirm "lnav is not installed. Install it" || return 1
+        pkg_install lnav || return 1
+        lnav_path=$(type -P lnav)  # Re-check for lnav path after installation
     fi
 
-    # With arguments, or when /var/log/syslog exists, run lnav as usual.
-    # Without both, feed today's journal into lnav.
+    # With arguments, or when /var/log/syslog exists, run lnav as usual. Without both, feed today's journal into
+    # lnav; systems without journald log to /var/log/messages (Alpine, Synology) or /tmp/syslog.log (Asuswrt).
     if [ -n "$1" ] || [ -f "/var/log/syslog" ]; then
         "$lnav_path" "$@"
-    else
+    elif command -v journalctl >/dev/null; then
         journalctl --since today -f -n 100 --no-pager | "$lnav_path"
+    else
+        for f in /var/log/messages /tmp/syslog.log /var/log; do
+            [ -e "$f" ] && { "$lnav_path" "$f"; return; }
+        done
     fi
 }
+
+# Prints one line "<name> <number of files>" per service under /var/log, sorted; used by logs and its tab completion
+function _logs_names() {
+    local dir=/var/log f n ext
+    for f in "$dir"/*; do
+        n=${f##*/}
+        # strip rotation and compression suffixes:
+        # auth.log.2.gz -> auth, syslog-20261026 -> syslog, telegraf.2026-10-16-1792167900.log -> telegraf
+        while :; do
+            ext=${n##*.}
+            case $n in
+                *.gz|*.xz|*.bz2|*.zst|*.old|*.log|*.err|*.out) n=${n%.*} ;;
+                *-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]) n=${n%-*} ;;
+                # last part only digits, '-' or '_', so php7.4-fpm stays
+                *.*) [ -z "${ext//[0-9_-]/}" ] && n=${n%.*} || break ;;
+                *) break ;;
+            esac
+        done
+        # binary files lnav cannot read
+        case $n in journal|wtmp|btmp|lastlog|faillog|'*') continue ;; esac
+        # a directory counts with the files in it
+        if [ -d "$f" ]; then
+            echo "$n $(ls -A "$f" 2>/dev/null | wc -l)"
+        else
+            echo "$n 1"
+        fi
+    done | awk '{ c[$1] += $2 } END { for (n in c) if (c[n]) print n, c[n] }' | sort
+}
+
+# Tab completion for logs: logs <TAB> offers the names that logs lists
+function _logs_complete() {
+    COMPREPLY=()
+    [ "$COMP_CWORD" -eq 1 ] || return 0
+    COMPREPLY=($(compgen -W "$(_logs_names | cut -d' ' -f1)" -- "${COMP_WORDS[1]}"))
+}
+complete -F _logs_complete logs
 
 # Function: logs
 # Lists and opens logs under /var/log. Uses only bash and busybox tools, so it also works on embedded systems.
 # Usage: logs           one entry per service with its number of files, in two columns
 #        logs <name>    all files of <name> incl. rotated and compressed ones in lnav,
 #                       without lnav 'tail -f' on the plain files, without files the systemd journal of <name>
+#        logs <TAB>     completes the names
 function logs() {
-    local dir=/var/log f n ext
+    local dir=/var/log f
     local files=() plain=()
 
     if [ -z "$1" ]; then
-        for f in "$dir"/*; do
-            n=${f##*/}
-            # strip rotation and compression suffixes:
-            # auth.log.2.gz -> auth, syslog-20261026 -> syslog, telegraf.2026-10-16-1792167900.log -> telegraf
-            while :; do
-                ext=${n##*.}
-                case $n in
-                    *.gz|*.xz|*.bz2|*.zst|*.old|*.log|*.err|*.out) n=${n%.*} ;;
-                    *-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]) n=${n%-*} ;;
-                    # last part only digits, '-' or '_', so php7.4-fpm stays
-                    *.*) [ -z "${ext//[0-9_-]/}" ] && n=${n%.*} || break ;;
-                    *) break ;;
-                esac
-            done
-            # binary files lnav cannot read
-            case $n in journal|wtmp|btmp|lastlog|faillog|'*') continue ;; esac
-            # a directory counts with the files in it
-            if [ -d "$f" ]; then
-                echo "$n $(ls -A "$f" 2>/dev/null | wc -l)"
-            else
-                echo "$n 1"
-            fi
-        done | awk '{ c[$1] += $2 } END { for (n in c) if (c[n]) print n, c[n] }' | sort |
+        _logs_names |
             # two columns, sorted top to bottom; one column on terminals below 76 chars
             awk -v w="${COLUMNS:-80}" '{ n[NR] = $1; c[NR] = $2 } END {
                 cols = (w >= 76) ? 2 : 1; rows = int((NR + cols - 1) / cols)

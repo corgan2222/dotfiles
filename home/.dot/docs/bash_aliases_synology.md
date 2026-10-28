@@ -22,3 +22,5 @@
 
 # stopZabbix_Agent
 
+# debianSynoStart
+

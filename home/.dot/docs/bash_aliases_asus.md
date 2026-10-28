@@ -20,11 +20,9 @@
 
 # ipLeases
 
-# vpn4_stop
-
-# vpn4_start
-
 # tcp_dump_port_53
 
 # lnav
+
+# zabbixAgentCheck
 

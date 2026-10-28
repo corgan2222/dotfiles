@@ -22,12 +22,6 @@ http://benalman.com/about/license/
 HELP
 exit; end
 
-# my "test suite"
-%s{
-scans=("" "x" "192.168.0.69" "192.168.0.232" "192.168.0.1" "192.168.0.1 192.168.0.107" "--full"); \
-for s in "${scans[@]}"; do echo -e "===\nargs: $s\n---"; scan $s; echo -e "---\nexit code: $?"; done
-}
-
 ips = []
 subnets = []
 

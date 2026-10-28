@@ -5,7 +5,8 @@ import click
 import requests
 import json
 
-base_url = "https://l.knaak.org"
+# own kutt instance: export KUTT_URL=https://<host> in ~/.dot/.secrets
+base_url = os.environ.get("KUTT_URL") or "https://kutt.it"
 try:
     if sys.platform == "win32":
         APPDATA = os.getenv('APPDATA')

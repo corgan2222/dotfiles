@@ -1,3 +1,7 @@
+# docker_build_push()
+>* builds the Dockerfile in the current directory as <parent>/<dir>:<timestamp> and :latest, then pushes both
+>* tags to Docker Hub after a yes. Until 28.10.26 it was "db".
+
 # prompt_yn()
 
 # get_keypress()
@@ -37,14 +41,15 @@
 >*"Usage:  findStringInFiles 'string' 'folder' ['exclude']"
 
 # createUserSSH()
->*create ssh files for new user
+>* ~/.ssh with an ed25519 key pair whose public key is in authorized_keys, optionally a PuTTY .ppk.
+>* Safe to run again: an existing key stays, the public key goes into authorized_keys once.
 
 # user_add_with_pass_and_folder()
 
 # user_remove()
 
 # replaceStringInFile()
->*replaceStringInFile 'string' 'replace' file"
+>* replaceStringInFile 'string' 'replace' file: replaces every literal occurrence of string in the file
 
 # GetFilelist_clean()
 >*GetFilelist_clean /home/user
@@ -56,7 +61,9 @@
 >*init homeShick
 
 # saveHome()
->*save changes in dotfiles
+>* saveHome "message" [path…]: commits the changes to files the dotfiles repository tracks already (git add -u) and
+>* the paths given (relative to the repository), and pushes the current branch only after a yes.
+>* New files come in with addToHome, homeshick track stages them.
 
 # loadHome()
 >*load newest dotfiles
@@ -84,8 +91,10 @@
 >*color man
 
 # extract()
->* extract: unified archive extractor
->* usage: extract <file>
+>* extract: unified archive extractor, unpacks into the current directory
+>* usage: extract <file> [file…]   (tar.gz/bz2/xz/zst/lz, zip, rar, 7z, gz, bz2, xz, zst, lzma, Z, deb, rpm, iso, cab/exe)
+>* Missing tools fall back to 7z or bsdtar; basics.sh installs unrar, 7zip, zip/unzip.
+>* unzip and unrar ask before they replace a file.
 
 # mkdatedir()
 >*create folder with the current date
@@ -344,9 +353,16 @@
 >*
 >* usage: json '{"foo":42}'` or `echo '{"foo":42}' | json
 
+# json2yaml()
+
+# kill_all_of_process()
+
 # escape()
 >* -------------------------------------------------------------------
 >* escape: Escape UTF-8 characters into their 3-byte format
+
+# logsLatest()
+>* scan multiple log subdirectories for the latest log files and tail them
 
 # unidecode()
 >* -------------------------------------------------------------------
@@ -463,7 +479,7 @@
 >* date -r .bashrc Tue Aug  6 19:14:12 CEST 2019
 >*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*>*
 
-# ps()
+# ct()
 >* prints colored text
 >* print_style "This is a green text " "success";
 >* print_style "This is a yellow text " "warning";
@@ -475,7 +491,7 @@
 >*what to do after telegraf update
 
 # yaml_r()
->*https://coderwall.com/p/xatm5a/bash-one-liner-to-read-yaml-files
+>* yaml_r file [key.path]: one value of a YAML file through yq (basics.sh)
 
 # perlver()
 >*info about perl
@@ -572,7 +588,7 @@
 >*dcraw -c RAW-Dateiname | convert - Ausgabedatei.FORMAT  
 
 # checkSSLfromDomain()
->*curl -i -k -X GET -u root:rootpw "https://knaak.org:8443/api/v2/domains" -H  "accept: application/json"
+>* show the validity dates of the TLS certificate of a domain: checkSSLfromDomain example.com
 
 # random_32chars_al()
 >* bash generate random alphanumeric string
@@ -632,6 +648,9 @@
 # raw2jpg_ext()
 >* "Usage: raw2jpg_ext 'ARW|CR2' 'outout Folder' "
 
+# raw2jpg_embedded_batch()
+>* "Usage: raw2jpg_embedded_batch ARW jpg/ "
+
 # checkURLs()
 >*checkt ob angegebene files auf server vorhanden sind
 
@@ -641,8 +660,6 @@
 # imgResize()
 >*"Usage: imgResize '75' '91' "
 >*"Usage: imgResize [sizeReduct][quality] "
-
-# getSSL()
 
 # iptable_block_bad_countrys()
 >*block all ip from country on all ports
@@ -664,12 +681,91 @@
 
 # iptable_block_subnet()
 >*is subnet blocked
+>* iptable_block_subnet 198.51.100.0/24 [interface]
 
 # iptable_view_blocked()
 >*see all blocked IPs
 
+# iptable_view_blocked_geo()
+>*see all blocked IPs
+
+# iptable_remove_lines()
+>*diff compare local file with repo file
+
 # diff_git_file()
 >*diff compare local file with repo file
 
+# user_add_to_group()
+>*add user to group
+
+# user_list_groups()
+>*list user groups
+
+# user_in_groups_list()
+>*List users and their groups:
+
+# groups_with_users_list()
+>*List groups and their users:
+
+# groups_with_manual_users_list()
+>*list only manually added users
+
+# zabbix_create_psk()
+
+# freeLinuxSpace()
+
+# help_journal()
+
 # installer()
+
+# help_mysql()
+
+# portscan_parallel()
+>*parallel portscan
+
+# portsD()
+
+# corganwashere()
+>*mural
+
+# get_all_configs_of_programm()
+>*List all accessed configuration files while executing a program in linux terminal (improved version)
+
+# tvNoise()
+>*Generates a TV noise alike output in the terminal
+
+# prq()
+
+# h_bash()
+
+# scanNetwork_nmap()
+>* find all active IP addresses in a network
+
+# scanNetwork_ping()
+>* Quickly ping range of IP adresses and return only those that are online
+
+# nmap_scanNetworkPing()
+>* Function to get the local IP and run nmap
+
+# nmap_scanNetworkAdvance()
+>* Function to get the local IP and run nmap
+
+# nmap_listScan()
+>* Function to get the local IP and run nmap
+
+# nmap_bacnet_scanNetwork()
+
+# lnav()
+>* Function: lanv
+>* Ensures 'lnav' is installed and uses it to view system logs. If '/var/log/syslog' is absent, logs are streamed from 'journalctl'. 
+>* It checks for 'lnav' presence, installs it if missing, and chooses the appropriate log source based on system configuration.
+>* Usage: Call 'lanv' without arguments to view logs. Requires sudo privileges for installation and log access.
+
+>* Find the full path of lnav
+# logs()
+>* Function: logs
+>* Lists and opens logs under /var/log. Uses only bash and busybox tools, so it also works on embedded systems.
+>* Usage: logs           one entry per service with its number of files, in two columns
+>*        logs <name>    all files of <name> incl. rotated and compressed ones in lnav,
+>*                       without lnav 'tail -f' on the plain files, without files the systemd journal of <name>
 

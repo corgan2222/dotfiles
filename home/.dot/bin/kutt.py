@@ -1,7 +1,9 @@
 import json
+import os
 import requests
 
-base_url = "https://l.knaak.org"
+# own kutt instance: export KUTT_URL=https://<host> in ~/.dot/.secrets
+base_url = os.environ.get("KUTT_URL") or "https://kutt.it"
 
 def submit(apikey, url, customurl=None, password=None, reuse=False):
     headers = {'X-API-Key': apikey}
