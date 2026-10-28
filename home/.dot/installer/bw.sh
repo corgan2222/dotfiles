@@ -9,7 +9,9 @@
 #   bw.sh --install                         install or update only
 #   BW_SERVER=https://vault.example.org     your own server (Vaultwarden, self-hosted), also as export in ~/.extra
 # In a shell: export BW_SESSION=$(bw unlock --raw), then installers started by hand store their summaries too.
-# category: base
+# sysop, not base: base installers are preselected on the first run, so the setup came up beside the menu's own
+# Bitwarden question, and leaving it showed "failed: bw" (28.10.26, Raspberry Pi)
+# category: sysop
 # check: bw
 . "$(dirname "$(readlink -f "$0")")/../lib/os.sh"
 . "$(dirname "$(readlink -f "$0")")/../lib/bw.sh"
@@ -23,5 +25,6 @@ bw --version
 
 # set up by hand: the installer menu asks again
 [ -f ~/.extra ] && sed -i '/^export DOT_SKIP_BW=/d' ~/.extra
-dot_bw_setup || dot_die "Bitwarden is not set up"
+# giving up the setup is an answer, not an error: bw stays installed
+dot_bw_setup || { dot_info "Bitwarden is not set up; run bw.sh again when you want it"; exit 0; }
 dot_info "server: $(bw status | jq -r '.serverUrl // "https://vault.bitwarden.com"'); the installer menu asks to unlock at its start"

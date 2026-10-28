@@ -233,8 +233,8 @@ Letters after a name list the ways to install; no letters means native only.
 
 | Category | Count | Installers |
 |---|--:|---|
-| Base | 15 | `basics`, `bat`, `bd`, `btop`, `bw`, `delta`, `duf`, `eza`, `glow`, `gping`, `lazydocker`, `lazygit`, `lsd`, `nmap`, `rustnet` |
-| Sysop | 10 | `ansible`, `atuin`, `etckeeper`, `fail2ban`, `onepanel`, `rclone`, `ssh`, `teamviewer`, `tldr`, `wifi-wavemon` |
+| Base | 14 | `basics`, `bat`, `bd`, `btop`, `delta`, `duf`, `eza`, `glow`, `gping`, `lazydocker`, `lazygit`, `lsd`, `nmap`, `rustnet` |
+| Sysop | 11 | `ansible`, `atuin`, `bw`, `etckeeper`, `fail2ban`, `onepanel`, `rclone`, `ssh`, `teamviewer`, `tldr`, `wifi-wavemon` |
 | Dev | 16 | `aichat`, `claude-code`, `code_server` (B D P), `codex`, `composer`, `cuda`, `gitea` (B D P), `gitlab` (B D P), `go`, `nodejs`, `opencv`, `pm2`, `python`, `rust`, `wpcli`, `yarn` |
 | Desktop | 8 | `chrome`, `chromium`, `digikam`, `firefoxdev`, `gimp`, `jetbrains`, `terminator`, `vscode` |
 | Docker | 5 | `diun` (D P), `dockcheck`, `docker`, `dozzle` (D P), `portainer` (D) |
