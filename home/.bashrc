@@ -254,7 +254,9 @@ _dotfilesCheck()
     behind=$(git -C "$repo" rev-list --count HEAD..@{u} 2>/dev/null)
     # dotupdate links the new files too and removes leftovers; a bare "homeshick pull" left new files unlinked
     if [ "${behind:-0}" -gt 0 ]; then
-      if [ "$name" = dotfiles ]; then print_style " dotfiles: $behind new commit(s), update with: dotupdate" "warning"
+      # homeshick is the tool, not a castle: "homeshick link homeshick" made no sense, dotupdate pulls it (28.10.26)
+      if [ "$name" = dotfiles ] || [ "$name" = homeshick ]; then
+        print_style " $name: $behind new commit(s), update with: dotupdate" "warning"
       else print_style " $name: $behind new commit(s), update with: homeshick pull $name && homeshick link $name" "warning"; fi
       echo
     fi

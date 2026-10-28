@@ -20,6 +20,11 @@ if [ "${1:-}" != --links ]; then
     git -C "$castle" status --short --untracked-files=no >&2
     die "these files of the dotfiles are changed here: commit them (saveHome) or undo them (git -C $castle checkout -- <file>), then run dotupdate again"
   fi
+  # homeshick itself: the deploy left an existing clone as it was, the login kept reporting it behind (28.10.26: a
+  # clone of 2024 on a Raspberry Pi, 22 commits). A failure only warns, the dotfiles do not depend on it.
+  hs=$HOME/.homesick/repos/homeshick
+  git -C "$hs" pull -q --ff-only 2>/dev/null ||
+    echo "warning: homeshick in $hs could not be updated (git -C $hs status)" >&2
   old=$(git -C "$castle" rev-parse HEAD)
   say "fetching the dotfiles"
   git -C "$castle" pull -q --ff-only || die "git pull failed in $castle (see above)"

@@ -53,6 +53,8 @@ fi
 say "homeshick and the dotfiles"
 [ -f "$REPOS/homeshick/homeshick.sh" ] || git clone -q https://github.com/andsens/homeshick.git "$REPOS/homeshick" ||
   die "could not fetch homeshick"
+# an existing clone stayed as it was: a Raspberry Pi kept one of 2024, 22 commits behind (28.10.26); only a warning
+git -C "$REPOS/homeshick" pull -q --ff-only 2>/dev/null || echo "  warning: homeshick could not be updated" >&2
 # shellcheck disable=SC1091
 . "$REPOS/homeshick/homeshick.sh"
 # started from a checkout (not through curl): take that one, so a local state can be tried before it is pushed.
