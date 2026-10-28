@@ -53,5 +53,3 @@
 
 # pi_info_temperature
 
-# dockerZabbix
-

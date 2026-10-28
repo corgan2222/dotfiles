@@ -58,8 +58,9 @@ else
 	exit 1
 fi
 
-base_url="https://l.knaak.org"  # Set base url
 [ -f ~/.dot/.secrets ] && source ~/.dot/.secrets 
+# own kutt instance: export KUTT_URL=https://<host> in ~/.dot/.secrets
+base_url="${KUTT_URL:-https://kutt.it}"
 
 # Check API Key is valid
 if [ -z "$kutt_key" ]; then

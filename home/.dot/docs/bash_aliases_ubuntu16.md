@@ -10,6 +10,8 @@
 
 # pleskRestart
 
+# pleskCertsList
+
 # py3
 
 # py36
@@ -26,8 +28,6 @@
 
 # eachdir
 
-# cdknaak
-
 # cd_Aptlist
 
 # cd_git
@@ -35,6 +35,4 @@
 # cd_Scripts
 
 # grep
-
-# pleskCertsList
 
