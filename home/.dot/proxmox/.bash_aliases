@@ -66,7 +66,6 @@ alias p3='py3'
 alias p='py3'
 
 alias bd=". bd -s"
-alias eachdir=". eachdir"
 
 alias grep='grep --color=auto'
 

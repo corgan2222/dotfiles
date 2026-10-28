@@ -25,9 +25,7 @@ alias startZabbix_Agent="sudo /opt/etc/init.d/S07zabbix_agentd start"
 alias stopZabbix_Agent="sudo /opt/etc/init.d/S07zabbix_agentd stop"
 
 
-if [ "$MODELL_TYPE" == "DS1817+" ]; then
-  source "$HOME/.dot/synology/motd.sh"
-else  
-  source "$HOME/.dot/synology/motd_415.sh"
-fi  
+alias debianSynoStart="chroot \"/volume1/@appstore/debian-chroot/var/chroottarget\" \"/bin/bash\""
+
+_dot_motd_off || _loadMotd "$HOME/.dot/synology/motd.sh" "synology motd"
 

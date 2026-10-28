@@ -1,3 +1,4 @@
 #!/bin/bash
 
-figlet -k -f slant "$(hostname)"
+# figlet is not part of Unraid or minimal systems: then the plain name; $HOSTNAME needs no hostname command
+if command -v figlet >/dev/null 2>&1; then figlet -k -f slant "$HOSTNAME"; else printf '\n  %s\n\n' "$HOSTNAME"; fi

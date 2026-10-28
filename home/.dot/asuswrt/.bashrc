@@ -23,10 +23,6 @@ shopt -s checkwinsize
             fi
     }
 
-    function getmyIP {
-          ifconfig | grep ^eth -A2 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1 }'  
-    }
-
     # get current status of git repo
     function parse_git_dirty {
         status=`git status 2>&1 | tee`

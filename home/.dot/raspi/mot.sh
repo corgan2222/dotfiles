@@ -12,7 +12,7 @@ cpuTemp1=$(($cpuTemp0/1000))
 cpuTemp2=$(($cpuTemp0/100))
 cpuTempM=$(($cpuTemp2 % $cpuTemp1))
 
-gpuTemp0=$(/opt/vc/bin/vcgencmd measure_temp)
+gpuTemp0=$(vcgencmd measure_temp)
 gpuTemp0=${gpuTemp0//\'/º}
 gpuTemp0=${gpuTemp0//temp=/}
 
@@ -44,8 +44,10 @@ hours=$((${upSeconds}/3600%24))
 days=$((${upSeconds}/86400))
 UPTIME=`printf "%d Days, %02d:%02d:%02dh" "$days" "$hours" "$mins" "$secs"`
 
-LANIP=`ip a | grep "global eth0" | awk '{print $2}' | head -1 | cut -f1 -d/`
-WLANIP=`ip a | grep "global wlan0" | awk '{print $2}' | head -1 | cut -f1 -d/`
+# whatever the interfaces are called (Bookworm names the wired one end0, not eth0): lib/net.sh
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/net.sh"
+LANIP=$(dot_main_ip)
+WLANIP=$(dot_ips 6 | awk '$1 ~ /^(wl|wlan)/ { print $2; exit }')
 
 
 

@@ -45,9 +45,7 @@ if [ "$color_prompt" = yes ]; then
             fi
     }
 
-    function getmyIP {
-          ifconfig | grep ^eth -A2 | grep 'inet' | head -1 | awk '{ print $2 }'
-    }
+    # getmyIP comes from prompt.sh: any interface name, also without ifconfig (28.10.26)
 
     # get current status of git repo
     function parse_git_dirty {

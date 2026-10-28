@@ -2,12 +2,15 @@
 # | #plesk   Ubuntu 16                                                         |
 # ------------------------------------------------------------------------------
 
-alias pleskReadPhpHandler="plesk bin php_handler --reread"
-alias peclPhp70Install="/opt/plesk/php/7.0/bin/pecl install "
-alias peclPhp71Install="/opt/plesk/php/7.1/bin/pecl install "
-alias peclPhp72Install="/opt/plesk/php/7.2/bin/pecl install "
-alias peclPhp73Install="/opt/plesk/php/7.3/bin/pecl install "
-alias pleskRestart="service sw-engine restart && service sw-cp-server restart"
+if command -v plesk >/dev/null 2>&1; then
+  alias pleskReadPhpHandler="plesk bin php_handler --reread"
+  alias peclPhp70Install="/opt/plesk/php/7.0/bin/pecl install "
+  alias peclPhp71Install="/opt/plesk/php/7.1/bin/pecl install "
+  alias peclPhp72Install="/opt/plesk/php/7.2/bin/pecl install "
+  alias peclPhp73Install="/opt/plesk/php/7.3/bin/pecl install "
+  alias pleskRestart="service sw-engine restart && service sw-cp-server restart"
+  alias pleskCertsList="la -la /usr/local/psa/var/modules/letsencrypt/etc/live/"
+fi
 
 alias py3='python3'
 alias py36='python3.6'
@@ -23,7 +26,6 @@ alias eachdir=". eachdir"
 # | Navigation                                                                 |
 # ------------------------------------------------------------------------------
 
-alias cdknaak='cd /var/www/vhosts/knaak.org/httpdocs'
 alias cd_Aptlist='cd /etc/apt/'
 alias cd_git="cd $HOME/git"
 alias cd_Scripts="cd $HOME/git/scripts"
@@ -42,5 +44,3 @@ echo -e "
 plesk bin <utility name> [parameters] [options]
 "
     }
-
-alias pleskCertsList="la -la /usr/local/psa/var/modules/letsencrypt/etc/live/"    

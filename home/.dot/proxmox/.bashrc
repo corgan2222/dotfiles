@@ -45,14 +45,6 @@ if [ "$color_prompt" = yes ]; then
             fi
     }
 
-    function getmyIP {
-        if command -v ifconfig >/dev/null 2>&1; then
-            ifconfig | grep -E '^(eth|ens|enp|vmbr)' -A2 | grep 'inet' | head -1 | awk '{ print $2 }'
-        else
-            ip -4 addr show | grep 'inet ' | grep -v '127\.0\.0\.1' | awk '{ print $2 }' | cut -d/ -f1 | head -1
-        fi
-    }
-
     # get current status of git repo
     function parse_git_dirty {
         status=`git status 2>&1 | tee`

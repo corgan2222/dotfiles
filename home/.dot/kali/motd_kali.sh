@@ -31,7 +31,7 @@ status_mem_usage_warn=80.0 # (float) %used memory(-buffers/cache) to trigger red
 status_swap_usage_warn=80.0 # (float) %used swap to trigger red line
 status_disk_usage_warn=80 # (int) warn if % disk usage greater than this value
 status_file_descriptor_usage_warn=70.0 # (float) warn if % of available file descriptors is used
-update_repository_max_age=86400 # (int) Update Package List (apt-get update) if this period (seconds) after last update has passed 
+cache_max_age=60 # (int) minutes until a background job renews the update and restart lines
 # if there is more than one security update, line is red
 # ############################## ~~~~~~~ ############################## 
 #
@@ -52,21 +52,15 @@ defcolor="\033[0m" # no color
 color_no_status_indicator_yet=$defcolor
 
 export PATH=$PATH:/usr/sbin:/usr/bin:/sbin:/bin
-if [ ! -f /usr/bin/figlet  ]; then
-	echo -e "$red\nError: Required packages are not installed.\ninstall with\napt-get update && apt-get install figlet$defcolor\n"
-	exit
-fi
-if [ ! -f  /usr/bin/bc  ]; then
-	echo -e "$red\nError: Required packages are not installed.\ninstall with\napt-get update && apt-get install  bc $defcolor\n"
-	exit
-fi
-if [ ! -f  /usr/bin/lsb_release  ]; then
-	echo -e "$red\nError: Required packages are not installed.\ninstall with\napt-get update && apt-get install lsb-release $defcolor\n"
-	exit
-fi
-if [ ! -f  /usr/sbin/needrestart ]; then
-	echo -e "$red\nError: Required packages are not installed.\ninstall with\napt-get update && apt-get install needrestart$defcolor\n"
-	exit
+missing=
+# figlet and bc are needed; lsb_release falls back to os-release, needrestart only adds the restart hints
+for t in /usr/bin/figlet:figlet /usr/bin/bc:bc; do
+	[ -f "${t%%:*}" ] || missing="$missing ${t#*:}"
+done
+if [ -n "$missing" ]; then
+	echo -e "$red\nmotd: required packages are not installed, install with\napt-get update && apt-get install$missing$defcolor\n"
+	# .bashrc sources this file: return, an exit would close the login shell
+	return 0 2>/dev/null || exit 0
 fi
 
 # relative cpu load warnings (1.0 = 100% on all cores)
@@ -75,7 +69,7 @@ status_cpu_load_warn5m=$(bc <<< "$status_cpu_load_warn5m+$(nproc)-1")
 status_cpu_load_warn15m=$(bc <<< "$status_cpu_load_warn15m+$(nproc)-1")
 
 # System  welcome message #################################################################################
-release_description=$(lsb_release -s -d)
+release_description=$(lsb_release -s -d 2>/dev/null || . /etc/os-release && echo "$PRETTY_NAME")
 release_kernel=$(uname -r)
 #release_arch=$(uname -m)
 
@@ -109,7 +103,8 @@ uptime=$(uptime -p | awk '{print substr($0, 4)}')
 users=$(users | wc -w)
 
 processes=$(ps ax | wc -l | awk '{print $1}')
-processes_zombie=$(( $(ps aux | grep 'Z' | wc -l) -2 ))
+# the state column only: grep 'Z' on all of ps aux also counted names and users with a Z (28.10.26)
+processes_zombie=$(ps -eo stat= | grep -c '^Z')
 
 cpu_load=$(cat /proc/loadavg | awk '{printf "%s %s %s ('$(nproc)' core)", $1, $2, $3}')
 
@@ -123,7 +118,12 @@ disk_usage=$(df --total  | grep -v udev | egrep "/dev/*" | awk '{printf "%-20s %
 
 
 # Network #################################################################################
-interfaces=$(cat /proc/net/dev | awk 'NR>2{print substr($1, 1, length($1)-1)}')
+# every interface whatever it is called; container and VM links (Docker, LXC, libvirt, ...) only count, one line each
+# would push the rest of the MOTD off the screen
+interfaces=$(awk 'NR > 2 { sub(/:.*/, "", $1); print $1 }' /proc/net/dev |
+	grep -vE '^(lo|docker.*|br-.*|veth.*|virbr.*|lxcbr.*|lxdbr.*|podman.*|cni.*|flannel.*|cali.*|vxlan.*|fwbr.*|fwpr.*|fwln.*|tap.*|hassio)$')
+virt_interfaces=$(awk 'NR > 2 { sub(/:.*/, "", $1); print $1 }' /proc/net/dev |
+	grep -cE '^(docker.*|br-.*|veth.*|virbr.*|lxcbr.*|lxdbr.*|podman.*|cni.*|flannel.*|cali.*|vxlan.*|fwbr.*|fwpr.*|fwln.*|tap.*|hassio)$')
 
 # Cast to int
 #updates_security=$(($updates_security+0))
@@ -224,18 +224,13 @@ echo "$interfaces" | while read iface; do
 	fi;
 done
 
+[ "${virt_interfaces:-0}" -gt 0 ] && echo "+ $virt_interfaces container networks"
+
 echo -e "$cyan# Security$color_no_status_indicator_yet"
 
 if [ $EUID -eq 0 ]; then
-	# Security #################################################################################	
-	if [[ -f /var/run/reboot-required || ! $(needrestart -k -r l -b 2>/dev/null | grep -c "NEEDRESTART-KSTA: 1") ]]; then
-		echo -e "${red}System restart required!$defcolor"
-	fi;
-
-	old_services=$(needrestart -l -r l -b 2>/dev/null | grep -v "NEEDRESTART-VER:" | wc -l)
-	if (( old_services > 0 )); then
-		echo -e "${yellow}${old_services} services might need a restart.$defcolor command: needrestart"
-	fi
+	# Security #################################################################################
+	[ -f /var/run/reboot-required ] && echo -e "${red}System restart required!$defcolor"
 
 	if [ -f /var/log/auth.log ]; then
 		ssh_fails=$(cat /var/log/auth.log | grep -i "fail" | wc -l)
@@ -244,51 +239,35 @@ if [ $EUID -eq 0 ]; then
 		echo -e "$ssh_fails failed SSH logins since $ssh_first_fail_date$defcolor"
 	fi
 
-	package_manager_found=0
-	
-	### SWITCH package manager commands for different OS ###
-	if [ -f /usr/bin/apt-get ]; then # debian/ubuntu, apt-get package manager
-		if (( $(date +%s) - $(stat -c%Y /var/cache/apt/pkgcache.bin) > update_repository_max_age)); then
-			echo "Updating package list..."
-			apt-get update > /dev/null 2>&1
+	# needrestart and twice apt-get -s upgrade took 4-7 s at every login, plus an apt-get update once a day
+	# (28.10.26). Their lines come from a cache that a background job renews when it is older than
+	# cache_max_age; the job runs no apt-get update, so a login never holds the apt lock.
+	_kali_checks() {
+		local updates updates_security old_services=0 s_upd=$green s_sec=$green
+		if command -v needrestart >/dev/null; then
+			needrestart -k -r l -b 2>/dev/null | grep -q "NEEDRESTART-KSTA: 1" ||
+				echo -e "${red}System restart required!$defcolor"
+			old_services=$(needrestart -l -r l -b 2>/dev/null | grep -vc "NEEDRESTART-VER:")
+			(( old_services > 0 )) &&
+				echo -e "${yellow}${old_services} services might need a restart.$defcolor command: needrestart"
 		fi
-		
-		updates=$(apt-get -s upgrade | grep ^Inst | wc -l)
-		updates_security=$(apt-get -s upgrade | grep ^Inst | grep -i security | wc -l)
-		
-		package_manager_found=1
-	elif [ -f /usr/bin/pacman ]; then
-		updates=$(pacman -Syup | grep "http://" | wc -l) 2>/dev/null
-
-		if [ -f /usr/bin/arch-audit ]; then
-			updates_security=$(arch-audit --upgradable | wc -l) 2>/dev/null
-		else
-			echo -e "${red}Error: Please install arch-audit from AUR$defcolor";
-		fi
-		package_manager_found=1
-	else
-		echo -e "${red}Error: No command available yet for your package manager$defcolor";
+		updates=$(apt-get -s upgrade 2>/dev/null | grep ^Inst)
+		updates_security=$(grep -ci security <<<"$updates")
+		updates=$(grep -c . <<<"$updates")
+		(( updates > 0 )) && s_upd=$yellow
+		(( updates_security > 0 )) && s_sec=$red
+		echo -e "$s_upd$updates packages can be updated.$s_sec \n$updates_security updates are security updates.\n$defcolor"
+	}
+	_cache=${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/motd-kali
+	mkdir -p "${_cache%/*}"
+	if [ -z "$(find "$_cache" -mmin -"$cache_max_age" 2>/dev/null)" ]; then
+		# double fork: no job notice in the login shell; exec 255>&-: the job must not hold the stderr of the login
+		# shell, which bash keeps on fd 255 (else "bash -lic cmd 2>&1 | ..." waits for the job, 28.10.26)
+		( ( exec 255>&-; _kali_checks > "$_cache.$$" 2>/dev/null && mv -f "$_cache.$$" "$_cache" ) \
+			</dev/null >/dev/null 2>&1 & )
 	fi
-
-
-	if (("$package_manager_found" == "1")); then
-		
-		updates_security=$(($updates_security+0))
-		updates=$(($updates+0))
-		
-		if (("$updates_security" == "0")); then
-			status_updates_security=$green
-		else
-			status_updates_security=$red
-		fi
-		if (("$updates" == "0")); then
-			status_updates=$green
-		else
-			status_updates=$yellow
-		fi
-		
-		echo -e "$status_updates$updates packages can be updated.$status_updates_security \n$updates_security updates are security updates.\n$defcolor"
-	fi;
+	if [ -s "$_cache" ]; then cat "$_cache"; else echo "(updates: collecting, shown at the next login)"; fi
+	unset -f _kali_checks
 else
 	echo -e "This requires root privileges.
 	$defcolor"
