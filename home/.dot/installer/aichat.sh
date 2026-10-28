@@ -1,24 +1,33 @@
 #!/bin/bash
+# installer: aichat, LLM chat on the command line
+# systems: amd64 arm64 armv7 armv6
+# Installs the latest static (musl) aichat release binary from GitHub into ~/.local/bin (sha256 checked).
+# Does nothing when that version is installed already.
+#   aichat.sh
+# category: dev
+# check: aichat
+. "$(dirname "$(readlink -f "$0")")/../lib/os.sh"
 
-# Check if aichat command is available
-if command -v aichat &> /dev/null; then
-    echo "aichat is already installed."
-    exit 0
+case $DOT_ARCH in
+  amd64) triple=x86_64-unknown-linux-musl ;;
+  arm64) triple=aarch64-unknown-linux-musl ;;
+  armv7) triple=armv7-unknown-linux-musleabihf ;;
+  armv6) triple=arm-unknown-linux-musleabihf ;;
+  *) dot_die "aichat has no release binary for architecture $DOT_ARCH" ;;
+esac
+dot_need curl tar
+
+tag=$(dot_github_latest sigoden/aichat)
+[ -n "$tag" ] || dot_die "cannot read the latest aichat release from GitHub (no network?)"
+if [ "$(~/.local/bin/aichat --version 2>/dev/null)" = "aichat ${tag#v}" ]; then
+  dot_info "aichat ${tag#v} is already installed"
+  exit 0
 fi
 
-# Get Cargo version
-CARGO_VERSION=$(cargo --version | awk '{print $2}')
-
-# Function to compare version numbers
-version_gt() {
-  [ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]
-}
-
-# Check if Cargo version is greater than 1.71
-if version_gt "$CARGO_VERSION" "1.71"; then
-    cargo install aichat
-else
-    # If Cargo is too old, update Rust and install again
-    curl -sf https://static.rust-lang.org/rustup.sh | sudo sh
-    cargo install aichat
-fi
+tmp=$(mktemp -d) && trap 'rm -rf "$tmp"' EXIT
+dot_info "Downloading aichat $tag ($triple)"
+dot_github_fetch sigoden/aichat "/aichat-$tag-$triple\.tar\.gz$" "$tmp/aichat.tar.gz" "$tag" ||
+  dot_die "could not download aichat"
+tar -xzf "$tmp/aichat.tar.gz" -C "$tmp" && install -D -m 755 "$tmp/aichat" ~/.local/bin/aichat ||
+  dot_die "could not unpack aichat into ~/.local/bin"
+~/.local/bin/aichat --version
