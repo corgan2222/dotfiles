@@ -1,12 +1,16 @@
 [Unit]
-Description=PWM Fan Control
-After=systemd-boot-check-no-failures.service
+Description=PWM fan control by CPU temperature
+After=local-fs.target
 
 [Service]
 Type=simple
-User=root
-ExecStart= /usr/bin/python3 /usr/bin/fan_ctrl.py
+EnvironmentFile=-/etc/default/fanctrl
+# lgpio writes notification files into its working directory
+RuntimeDirectory=fanctrl
+WorkingDirectory=/run/fanctrl
+ExecStart=/usr/local/bin/fan_ctrl.py
 Restart=always
+RestartSec=5
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
