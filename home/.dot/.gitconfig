@@ -1,9 +1,5 @@
 # This is Git's per-user configuration file.
-[user]
-# Please adapt and uncomment the following lines:
-	name = Stefan Knaak
-	email = stefan@knaak.org
-	signingkey = 27EADC96482407F7
+# name, email and signingkey belong into ~/.gitconfig of each machine, not into this repository
 [core]
 	editor = joe
 [push]

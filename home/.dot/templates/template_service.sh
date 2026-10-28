@@ -8,8 +8,8 @@
 Description=Nextcloud cron.php job
 
 [Service]
-User=knaak
-ExecStart=/opt/plesk/php/7.3/bin/php -f /var/www/vhosts/knaak.org/cloud.knaak.org/cron.php
+User=<web user>
+ExecStart=/usr/bin/php -f /var/www/<nextcloud dir>/cron.php
 
 [Install]
 WantedBy=basic.target
