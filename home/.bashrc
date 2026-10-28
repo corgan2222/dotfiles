@@ -1,7 +1,13 @@
 #!/bin/bash -x
- 
-[ -z "$PS1" ] && return
+
+# bash only: sh, dash and BusyBox ash stop at the syntax below (~/.profile loads this file only under bash)
+[ -n "${BASH_VERSION:-}" ] || return
+# interactive shells only. Not PS1: Git Bash's /etc/profile sets it in every login shell, so the deploy's last
+# "bash -l" without a terminal loaded everything (sensible.bash: "bind: line editing not enabled", 28.10.26)
+case $- in *i*) ;; *) return ;; esac
 # ~/.bashrc: executed by bash(1) for non-login shells.
+# not exported: ~/.profile skips a second load in this shell, a new shell loads again
+_dot_bashrc_loaded=1
 
 ############# INCLUDE ####################################
 
@@ -33,20 +39,41 @@ print_style () {
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
 }
 
+# sources a file when it is readable; DOT_TIMING=1 bash -l prints how long each file takes (bash 5: EPOCHREALTIME)
 _loadFile()
 {
-  if [ -r "$1" ]; then
-      #LAST=$(stat -c%y "$1" | cut -d'.' -f1) 
-        DALTA=$(($(date +%s) - $(date +%s -r "$1"))) 
+  [ -r "$1" ] || return 0
+  if [ -n "${DOT_TIMING:-}" ] && [ -n "${EPOCHREALTIME:-}" ]; then
+    local t0=${EPOCHREALTIME/[.,]/}
+    source "$1"
+    printf '%6d ms  %s\n' $(( (${EPOCHREALTIME/[.,]/} - t0) / 1000 )) "$1" >&2
+  else
+    source "$1"
+  fi
+}
 
-      LAST=$(date -r "$1" +'%H:%M:%S %d-%m-%Y ') 
-      c1=$(print_style " $2" "success")
-      c2=$(print_style " $1" "info")
-      c3=$(print_style " $DALTA" "success")
+# MOTD scripts: sourced like the rest, but without alias expansion: an alias such as df="df -kTh" in .bash_aliases
+# would change what they read (the columns of df)
+_loadMotd()
+{
+  # the user switches the MOTD off in setup.sh (DOT_MOTD=0)
+  _dot_motd_off && return 0
+  local had=0
+  shopt -q expand_aliases && had=1
+  shopt -u expand_aliases
+  _loadFile "$@"
+  [ $had = 1 ] && shopt -s expand_aliases
+  return 0
+}
 
-      #printf "%5s%35s%50s%55s\n" loading "$c1" "$c2" "$LAST (+$c3 sec)"     
-      source "$1"
-  fi  
+# runs a command, with DOT_TIMING=1 also prints its time: _dot_time <label> <command…>
+_dot_time()
+{
+  local label=$1 t0; shift
+  [ -n "${DOT_TIMING:-}" ] && [ -n "${EPOCHREALTIME:-}" ] || { "$@"; return; }
+  t0=${EPOCHREALTIME/[.,]/}
+  "$@"
+  printf '%6d ms  %s\n' $(( (${EPOCHREALTIME/[.,]/} - t0) / 1000 )) "$label" >&2
 }
 
 #load core system
@@ -63,8 +90,38 @@ resetHome()
   #gitSaveCredential
 }
 
+# Cygwin, Git Bash: "command -v" on a missing tool looks into every PATH directory, with the Windows PATH (100
+# entries) 16 ms each, and the files below ask for about 45 tools (27.10.26). While they load, one listing of the
+# PATH directories answers the misses; the end of this file removes the wrapper again.
+case $OSTYPE in
+  cygwin*|msys*)
+    declare -A _dot_cmds=()
+    _dot_cmd_dirs=: _dot_cmd_path=
+    command()
+    {
+      [ "$1" = -v ] && [ $# = 2 ] && [[ $2 != */* ]] || { builtin command "$@"; return; }
+      if [ "$PATH" != "$_dot_cmd_path" ]; then
+        local - d f x IFS=:
+        set -f
+        for d in $PATH; do
+          [[ $_dot_cmd_dirs == *":${d:-.}:"* ]] && continue
+          _dot_cmd_dirs+="${d:-.}:"
+          set +f; f=("${d:-.}"/*); set -f
+          f=("${f[@]##*/}"); f=("${f[@],,}")
+          printf -v x '[%q]=1 ' "${f[@]%.exe}"
+          eval "_dot_cmds+=($x)"
+        done
+        _dot_cmd_path=$PATH
+      fi
+      [ -n "${_dot_cmds[${2,,}]:-}" ] && { builtin command -v "$2"; return; }
+      # no such file in PATH: an alias, function or builtin still counts, found without the PATH walk
+      PATH=/nonexistent builtin command -v "$2"
+    }
+    ;;
+esac
+
 #OS Check
-shootProfile
+_dot_time shootProfile shootProfile
 shopt -s histappend 
 
 #load basisc
@@ -73,15 +130,18 @@ _loadFile "$HOME"/.dot/.bash_aliases "Base Alias"
 _loadFile "$HOME"/.dot/.bash_functions.sh "Base Functions"
 _loadFile "$HOME"/.dot/.exports "Base Exports"
 _loadFile "$HOME"/.dot/bin/sensible.bash "Bash Stuff"
+_loadFile "$HOME"/.dot/prompt.sh "Prompt"
 
 #printf "\t%s \t%s \n" "$DIST $PSUEDONAME $REV $MODELL_TYPE" 
 
-if [ "$DIST" = "Ubuntu" ]; then   
+# DIST, PSUEDONAME: lower-case system and codename from shootProfile (core.sh); DOT_OS_BASE is the family, so
+# Ubuntu derivatives (Linux Mint, Pop!_OS, ...) load the Ubuntu files too
+if [ "$DOT_OS_BASE" = "ubuntu" ]; then   
   # load the shell dotfiles, and then some:
   # * ~/.path can be used to extend `$PATH`.
   # * ~/.extra can be used for other settings you don’t want to commit.
   #for file in ~/.{config_dotfiles,path,load,colors,exports,icons,aliases,bash_complete,functions,extra,dotfilecheck}; do
-  #for file in ~/.dot/ubuntu16/{.bashrc,.exports,.bash_aliases,.srv1.bash_aliases,debian.sh}; do
+  #for file in ~/.dot/ubuntu16/{.bashrc,.exports,.bash_aliases,debian.sh}; do
   #    [ -r "$file" ] && [ -f "$file" ] && _loadFile "$file"
   #done
   #printf "\t%s \t%s \n" fresh "Ubuntu $PSUEDONAME $REV"   
@@ -90,38 +150,34 @@ if [ "$DIST" = "Ubuntu" ]; then
       _loadFile "$HOME"/.dot/ubuntu19/.bashrc "Debian Userpromt"
       _loadFile "$HOME"/.dot/ubuntu19/.exports "Exports"
       _loadFile "$HOME"/.dot/ubuntu19/.bash_aliases "Debian Alias"    
-      figlet -k -f slant "$(hostname)"  | lolcat
     elif [ "$PSUEDONAME" = "bionic" ]; then
       _loadFile "$HOME"/.dot/ubuntu18/.bashrc "Debian Userpromt"
       _loadFile "$HOME"/.dot/ubuntu18/.exports "Exports"
       _loadFile "$HOME"/.dot/ubuntu18/.bash_aliases "Debian Alias"    
-      figlet -k -f slant "$(hostname)"  | lolcat
-    else
+    # the version folders serve their own release only; newer Ubuntu and derivatives use the base (prompt.sh)
+    elif [ "$PSUEDONAME" = "xenial" ]; then
       _loadFile "$HOME"/.dot/ubuntu16/.bashrc "Debian Userpromt"
       _loadFile "$HOME"/.dot/ubuntu16/.exports "Exports"
       _loadFile "$HOME"/.dot/ubuntu16/.bash_aliases "Debian Alias"
-      _loadFile "$HOME"/.dot/ubuntu16/.srv1.bash_aliases "srv1"
     fi
-  reload=yes  
 fi  
 
 #PROG="`basename $0`" 
 #BASEDIR=$(dirname "$0")
 #echo "$BASEDIR"
 
-if [ "$DIST" = "Synology" ]; then 
+if [ "$DIST" = "synology" ]; then 
   _loadFile "$HOME"/.dot/synology/.bashrc "$DIST Userpromt"
   _loadFile "$HOME"/.dot/synology/.exports " $DIST Exports"
   _loadFile "$HOME"/.dot/synology/.bash_aliases "$DIST Alias"
-  reload=yes
 fi  
 
-if [[ "$DIST" = "raspbian" || "$DIST" = "debian" ]]; then
+# raspi: Raspberry Pi OS or any distro on a Pi device tree (lib/detect.sh), not every Debian
+if [ "$DIST" = "raspi" ]; then
  _loadFile "$HOME"/.dot/raspi/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/raspi/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/raspi/.bash_aliases "$DIST bash_aliases"
  _loadFile "$HOME"/.dot/raspi/raspi_bash_functions.sh "$DIST Functions"
- reload=yes
 fi
 
 if [ "$DIST" = "proxmox" ]; then
@@ -129,58 +185,50 @@ if [ "$DIST" = "proxmox" ]; then
  _loadFile "$HOME"/.dot/proxmox/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/proxmox/.bash_aliases "$DIST bash_aliases"
  _loadFile "$HOME"/.dot/proxmox/proxmox_bash_functions.sh "$DIST Functions"
- _loadFile "$HOME"/.dot/proxmox/motd_proxmox.sh "$DIST motd_proxmox"
- reload=yes
+ _loadMotd "$HOME"/.dot/proxmox/motd_proxmox.sh "$DIST motd_proxmox"
 fi
 
-if [ "$MODELL_TYPE" = "ASUSWRT-Merlin" ]; then 
+if [ "$DIST" = "asuswrt" ]; then 
  _loadFile "$HOME"/.dot/asuswrt/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/asuswrt/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/asuswrt/.bash_aliases "$DIST bash_aliases"  
- _loadFile "$HOME"/.dot/asuswrt/.raspi_bash_functions.sh "$DIST Functions"  
- _loadFile "$HOME"/.dot/asuswrt/EntwareApps.sh "$DIST EntwareApps.sh"  
- _loadFile "$HOME"/.dot/asuswrt/motd_asus.sh "$DIST motd_asus.sh"  
+ _loadFile "$HOME"/.dot/asuswrt/asus_bash_functions.sh "$DIST Functions"  
+ _loadMotd "$HOME"/.dot/asuswrt/EntwareApps.sh "$DIST EntwareApps.sh"  
+ _loadMotd "$HOME"/.dot/asuswrt/motd_asus.sh "$DIST motd_asus.sh"  
 fi 
 
 if [ "$DIST" = "kali" ]; then 
  _loadFile "$HOME"/.dot/kali/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/kali/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/kali/.bash_aliases "$DIST bash_aliases" 
- _loadFile "$HOME"/.dot/kali/motd_kali.sh "$DIST motd_kali.sh"
- reload=yes   
+ _loadMotd "$HOME"/.dot/kali/motd_kali.sh "$DIST motd_kali.sh"
 fi 
 
-if [[ "$DIST" = "Unraid" || "$DIST" = "slackware" ]]; then 
+if [ "$DIST" = "unraid" ]; then 
  _loadFile "$HOME"/.dot/unraid/.bashrc "$DIST bashrc"
  _loadFile "$HOME"/.dot/unraid/.exports "$DIST exports"
  _loadFile "$HOME"/.dot/unraid/.bash_aliases "$DIST bash_aliases" 
  _loadFile "$HOME"/.dot/unraid/unraid_bash_functions.sh "$DIST bash_aliases" 
- _loadFile "$HOME"/.dot/unraid/motd/10-display-name "$DIST bash_aliases" 
- _loadFile "$HOME"/.dot/unraid/motd/20-sysinfo "$DIST bash_aliases" 
- 
- reload=yes   
+ _loadMotd "$HOME"/.dot/unraid/motd/10-display-name "$DIST bash_aliases" 
+ _loadMotd "$HOME"/.dot/unraid/motd/20-sysinfo "$DIST bash_aliases" 
 fi 
+
+# Cygwin, Git Bash and MSYS2 (lib/detect.sh): open, clipboard, path conversion, native symlinks
+if [ "$DIST" = cygwin ] || [ "$DIST" = msys ]; then
+ _loadFile "$HOME"/.dot/windows/.exports "$DIST exports"
+ _loadFile "$HOME"/.dot/windows/.bash_aliases "$DIST bash_aliases"
+fi
+
+# every other Linux gets the general login screen; the special systems above bring their own, Windows none
+case $DIST in
+  synology|raspi|proxmox|asuswrt|kali|unraid|cygwin|msys) ;;
+  *) _loadMotd "$HOME"/.dot/motd.sh "motd" ;;
+esac
 
 #echo $DIST
 
 
 
-tempfile_c="/var/log/apt/apt-updates_count.log"
-if [ -f "$tempfile_c" ]; then
-  AptCount=$(cat $tempfile_c )  
-fi  
-
-if [[ $AptCount -gt 0 ]]; then
-    UPDATED="$(print_style " $AptCount" "success") Apt Update available - #apuu"
-fi
-
-
-
-# printf "\n" 
- #echo "$OS $DIST $_MACH $REV $PSUEDONAME | Kernel $_KERNEL | based on $DistroBasedOn "
- #echo "$MODELL_TYPE $MODELL_SYSTEM | $CPU_CORES'x'$CPU_TYPE"
- #echo "$UPDATED"
-# echo 
 # ______ ______   _____________________ __________________________
 # ___  //_/__  | / /__    |__    |__  //_/__  __ \__  __ \_  ____/
 # __  ,<  __   |/ /__  /| |_  /| |_  ,<   _  / / /_  /_/ /  / __  
@@ -197,23 +245,30 @@ fi
 _dotfilesCheck()
 {
   local repo name behind to=""
-  command -v git >/dev/null || return
+  # no git is no error
+  command -v git >/dev/null || return 0
   command -v timeout >/dev/null && to="timeout 20"
   for repo in "$HOME"/.homesick/repos/*; do
     [ -d "$repo/.git" ] || continue
     name=${repo##*/}
     behind=$(git -C "$repo" rev-list --count HEAD..@{u} 2>/dev/null)
-    [ "${behind:-0}" -gt 0 ] && print_style " $name: $behind new commit(s), update with: homeshick pull $name" "warning" && echo
-    # fetch at most every 6 hours; never ask for credentials
-    [ -n "$(find "$repo/.git/FETCH_HEAD" -mmin -360 2>/dev/null)" ] && continue
-    ( GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="ssh -o BatchMode=yes" $to git -C "$repo" fetch -q >/dev/null 2>&1 & )
+    # dotupdate links the new files too and removes leftovers; a bare "homeshick pull" left new files unlinked
+    if [ "${behind:-0}" -gt 0 ]; then
+      if [ "$name" = dotfiles ]; then print_style " dotfiles: $behind new commit(s), update with: dotupdate" "warning"
+      else print_style " $name: $behind new commit(s), update with: homeshick pull $name && homeshick link $name" "warning"; fi
+      echo
+    fi
+    # fetch at most every 6 hours; never ask for credentials. The age check runs in the background too: a find
+    # costs 50 ms on Windows (28.10.26). The job lets go of the terminal, also of fd 255 where an interactive bash
+    # keeps it: else "bash -lic cmd 2>&1 | ..." waited for the fetch (28.10.26)
+    ( exec 255>&- </dev/null >/dev/null 2>&1
+      [ -n "$(find "$repo/.git/FETCH_HEAD" -mmin -360)" ] ||
+        GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="ssh -o BatchMode=yes" $to git -C "$repo" fetch -q & )
   done
 }
 
-if [ "$reload" = "yes" ]; then
-  _dotfilesCheck
-  #homeshick link
-fi
+# every system, not only those with a folder of their own
+_dotfilesCheck
 
 #a command-line fuzzy finde
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
@@ -221,13 +276,19 @@ fi
 #locals
 [ -f ~/.dot/.secrets ] && source ~/.dot/.secrets 
 
-if [ -d ~/.dot/bin ] ; then
-  export PATH=~/.dot/bin:$PATH
-fi
+# behind the system commands, which the scripts here must not hide; once only, a new login shell loads this again
+# (28.10.26)
+case ":$PATH:" in
+  *":$HOME/.dot/bin:"*) ;;
+  *) [ ! -d "$HOME/.dot/bin" ] || export PATH="$PATH:$HOME/.dot/bin" ;;
+esac
 
 if [ -d ~/.git-radar ] ; then
   export PATH=~/.git-radar:$PATH
 fi
+
+# modern replacements (cat->bat, ping->gping, df->duf, top->btop …), after all functions on purpose
+_loadFile "$HOME"/.dot/.bash_aliases_modern "Modern Alias"
 
 
 export NVM_DIR="$HOME/.nvm"
@@ -280,3 +341,12 @@ elif type compctl &>/dev/null; then
   compctl -K _pm2_completion + -f + pm2
 fi
 ###-end-pm2-completion-###
+
+# personal settings that stay out of the repository (EDITOR, tokens, ...); setup.sh writes them
+[ -r "$HOME/.extra" ] && . "$HOME/.extra"
+
+# the command -v wrapper of Cygwin and Git Bash serves the loading only
+if [ -n "${_dot_cmd_dirs:-}" ]; then
+  unset -f command
+  unset _dot_cmds _dot_cmd_dirs _dot_cmd_path
+fi

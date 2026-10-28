@@ -12,221 +12,74 @@ lowercase(){
 ####################################################################
 # Get System Info
 ####################################################################
+# Fills the variables the shell, the motd scripts and the prompts read, from dot_os_detect in lib/detect.sh (the same
+# detection the installers use). DIST is the lower-case system: ubuntu, debian, arch, kali, proxmox, raspi, synology,
+# asuswrt, unraid, ... (it equals DOT_OS); REV is the version, PSUEDONAME the codename.
 shootProfile(){
-	OS1=$(lowercase \`uname\`)
-	_KERNEL=$(uname -r)
-	_MACH=$(uname -m)
+	. "${BASH_SOURCE[0]%/*}/lib/detect.sh" || return
+	dot_os_detect
 
+	# without subprocesses where bash or /proc know it: each one costs on Windows and small routers. /proc/version
+	# reads "<name> version <release> ...", also in Cygwin and Git Bash, which have no /proc/sys/kernel (28.10.26)
+	# (no OS here: it would overwrite Windows' OS=Windows_NT for every program started from this shell).
+	# Cygwin, Git Bash: detect.sh has read it already, each read of /proc there costs 25 ms (28.10.26)
+	case $DOT_OS in
+		cygwin|msys) _KERNEL=$DOT_OS_VERSION ;;
+		*) if [ -r /proc/version ]; then read -r _ _ _KERNEL _ </proc/version; else _KERNEL=$(uname -r); fi ;;
+	esac
+	_MACH=${HOSTTYPE:-$(uname -m)}
+	DIST=$DOT_OS
+	REV=$DOT_OS_VERSION
+	PSUEDONAME=$DOT_OS_CODENAME
+	DistroBasedOn=${DOT_OS_BASE:-${DOT_OS_LIKE%% *}}
+	MODELL= MODELL_TYPE= MODELL_SYSTEM=
 
-	CPU_CORES=$(cat /proc/cpuinfo | grep "model name" | wc -l)
-	CPU_TYPE=$(cat /proc/cpuinfo | grep "model name" -m 1 | cut -d: -f2)
-
-	if [ "${OS1}" == "windowsnt" ]; then
-		OS=windows
-	elif [ "${OS1}" == "darwin" ]; then
-		OS=mac
-	else
-		OS=$(uname)
-		if [ "${OS}" = "SunOS" ] ; then
-			OS=Solaris
-			ARCH=$(uname -p)
-			OSSTR="${OS} ${REV}(${ARCH} $(uname -v))"
-		elif [ "${OS}" = "AIX" ] ; then
-			OSSTR="${OS} $(oslevel) ($(oslevel -r))"
-		elif [ "${OS}" = "Linux" ] ; then
-			if [ -f /etc/redhat-release ] ; then
-				DistroBasedOn='RedHat'
-				DIST=$(cat /etc/redhat-release |sed s/\ release.*//)
-				PSUEDONAME=$(cat /etc/redhat-release | sed s/.*\(// | sed s/\)//)
-				REV=$(cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//)
-			elif [ -f /etc/SuSE-release ] ; then
-				DistroBasedOn='SuSe'
-				PSUEDONAME=$(cat /etc/SuSE-release | tr "\n" ' '| sed s/VERSION.*//)
-				REV=$(cat /etc/SuSE-release | tr "\n" ' ' | sed s/.*=\ //)
-			elif [ -f /etc/mandrake-release ] ; then
-				DistroBasedOn='Mandrake'
-				PSUEDONAME=$(cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//)
-				REV=$(cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//)
-			elif [ -f /etc/debian_version ] ; then
-				DistroBasedOn='Debian'
-				if [ -f /etc/lsb-release ] ; then
-			        	DIST=$(cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }')
-			                PSUEDONAME=$(cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }')
-			                REV=$(cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }')
-            			fi
-			elif [ -f /etc/VERSION ] ; then
-			 	DistroBasedOn='Synology'
-				DIST=$(cat /etc.defaults/synoinfo.conf | grep '^company_title' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				PSUEDONAME="DSM"
-				REV=$(cat /etc.defaults/VERSION | grep '^productversion' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				MODELL=$(cat /etc.defaults/synoinfo.conf | grep '^product' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				MODELL_TYPE=$(cat /etc.defaults/synoinfo.conf | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				MODELL_SYSTEM=$(cat /etc.defaults/synoinfo.conf | grep '^unique' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")				
-
-				#AsusWRT
-			elif [ -f /opt/etc/entware_release ] ; then
-				PSUE1=$(cat /proc/version | awk -F" " '{ print $5}')
-				PSUE2=$(cat /proc/version | awk -F" " '{ print $6}')
-				PSUE3=$(cat /proc/version | awk -F" " '{ print $7}')
-
-	 			DistroBasedOn='Ubuntu'
-				DIST=$(cat /proc/version | awk -F" " '{ print $4}')
-				PSUEDONAME="$PSUE1 $PSUE2 $PSUE3"
-
-				#REV=$(cat /proc/version | awk -F" " '{ print $3}')
-				#MODELL=
-				MODELL_TYPE=$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $1}')
-				MODELL_SYSTEM="$(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $2}') $(sysinfo | grep ASUS -m1 |  awk -F" " '{ print $3}')"
-
-				CPU_CORES=$(cat /proc/cpuinfo | grep "cpu model" | wc -l)
-				CPU_TYPE=$(cat /proc/cpuinfo | grep "cpu model" -m 1 | cut -d: -f2)	
-
-			fi
-
-			#raspi / unraid
-			if [ -f /etc/os-release ] ; then
-				#DIST=$(cat /etc/os-release | grep '^NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-				if [ -z "$DIST" ]; then
-					DIST=$(cat /etc/os-release | grep '^ID=' | awk -F=  '{ print $2 }')
-				fi
-
-				#raspbian
-				if [ "$DIST" = "debian" ]; then
-					PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-
-					if [ -f /proc/device-tree/model ]; then
-						IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
-						MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
-					fi
-				fi
-
-				#proxmox VE (debian-based, identify via -pve kernel or /etc/pve)
-				if [ "$DIST" = "debian" ] && { uname -r 2>/dev/null | grep -q -- '-pve' || [ -d /etc/pve ]; }; then
-					DIST="proxmox"
-					PSUEDONAME=$(cat /etc/os-release | grep '^VERSION_CODENAME' | awk -F= '{ print $2 }' | sed -e 's/^"//' -e 's/"$//')
-					REV=$(cat /etc/os-release | grep '^VERSION_ID' | awk -F= '{ print $2 }' | sed -e 's/^"//' -e 's/"$//')
-					if command -v pveversion >/dev/null 2>&1; then
-						MODELL_TYPE=$(pveversion 2>/dev/null | head -1 | awk '{ print $2 }')
-					else
-						MODELL_TYPE=$(uname -r)
-					fi
-					MODELL_SYSTEM=$(uname -r)
-				fi
-
-				#debian
-				if [ "$DIST" = "raspbian" ]; then
-					PSUEDONAME=$(cat /etc/os-release| grep '^VERSION_CODENAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-
-					if [ -f /proc/device-tree/model ]; then
-						IFS= read -r -d '' model </proc/device-tree/model || [[ $model ]]
-						MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model)
-					fi
-				fi
-
-				#unraid
-				if [ "$DIST" = "Unraid" ]; then
-					DIST=$(uname -r | sed 's/[^a-zA-Z]*//g')
-					PSUEDONAME=$(cat /etc/os-release| grep '^PRETTY_NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					REV=$(cat /etc/os-release| grep '^VERSION_ID' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					MODELL_TYPE=$(cat /etc/os-release | grep '^upnpmodelname' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					DistroBasedOn=$(cat /etc/os-release | grep '^CPE_NAME' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-					KERNEL=$(uname -r)
-				fi
-				#MODELL=$(cat /etc/os-release | grep '^PRETTY_NAME=' | awk -F=  '{ print $2 }' | sed -e "s/^\"//" -e "s/\"$//")
-			fi
-
-
-			# if [ -f /etc/UnitedLinux-release ] ; then
-			# 	DIST="${DIST}[`cat /etc/UnitedLinux-release | tr "\n" ' ' | sed s/VERSION.*//`]"
-			# fi
-
-			OS=$(lowercase $OS)
-			DistroBasedOn=$(lowercase $DistroBasedOn)
-
-			export OSSTR
-			export CPU_CORES
-			export CPU_TYPE
-			export OS
-			export DIST
-			export DistroBasedOn
-			export PSUEDONAME
-			export REV
-			export _KERNEL
-			export _MACH
-			export MODELL
-			export MODELL_TYPE
-			export MODELL_SYSTEM
-		fi
-
-	fi
-}
-
-####################################################################
-# Print Menu
-####################################################################
-printMenu(){
-	if [[ "$user" = "" || "$passwd" = "" || "$port" = "" ]]; then
-		echo -e "$red Error: USER, PASS AND PORT ARE REQUIRED, PLEASE SET THEM IN CONFIG FILE $endColor"
-		echo ""
-		echo ""
-		exit 1 
-	fi
-	clear
-	echo -e "$cyan Fast and Easy Web Server Installation $endColor"
-	echo "Choose an option writing its number and press enter:"
-	echo -e "\t1) Create a user"
-	echo -e "\t2) Create users profile (color in bash)"
-	echo -e "\t3) Update and Install (Apache, PHP, MySQL, SQLite, Django, Subversion)"
-	echo -e "\t4) Configurating SSH and IPTABLES"
-	echo -e "\t5) Configure and securitizing Apache"
-	echo -e "\t6) Configure and securitizing MySQL"
-	echo -e "\t7) Create SVN & TRAC repos"
-	echo -e "\t8) Create a Mail Server"
-	echo -e "\t9) Create a cron backup (mysql, apache, trac & svn)"
-	echo -e "\t10) Set DNS and to add Google Apps MX records (Only SliceHost.com)"
-	echo -e "\t11) Install Trac and its Plugins"
-	echo -e "\t12) I do not know, exit!"
-	#echo -e "\t13) Create VirtualHosts"
-	read option;
-	while [[ $option -gt 12 || ! $(echo $option | grep '^[1-9]$') ]]
-	do
-		printMenu
+	# every core has a "processor" line; the name is "model name" on x86 and most ARM boards, "cpu model" on MIPS
+	# routers, a Raspberry Pi has neither (its board is MODELL_SYSTEM). mapfile reads the file at once: "read" per
+	# line took 182 ms for 32 cores, mapfile 2 ms, an awk 2 ms on Linux but 50 ms on Windows (28.10.26)
+	local l a=()
+	CPU_CORES=0 CPU_TYPE=
+	# Windows names cores and processor in its environment; Cygwin and Git Bash need 90 ms for /proc/cpuinfo (28.10.26)
+	case $DOT_OS in
+		cygwin|msys) CPU_CORES=${NUMBER_OF_PROCESSORS:-0} CPU_TYPE=${PROCESSOR_IDENTIFIER:-} ;;
+		*) [ -r /proc/cpuinfo ] && mapfile -t a </proc/cpuinfo ;;
+	esac
+	for l in "${a[@]}"; do
+		case $l in
+			processor*) CPU_CORES=$((CPU_CORES + 1)) ;;
+			"model name"*|"cpu model"*) [ -n "$CPU_TYPE" ] || CPU_TYPE=${l#*: } ;;
+		esac
 	done
-	runOption
+
+	case $DIST in
+		proxmox)
+			# the pve-manager version; pveversion (perl) needs 0.8 s for the same, dpkg-query 0.01 s (27.10.26)
+			MODELL_TYPE=$(dpkg-query -W -f '${Version}' pve-manager 2>/dev/null)
+			MODELL_SYSTEM=$_KERNEL ;;
+		raspi)
+			MODELL_SYSTEM=$(tr -d '\0' </proc/device-tree/model 2>/dev/null) ;;
+		synology)
+			_syno() { sed -n "s/^$1=\"\{0,1\}\([^\"]*\)\"\{0,1\}$/\1/p" "$2" 2>/dev/null | head -n 1; }
+			PSUEDONAME=DSM
+			REV=$(_syno productversion /etc.defaults/VERSION)
+			MODELL=$(_syno product /etc.defaults/synoinfo.conf)
+			MODELL_TYPE=$(_syno upnpmodelname /etc.defaults/synoinfo.conf)
+			MODELL_SYSTEM=$(_syno unique /etc.defaults/synoinfo.conf)
+			unset -f _syno ;;
+		asuswrt)
+			MODELL_TYPE=$(nvram get productid 2>/dev/null)
+			MODELL_SYSTEM="$(nvram get buildno 2>/dev/null)_$(nvram get extendno 2>/dev/null)" ;;
+	esac
+
+	# DIST and REV stay in this shell: programs and build scripts read variables of these names for their own
+	# purpose; the scripts started from here (raspi_motd.sh) find their own values
+	export PSUEDONAME DistroBasedOn CPU_CORES CPU_TYPE _KERNEL _MACH MODELL MODELL_TYPE MODELL_SYSTEM
 }
 
-####################################################################
-# Run an Option
-####################################################################
-runOption(){
-	case $option in
-		1) createUser;;
-		2) profileUser;;
-		3) updateInstall;;
-		4) sshIptables;;
-		5) secureApache;;
-		6) secureMySQL;;
-		7) tracsvn;;
-		8) mailServer;;
-		9) cronBackup;;
-		10) set_dns;;
-		11) InstallTrac;;
-		12) exit
-#		13) CreateVirtualHosts;;
-	esac 
-	echo "Press any Key to continue"
-	read x
-	printMenu
-}
 
 
 # shootProfile
 # echo "$CPU_CORES x $CPU_TYPE"
-# echo "OS: $OS"
 # echo "DIST: $DIST"
 # echo "PSUEDONAME: $PSUEDONAME"
 # echo "REV: $REV"
@@ -237,7 +90,6 @@ runOption(){
 # echo "type: $MODELL_TYPE"
 # echo "system: $MODELL_SYSTEM"
 # echo "========"
-# printMenu
 
 
 #upnpmodelname="DS415+"

@@ -5,12 +5,16 @@ shopt -s histappend
 PROMPT_COMMAND='history -a'
 
 # Env vars
-export EDITOR=joe
+# joe where it is installed, else the first editor there is; setup.sh writes a choice to ~/.extra
+for EDITOR in joe nano vim vi; do command -v "$EDITOR" >/dev/null 2>&1 && break; done
+export EDITOR
 
-# lazy add local bin
-LOCAL_BIN="$HOME/.local/bin"
-if [ -d $LOCAL_BIN ]; then
-  export PATH="$PATH:$LOCAL_BIN"
+# Go from installer/go.sh
+if [ -d /usr/local/go/bin ]; then
+  export PATH="$PATH:/usr/local/go/bin"
+fi
+if [ -d "$HOME/go" ]; then
+  export GOPATH=$HOME/go PATH="$PATH:$HOME/go/bin"
 fi
 
 
@@ -28,7 +32,9 @@ fi
 # Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
 #export PYTHONIOENCODING="UTF-8"
 
-export PATH="$HOME/.local/bin:$PATH"
+# ~/.local/bin in front: the installers put newer versions there than the distribution has. Once only: it was
+# appended and prepended, and a subshell loads this file again (28.10.26)
+case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
 #export CHEAT_PATH='/path/to/my/cheats'
 export CHEAT_COLORS=true
 export CHEAT_COLORSCHEME=dark
